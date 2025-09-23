@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 23/09/2025 às 15:35
+-- Tempo de geração: 23/09/2025 às 15:56
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
@@ -38,11 +38,6 @@ CREATE TABLE `agendamentos` (
   `observacoes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `agendamentos`
---
-
-TRUNCATE TABLE `agendamentos`;
 -- --------------------------------------------------------
 
 --
@@ -56,11 +51,6 @@ CREATE TABLE `agua` (
   `idaluno` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `agua`
---
-
-TRUNCATE TABLE `agua`;
 -- --------------------------------------------------------
 
 --
@@ -80,11 +70,6 @@ CREATE TABLE `alunos` (
   `idPersonal` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `alunos`
---
-
-TRUNCATE TABLE `alunos`;
 -- --------------------------------------------------------
 
 --
@@ -99,11 +84,6 @@ CREATE TABLE `exercadaptados` (
   `cadastradoPor` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `exercadaptados`
---
-
-TRUNCATE TABLE `exercadaptados`;
 -- --------------------------------------------------------
 
 --
@@ -118,11 +98,6 @@ CREATE TABLE `exercicios` (
   `cadastradoPor` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `exercicios`
---
-
-TRUNCATE TABLE `exercicios`;
 --
 -- Despejando dados para a tabela `exercicios`
 --
@@ -256,11 +231,6 @@ CREATE TABLE `itens_refeicao` (
   `medida` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `itens_refeicao`
---
-
-TRUNCATE TABLE `itens_refeicao`;
 -- --------------------------------------------------------
 
 --
@@ -277,11 +247,6 @@ CREATE TABLE `nutrientes` (
   `medida` varchar(25) DEFAULT 'g'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `nutrientes`
---
-
-TRUNCATE TABLE `nutrientes`;
 -- --------------------------------------------------------
 
 --
@@ -303,11 +268,6 @@ CREATE TABLE `personal` (
   `statusPlano` enum('Ativo','Pendente','Desativado','Cancelado','A verificar') NOT NULL DEFAULT 'A verificar'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `personal`
---
-
-TRUNCATE TABLE `personal`;
 -- --------------------------------------------------------
 
 --
@@ -319,11 +279,6 @@ CREATE TABLE `refeicoes_tipos` (
   `nome_tipo` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `refeicoes_tipos`
---
-
-TRUNCATE TABLE `refeicoes_tipos`;
 -- --------------------------------------------------------
 
 --
@@ -332,17 +287,14 @@ TRUNCATE TABLE `refeicoes_tipos`;
 
 CREATE TABLE `solicitacoes` (
   `idSolicitacao` int(11) NOT NULL,
+  `token` varchar(64) DEFAULT NULL,
+  `data_expiracao` datetime DEFAULT NULL,
   `idPersonal` int(11) NOT NULL,
   `idAluno` int(11) NOT NULL,
   `status` enum('Pendente','Aceita','Rejeitada','Em análise') NOT NULL DEFAULT 'Pendente',
   `data_solicitacao` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `solicitacoes`
---
-
-TRUNCATE TABLE `solicitacoes`;
 -- --------------------------------------------------------
 
 --
@@ -356,11 +308,6 @@ CREATE TABLE `traducoes_alimentos` (
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `traducoes_alimentos`
---
-
-TRUNCATE TABLE `traducoes_alimentos`;
 -- --------------------------------------------------------
 
 --
@@ -379,11 +326,6 @@ CREATE TABLE `treinos` (
   `data_ultima_modificacao` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `treinos`
---
-
-TRUNCATE TABLE `treinos`;
 -- --------------------------------------------------------
 
 --
@@ -397,11 +339,6 @@ CREATE TABLE `treinospersonal` (
   `nomePersonal` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `treinospersonal`
---
-
-TRUNCATE TABLE `treinospersonal`;
 -- --------------------------------------------------------
 
 --
@@ -422,11 +359,6 @@ CREATE TABLE `treino_exercicio` (
   `observacoes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `treino_exercicio`
---
-
-TRUNCATE TABLE `treino_exercicio`;
 -- --------------------------------------------------------
 
 --
@@ -441,11 +373,6 @@ CREATE TABLE `videos` (
   `cover` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tabela truncada antes do insert `videos`
---
-
-TRUNCATE TABLE `videos`;
 --
 -- Despejando dados para a tabela `videos`
 --
@@ -644,6 +571,7 @@ ALTER TABLE `refeicoes_tipos`
 --
 ALTER TABLE `solicitacoes`
   ADD PRIMARY KEY (`idSolicitacao`),
+  ADD UNIQUE KEY `token` (`token`),
   ADD KEY `FK_Personal_Solicit` (`idPersonal`),
   ADD KEY `FK_Aluno_Solicit` (`idAluno`);
 
