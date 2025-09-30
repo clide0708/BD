@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 30-Set-2025 às 00:20
+-- Tempo de geração: 30-Set-2025 às 01:48
 -- Versão do servidor: 8.0.31
 -- versão do PHP: 8.0.26
 
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `agua` (
   `idAgua` int NOT NULL AUTO_INCREMENT,
   `quantidade` int DEFAULT NULL,
   `data` datetime DEFAULT NULL,
-  `idaluno` int NOT NULL,
+  `idaluno` int DEFAULT NULL,
   PRIMARY KEY (`idAgua`),
   KEY `FK_Agua_Aluno` (`idaluno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
