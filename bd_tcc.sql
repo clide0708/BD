@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Tempo de geração: 23/09/2025 às 15:56
--- Versão do servidor: 10.4.28-MariaDB
--- Versão do PHP: 8.2.4
+-- Host: 127.0.0.1:3306
+-- Tempo de geração: 30-Set-2025 às 00:20
+-- Versão do servidor: 8.0.31
+-- versão do PHP: 8.0.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -26,80 +26,145 @@ USE `bd_tcc`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `agendamentos`
+-- Estrutura da tabela `agendamentos`
 --
 
-CREATE TABLE `agendamentos` (
-  `idAgendamento` int(11) NOT NULL,
-  `idPersonal` int(11) NOT NULL,
-  `idAluno` int(11) NOT NULL,
+DROP TABLE IF EXISTS `agendamentos`;
+CREATE TABLE IF NOT EXISTS `agendamentos` (
+  `idAgendamento` int NOT NULL AUTO_INCREMENT,
+  `idPersonal` int NOT NULL,
+  `idAluno` int NOT NULL,
   `data_hora` datetime NOT NULL,
-  `local` varchar(150) DEFAULT NULL,
-  `observacoes` text DEFAULT NULL
+  `local` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `observacoes` text COLLATE utf8mb4_general_ci,
+  PRIMARY KEY (`idAgendamento`),
+  KEY `FK_Agend_Aluno` (`idAluno`),
+  KEY `FK_Agend_Personal` (`idPersonal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `agendamentos`
+--
+
+TRUNCATE TABLE `agendamentos`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `agua`
+-- Estrutura da tabela `agua`
 --
 
-CREATE TABLE `agua` (
-  `idAgua` int(11) NOT NULL,
-  `quantidade` int(11) DEFAULT NULL,
+DROP TABLE IF EXISTS `agua`;
+CREATE TABLE IF NOT EXISTS `agua` (
+  `idAgua` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int DEFAULT NULL,
   `data` datetime DEFAULT NULL,
-  `idaluno` int(11) NOT NULL
+  `idaluno` int NOT NULL,
+  PRIMARY KEY (`idAgua`),
+  KEY `FK_Agua_Aluno` (`idaluno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `agua`
+--
+
+TRUNCATE TABLE `agua`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `alunos`
+-- Estrutura da tabela `alunos`
 --
 
-CREATE TABLE `alunos` (
-  `idAluno` int(11) NOT NULL,
-  `nome` varchar(100) DEFAULT NULL,
-  `cpf` varchar(20) NOT NULL,
-  `rg` varchar(20) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `senha` varchar(255) DEFAULT NULL,
-  `numTel` varchar(20) NOT NULL,
+DROP TABLE IF EXISTS `alunos`;
+CREATE TABLE IF NOT EXISTS `alunos` (
+  `idAluno` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `rg` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `senha` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `numTel` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
   `data_cadastro` datetime NOT NULL,
-  `statusPlano` enum('Ativo','Pendente','Desativado','Cancelado','A verificar') NOT NULL DEFAULT 'A verificar',
-  `idPersonal` int(11) DEFAULT NULL
+  `statusPlano` enum('Ativo','Pendente','Desativado','Cancelado','A verificar') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'A verificar',
+  `idPersonal` int DEFAULT NULL,
+  PRIMARY KEY (`idAluno`),
+  UNIQUE KEY `cpf` (`cpf`),
+  UNIQUE KEY `uq_numTel` (`numTel`),
+  UNIQUE KEY `uq_rg` (`rg`),
+  UNIQUE KEY `uq_email` (`email`),
+  KEY `FK_Alunos_Personal` (`idPersonal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `alunos`
+--
+
+TRUNCATE TABLE `alunos`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `exercadaptados`
+-- Estrutura da tabela `devs`
 --
 
-CREATE TABLE `exercadaptados` (
-  `idExercAdaptado` int(11) NOT NULL,
-  `nome` varchar(100) DEFAULT NULL,
-  `grupoMuscular` varchar(255) DEFAULT NULL,
-  `descricao` varchar(255) DEFAULT NULL,
-  `cadastradoPor` varchar(50) DEFAULT NULL
+DROP TABLE IF EXISTS `devs`;
+CREATE TABLE IF NOT EXISTS `devs` (
+  `idDev` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cpf` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cadastradoEm` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idDev`),
+  KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `devs`
+--
+
+TRUNCATE TABLE `devs`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `exercicios`
+-- Estrutura da tabela `exercadaptados`
 --
 
-CREATE TABLE `exercicios` (
-  `idExercicio` int(11) NOT NULL,
-  `nome` varchar(100) DEFAULT NULL,
-  `grupoMuscular` varchar(255) DEFAULT NULL,
-  `descricao` varchar(255) DEFAULT NULL,
-  `cadastradoPor` varchar(50) DEFAULT NULL
+DROP TABLE IF EXISTS `exercadaptados`;
+CREATE TABLE IF NOT EXISTS `exercadaptados` (
+  `idExercAdaptado` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `grupoMuscular` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `descricao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cadastradoPor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`idExercAdaptado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `exercicios`
+-- Truncar tabela antes do insert `exercadaptados`
+--
+
+TRUNCATE TABLE `exercadaptados`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `exercicios`
+--
+
+DROP TABLE IF EXISTS `exercicios`;
+CREATE TABLE IF NOT EXISTS `exercicios` (
+  `idExercicio` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `grupoMuscular` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `descricao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cadastradoPor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`idExercicio`)
+) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `exercicios`
+--
+
+TRUNCATE TABLE `exercicios`;
+--
+-- Extraindo dados da tabela `exercicios`
 --
 
 INSERT INTO `exercicios` (`idExercicio`, `nome`, `grupoMuscular`, `descricao`, `cadastradoPor`) VALUES
@@ -220,161 +285,276 @@ INSERT INTO `exercicios` (`idExercicio`, `nome`, `grupoMuscular`, `descricao`, `
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `itens_refeicao`
+-- Estrutura da tabela `itens_refeicao`
 --
 
-CREATE TABLE `itens_refeicao` (
-  `idItensRef` int(11) NOT NULL,
-  `id_tipo_refeicao` int(11) NOT NULL,
-  `nome` varchar(50) NOT NULL,
-  `quantidade` int(11) NOT NULL,
-  `medida` varchar(25) DEFAULT NULL
+DROP TABLE IF EXISTS `itens_refeicao`;
+CREATE TABLE IF NOT EXISTS `itens_refeicao` (
+  `idItensRef` int NOT NULL AUTO_INCREMENT,
+  `id_tipo_refeicao` int NOT NULL,
+  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `quantidade` int NOT NULL,
+  `medida` varchar(25) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`idItensRef`),
+  KEY `id_tipo_refeicao` (`id_tipo_refeicao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `itens_refeicao`
+--
+
+TRUNCATE TABLE `itens_refeicao`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `nutrientes`
+-- Estrutura da tabela `nutrientes`
 --
 
-CREATE TABLE `nutrientes` (
-  `idNutrientes` int(11) NOT NULL,
-  `alimento_id` int(11) NOT NULL,
-  `calorias` decimal(10,2) DEFAULT 0.00,
-  `proteinas` decimal(10,2) DEFAULT 0.00,
-  `carboidratos` decimal(10,2) DEFAULT 0.00,
-  `gorduras` decimal(10,2) DEFAULT 0.00,
-  `medida` varchar(25) DEFAULT 'g'
+DROP TABLE IF EXISTS `nutrientes`;
+CREATE TABLE IF NOT EXISTS `nutrientes` (
+  `idNutrientes` int NOT NULL AUTO_INCREMENT,
+  `alimento_id` int NOT NULL,
+  `calorias` decimal(10,2) DEFAULT '0.00',
+  `proteinas` decimal(10,2) DEFAULT '0.00',
+  `carboidratos` decimal(10,2) DEFAULT '0.00',
+  `gorduras` decimal(10,2) DEFAULT '0.00',
+  `medida` varchar(25) COLLATE utf8mb4_general_ci DEFAULT 'g',
+  PRIMARY KEY (`idNutrientes`),
+  UNIQUE KEY `alimento_id` (`alimento_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `nutrientes`
+--
+
+TRUNCATE TABLE `nutrientes`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `personal`
+-- Estrutura da tabela `personal`
 --
 
-CREATE TABLE `personal` (
-  `idPersonal` int(11) NOT NULL,
-  `nome` varchar(50) NOT NULL,
-  `cpf` varchar(20) NOT NULL,
-  `rg` varchar(20) DEFAULT NULL,
-  `cref_numero` varchar(9) NOT NULL,
-  `cref_categoria` char(1) NOT NULL,
-  `cref_regional` varchar(5) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `senha` varchar(255) NOT NULL,
+DROP TABLE IF EXISTS `personal`;
+CREATE TABLE IF NOT EXISTS `personal` (
+  `idPersonal` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `rg` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cref_numero` varchar(9) COLLATE utf8mb4_general_ci NOT NULL,
+  `cref_categoria` char(1) COLLATE utf8mb4_general_ci NOT NULL,
+  `cref_regional` varchar(5) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `data_cadastro` datetime NOT NULL,
-  `numTel` varchar(20) DEFAULT NULL,
-  `statusPlano` enum('Ativo','Pendente','Desativado','Cancelado','A verificar') NOT NULL DEFAULT 'A verificar'
+  `numTel` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `statusPlano` enum('Ativo','Pendente','Desativado','Cancelado','A verificar') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'A verificar',
+  PRIMARY KEY (`idPersonal`),
+  UNIQUE KEY `cpf` (`cpf`) USING BTREE,
+  UNIQUE KEY `uq_cref_numero` (`cref_numero`),
+  UNIQUE KEY `uq_email` (`email`),
+  UNIQUE KEY `uq_numTel` (`numTel`),
+  UNIQUE KEY `uq_rg` (`rg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `personal`
+--
+
+TRUNCATE TABLE `personal`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `refeicoes_tipos`
+-- Estrutura da tabela `recuperacao_senha`
 --
 
-CREATE TABLE `refeicoes_tipos` (
-  `id` int(11) NOT NULL,
-  `nome_tipo` varchar(50) NOT NULL
+DROP TABLE IF EXISTS `recuperacao_senha`;
+CREATE TABLE IF NOT EXISTS `recuperacao_senha` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `token_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `expiraEm` datetime NOT NULL,
+  `tentativas` int NOT NULL DEFAULT '0',
+  `usado` tinyint(1) NOT NULL DEFAULT '0',
+  `criadoEm` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `recuperacao_senha`
+--
+
+TRUNCATE TABLE `recuperacao_senha`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `solicitacoes`
+-- Estrutura da tabela `refeicoes_tipos`
 --
 
-CREATE TABLE `solicitacoes` (
-  `idSolicitacao` int(11) NOT NULL,
-  `token` varchar(64) DEFAULT NULL,
+DROP TABLE IF EXISTS `refeicoes_tipos`;
+CREATE TABLE IF NOT EXISTS `refeicoes_tipos` (
+  `id` int NOT NULL,
+  `nome_tipo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome_tipo` (`nome_tipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `refeicoes_tipos`
+--
+
+TRUNCATE TABLE `refeicoes_tipos`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `solicitacoes`
+--
+
+DROP TABLE IF EXISTS `solicitacoes`;
+CREATE TABLE IF NOT EXISTS `solicitacoes` (
+  `idSolicitacao` int NOT NULL AUTO_INCREMENT,
+  `token` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_expiracao` datetime DEFAULT NULL,
-  `idPersonal` int(11) NOT NULL,
-  `idAluno` int(11) NOT NULL,
-  `status` enum('Pendente','Aceita','Rejeitada','Em análise') NOT NULL DEFAULT 'Pendente',
-  `data_solicitacao` datetime DEFAULT current_timestamp()
+  `idPersonal` int NOT NULL,
+  `idAluno` int NOT NULL,
+  `status` enum('Pendente','Aceita','Rejeitada','Em análise') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Pendente',
+  `data_solicitacao` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idSolicitacao`),
+  UNIQUE KEY `token` (`token`),
+  KEY `FK_Personal_Solicit` (`idPersonal`),
+  KEY `FK_Aluno_Solicit` (`idAluno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `solicitacoes`
+--
+
+TRUNCATE TABLE `solicitacoes`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `traducoes_alimentos`
+-- Estrutura da tabela `traducoes_alimentos`
 --
 
-CREATE TABLE `traducoes_alimentos` (
-  `id` int(11) NOT NULL,
-  `termo_ingles` varchar(100) NOT NULL,
-  `termo_portugues` varchar(100) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
+DROP TABLE IF EXISTS `traducoes_alimentos`;
+CREATE TABLE IF NOT EXISTS `traducoes_alimentos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `termo_ingles` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `termo_portugues` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `termo_ingles` (`termo_ingles`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `traducoes_alimentos`
+--
+
+TRUNCATE TABLE `traducoes_alimentos`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `treinos`
+-- Estrutura da tabela `treinos`
 --
 
-CREATE TABLE `treinos` (
-  `idTreino` int(11) NOT NULL,
-  `idAluno` int(11) NOT NULL,
-  `idPersonal` int(11) NOT NULL,
-  `criadoPor` varchar(100) NOT NULL,
-  `nome` varchar(50) NOT NULL,
-  `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') NOT NULL DEFAULT 'Outros',
-  `descricao` text DEFAULT NULL,
+DROP TABLE IF EXISTS `treinos`;
+CREATE TABLE IF NOT EXISTS `treinos` (
+  `idTreino` int NOT NULL AUTO_INCREMENT,
+  `idAluno` int DEFAULT NULL,
+  `idPersonal` int DEFAULT NULL,
+  `criadoPor` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Outros',
+  `descricao` text COLLATE utf8mb4_general_ci,
   `data_criacao` datetime NOT NULL,
-  `data_ultima_modificacao` date NOT NULL
+  `data_ultima_modificacao` date NOT NULL,
+  PRIMARY KEY (`idTreino`),
+  KEY `FK_Personal_treino` (`idPersonal`),
+  KEY `FK_Aluno_treino` (`idAluno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `treinos`
+--
+
+TRUNCATE TABLE `treinos`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `treinospersonal`
+-- Estrutura da tabela `treinospersonal`
 --
 
-CREATE TABLE `treinospersonal` (
-  `idTreinosP` int(11) NOT NULL,
-  `nomeTreino` varchar(50) NOT NULL,
-  `idPersonal` int(11) NOT NULL,
-  `nomePersonal` varchar(50) NOT NULL
+DROP TABLE IF EXISTS `treinospersonal`;
+CREATE TABLE IF NOT EXISTS `treinospersonal` (
+  `idTreinosP` int NOT NULL AUTO_INCREMENT,
+  `nomeTreino` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `idPersonal` int NOT NULL,
+  `nomePersonal` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`idTreinosP`),
+  KEY `FK_Treino_Personal` (`idPersonal`),
+  KEY `FK_Treino_nomePersonal` (`nomePersonal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `treinospersonal`
+--
+
+TRUNCATE TABLE `treinospersonal`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `treino_exercicio`
+-- Estrutura da tabela `treino_exercicio`
 --
 
-CREATE TABLE `treino_exercicio` (
-  `idTreino_Exercicio` int(11) NOT NULL,
-  `idTreinosP` int(11) NOT NULL,
-  `idExercicio` int(11) DEFAULT NULL,
-  `idExercAdaptado` int(11) DEFAULT NULL,
+DROP TABLE IF EXISTS `treino_exercicio`;
+CREATE TABLE IF NOT EXISTS `treino_exercicio` (
+  `idTreino_Exercicio` int NOT NULL AUTO_INCREMENT,
+  `idTreinosP` int NOT NULL,
+  `idExercicio` int DEFAULT NULL,
+  `idExercAdaptado` int DEFAULT NULL,
   `data_criacao` datetime NOT NULL,
   `data_ultima_modificacao` datetime NOT NULL,
-  `series` int(11) DEFAULT NULL,
-  `repeticoes` int(11) DEFAULT NULL,
+  `series` int DEFAULT NULL,
+  `repeticoes` int DEFAULT NULL,
   `carga` decimal(10,2) DEFAULT NULL,
-  `ordem` int(11) DEFAULT NULL,
-  `observacoes` text DEFAULT NULL
+  `ordem` int DEFAULT NULL,
+  `observacoes` text COLLATE utf8mb4_general_ci,
+  PRIMARY KEY (`idTreino_Exercicio`),
+  KEY `FK_Treino_TreinosP` (`idTreinosP`),
+  KEY `FK_Treino_Exercicio` (`idExercicio`),
+  KEY `FK_Treino_ExercAdaptado` (`idExercAdaptado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Truncar tabela antes do insert `treino_exercicio`
+--
+
+TRUNCATE TABLE `treino_exercicio`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `videos`
+-- Estrutura da tabela `videos`
 --
 
-CREATE TABLE `videos` (
-  `idvideos` int(11) NOT NULL,
-  `url` text DEFAULT NULL,
-  `idExercicio` int(11) DEFAULT NULL,
-  `idExercAdaptado` int(11) DEFAULT NULL,
-  `cover` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `videos`;
+CREATE TABLE IF NOT EXISTS `videos` (
+  `idvideos` int NOT NULL AUTO_INCREMENT,
+  `url` text COLLATE utf8mb4_general_ci,
+  `idExercicio` int DEFAULT NULL,
+  `idExercAdaptado` int DEFAULT NULL,
+  `cover` text COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`idvideos`),
+  KEY `FK_Video_Exercicio` (`idExercicio`),
+  KEY `FK_Video_ExercAdaptado` (`idExercAdaptado`)
+) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `videos`
+-- Truncar tabela antes do insert `videos`
+--
+
+TRUNCATE TABLE `videos`;
+--
+-- Extraindo dados da tabela `videos`
 --
 
 INSERT INTO `videos` (`idvideos`, `url`, `idExercicio`, `idExercAdaptado`, `cover`) VALUES
@@ -493,260 +673,49 @@ INSERT INTO `videos` (`idvideos`, `url`, `idExercicio`, `idExercAdaptado`, `cove
 (113, 'https://www.youtube.com/watch?v=KSjVpHvJhLo', 113, NULL, '');
 
 --
--- Índices para tabelas despejadas
+-- Restrições para despejos de tabelas
 --
 
 --
--- Índices de tabela `agendamentos`
---
-ALTER TABLE `agendamentos`
-  ADD PRIMARY KEY (`idAgendamento`),
-  ADD KEY `FK_Agend_Aluno` (`idAluno`),
-  ADD KEY `FK_Agend_Personal` (`idPersonal`);
-
---
--- Índices de tabela `agua`
---
-ALTER TABLE `agua`
-  ADD PRIMARY KEY (`idAgua`),
-  ADD KEY `FK_Agua_Aluno` (`idaluno`);
-
---
--- Índices de tabela `alunos`
---
-ALTER TABLE `alunos`
-  ADD PRIMARY KEY (`idAluno`),
-  ADD UNIQUE KEY `cpf` (`cpf`),
-  ADD UNIQUE KEY `uq_numTel` (`numTel`),
-  ADD UNIQUE KEY `uq_rg` (`rg`),
-  ADD UNIQUE KEY `uq_email` (`email`),
-  ADD KEY `FK_Alunos_Personal` (`idPersonal`);
-
---
--- Índices de tabela `exercadaptados`
---
-ALTER TABLE `exercadaptados`
-  ADD PRIMARY KEY (`idExercAdaptado`);
-
---
--- Índices de tabela `exercicios`
---
-ALTER TABLE `exercicios`
-  ADD PRIMARY KEY (`idExercicio`);
-
---
--- Índices de tabela `itens_refeicao`
---
-ALTER TABLE `itens_refeicao`
-  ADD PRIMARY KEY (`idItensRef`),
-  ADD KEY `id_tipo_refeicao` (`id_tipo_refeicao`);
-
---
--- Índices de tabela `nutrientes`
---
-ALTER TABLE `nutrientes`
-  ADD PRIMARY KEY (`idNutrientes`),
-  ADD UNIQUE KEY `alimento_id` (`alimento_id`);
-
---
--- Índices de tabela `personal`
---
-ALTER TABLE `personal`
-  ADD PRIMARY KEY (`idPersonal`),
-  ADD UNIQUE KEY `cpf` (`cpf`) USING BTREE,
-  ADD UNIQUE KEY `uq_cref_numero` (`cref_numero`),
-  ADD UNIQUE KEY `uq_email` (`email`),
-  ADD UNIQUE KEY `uq_numTel` (`numTel`),
-  ADD UNIQUE KEY `uq_rg` (`rg`);
-
---
--- Índices de tabela `refeicoes_tipos`
---
-ALTER TABLE `refeicoes_tipos`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nome_tipo` (`nome_tipo`);
-
---
--- Índices de tabela `solicitacoes`
---
-ALTER TABLE `solicitacoes`
-  ADD PRIMARY KEY (`idSolicitacao`),
-  ADD UNIQUE KEY `token` (`token`),
-  ADD KEY `FK_Personal_Solicit` (`idPersonal`),
-  ADD KEY `FK_Aluno_Solicit` (`idAluno`);
-
---
--- Índices de tabela `traducoes_alimentos`
---
-ALTER TABLE `traducoes_alimentos`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `termo_ingles` (`termo_ingles`);
-
---
--- Índices de tabela `treinos`
---
-ALTER TABLE `treinos`
-  ADD PRIMARY KEY (`idTreino`),
-  ADD KEY `FK_Personal_treino` (`idPersonal`),
-  ADD KEY `FK_Aluno_treino` (`idAluno`);
-
---
--- Índices de tabela `treinospersonal`
---
-ALTER TABLE `treinospersonal`
-  ADD PRIMARY KEY (`idTreinosP`),
-  ADD KEY `FK_Treino_Personal` (`idPersonal`),
-  ADD KEY `FK_Treino_nomePersonal` (`nomePersonal`);
-
---
--- Índices de tabela `treino_exercicio`
---
-ALTER TABLE `treino_exercicio`
-  ADD PRIMARY KEY (`idTreino_Exercicio`),
-  ADD KEY `FK_Treino_TreinosP` (`idTreinosP`),
-  ADD KEY `FK_Treino_Exercicio` (`idExercicio`),
-  ADD KEY `FK_Treino_ExercAdaptado` (`idExercAdaptado`);
-
---
--- Índices de tabela `videos`
---
-ALTER TABLE `videos`
-  ADD PRIMARY KEY (`idvideos`),
-  ADD KEY `FK_Video_Exercicio` (`idExercicio`),
-  ADD KEY `FK_Video_ExercAdaptado` (`idExercAdaptado`);
-
---
--- AUTO_INCREMENT para tabelas despejadas
---
-
---
--- AUTO_INCREMENT de tabela `agendamentos`
---
-ALTER TABLE `agendamentos`
-  MODIFY `idAgendamento` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `agua`
---
-ALTER TABLE `agua`
-  MODIFY `idAgua` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `alunos`
---
-ALTER TABLE `alunos`
-  MODIFY `idAluno` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `exercadaptados`
---
-ALTER TABLE `exercadaptados`
-  MODIFY `idExercAdaptado` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `exercicios`
---
-ALTER TABLE `exercicios`
-  MODIFY `idExercicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
-
---
--- AUTO_INCREMENT de tabela `itens_refeicao`
---
-ALTER TABLE `itens_refeicao`
-  MODIFY `idItensRef` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `nutrientes`
---
-ALTER TABLE `nutrientes`
-  MODIFY `idNutrientes` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `personal`
---
-ALTER TABLE `personal`
-  MODIFY `idPersonal` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `solicitacoes`
---
-ALTER TABLE `solicitacoes`
-  MODIFY `idSolicitacao` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `traducoes_alimentos`
---
-ALTER TABLE `traducoes_alimentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `treinos`
---
-ALTER TABLE `treinos`
-  MODIFY `idTreino` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `treinospersonal`
---
-ALTER TABLE `treinospersonal`
-  MODIFY `idTreinosP` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `treino_exercicio`
---
-ALTER TABLE `treino_exercicio`
-  MODIFY `idTreino_Exercicio` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `videos`
---
-ALTER TABLE `videos`
-  MODIFY `idvideos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
-
---
--- Restrições para tabelas despejadas
---
-
---
--- Restrições para tabelas `agua`
+-- Limitadores para a tabela `agua`
 --
 ALTER TABLE `agua`
   ADD CONSTRAINT `FK_Agua_Aluno` FOREIGN KEY (`idaluno`) REFERENCES `alunos` (`idAluno`);
 
 --
--- Restrições para tabelas `alunos`
+-- Limitadores para a tabela `alunos`
 --
 ALTER TABLE `alunos`
   ADD CONSTRAINT `FK_Alunos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`);
 
 --
--- Restrições para tabelas `itens_refeicao`
+-- Limitadores para a tabela `itens_refeicao`
 --
 ALTER TABLE `itens_refeicao`
   ADD CONSTRAINT `itens_refeicao_ibfk_1` FOREIGN KEY (`id_tipo_refeicao`) REFERENCES `refeicoes_tipos` (`id`);
 
 --
--- Restrições para tabelas `nutrientes`
+-- Limitadores para a tabela `nutrientes`
 --
 ALTER TABLE `nutrientes`
   ADD CONSTRAINT `nutrientes_ibfk_1` FOREIGN KEY (`alimento_id`) REFERENCES `itens_refeicao` (`idItensRef`) ON DELETE CASCADE;
 
 --
--- Restrições para tabelas `solicitacoes`
+-- Limitadores para a tabela `solicitacoes`
 --
 ALTER TABLE `solicitacoes`
   ADD CONSTRAINT `FK_Aluno_Solicit` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`),
   ADD CONSTRAINT `FK_Personal_Solicit` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`);
 
 --
--- Restrições para tabelas `treinos`
+-- Limitadores para a tabela `treinos`
 --
 ALTER TABLE `treinos`
-  ADD CONSTRAINT `FK_Aluno_treino` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`),
-  ADD CONSTRAINT `FK_Personal_treino` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`);
+  ADD CONSTRAINT `FK_Aluno_treino` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_Personal_treino` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE SET NULL;
 
 --
--- Restrições para tabelas `videos`
+-- Limitadores para a tabela `videos`
 --
 ALTER TABLE `videos`
   ADD CONSTRAINT `FK_Video_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`),
