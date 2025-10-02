@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 02-Out-2025 às 01:07
+-- Tempo de geração: 02-Out-2025 às 17:06
 -- Versão do servidor: 8.0.31
 -- versão do PHP: 8.0.26
 
@@ -23,6 +23,33 @@ SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `bd_tcc` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `bd_tcc`;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `academias`
+--
+
+DROP TABLE IF EXISTS `academias`;
+CREATE TABLE IF NOT EXISTS `academias` (
+  `idAcademia` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `cnpj` varchar(18) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `endereco` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `data_cadastro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status_conta` enum('Ativa','Inativa','Excluida') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
+  PRIMARY KEY (`idAcademia`),
+  UNIQUE KEY `cnpj` (`cnpj`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `academias`
+--
+
+TRUNCATE TABLE `academias`;
 -- --------------------------------------------------------
 
 --
@@ -89,9 +116,9 @@ CREATE TABLE IF NOT EXISTS `alunos` (
   `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL,
   `tipoPlano` enum('Básico(Gratuito)','Plus') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
-  `statusPlano` enum('Ativo','Pendente','Desativado','Cancelado','A verificar') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'A verificar',
   `idPersonal` int DEFAULT NULL,
   `status_vinculo` enum('Ativo','Inativo','Pendente') COLLATE utf8mb4_general_ci DEFAULT 'Inativo',
+  `status_conta` enum('Ativa','Pendente','Excluida') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
   PRIMARY KEY (`idAluno`),
   UNIQUE KEY `cpf` (`cpf`),
   UNIQUE KEY `uq_numTel` (`numTel`),
@@ -109,9 +136,35 @@ TRUNCATE TABLE `alunos`;
 -- Extraindo dados da tabela `alunos`
 --
 
-INSERT INTO `alunos` (`idAluno`, `nome`, `cpf`, `rg`, `email`, `senha`, `numTel`, `altura`, `genero`, `meta`, `foto_perfil`, `data_cadastro`, `tipoPlano`, `statusPlano`, `idPersonal`, `status_vinculo`) VALUES
-(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$zOlsSumK/y44UxqEJJ3Yh.cTPpfCHAPMP.4jxC8nTzzrHSvmBg.Aa', '11933572695', NULL, NULL, NULL, NULL, '2025-10-01 21:43:56', 'Básico(Gratuito)', 'A verificar', NULL, 'Inativo');
+INSERT INTO `alunos` (`idAluno`, `nome`, `cpf`, `rg`, `email`, `senha`, `numTel`, `altura`, `genero`, `meta`, `foto_perfil`, `data_cadastro`, `tipoPlano`, `idPersonal`, `status_vinculo`, `status_conta`) VALUES
+(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$zOlsSumK/y44UxqEJJ3Yh.cTPpfCHAPMP.4jxC8nTzzrHSvmBg.Aa', '11933572695', NULL, NULL, NULL, NULL, '2025-10-01 21:43:56', 'Básico(Gratuito)', NULL, 'Inativo', 'Ativa');
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `assinaturas`
+--
+
+DROP TABLE IF EXISTS `assinaturas`;
+CREATE TABLE IF NOT EXISTS `assinaturas` (
+  `idAssinatura` int NOT NULL AUTO_INCREMENT,
+  `idUsuario` int NOT NULL,
+  `tipo_usuario` enum('aluno','personal','academia') COLLATE utf8mb4_general_ci NOT NULL,
+  `idPlano` int NOT NULL,
+  `data_inicio` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_fim` datetime DEFAULT NULL,
+  `status` enum('ativa','cancelada','pendente','expirada','inadimplente') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `id_gateway_assinatura` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`idAssinatura`),
+  KEY `idx_usuario` (`idUsuario`,`tipo_usuario`),
+  KEY `FK_Assinatura_Plano` (`idPlano`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `assinaturas`
+--
+
+TRUNCATE TABLE `assinaturas`;
 -- --------------------------------------------------------
 
 --
@@ -344,6 +397,30 @@ TRUNCATE TABLE `nutrientes`;
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `pagamentos`
+--
+
+DROP TABLE IF EXISTS `pagamentos`;
+CREATE TABLE IF NOT EXISTS `pagamentos` (
+  `idPagamento` int NOT NULL AUTO_INCREMENT,
+  `idAssinatura` int NOT NULL,
+  `valor` decimal(10,2) NOT NULL,
+  `data_pagamento` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('aprovado','pendente','recusado','estornado') COLLATE utf8mb4_general_ci NOT NULL,
+  `metodo_pagamento` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `id_gateway_transacao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`idPagamento`),
+  KEY `FK_Pagamento_Assinatura` (`idAssinatura`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `pagamentos`
+--
+
+TRUNCATE TABLE `pagamentos`;
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `personal`
 --
 
@@ -363,7 +440,7 @@ CREATE TABLE IF NOT EXISTS `personal` (
   `senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `data_cadastro` datetime NOT NULL,
   `numTel` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `statusPlano` enum('Ativo','Pendente','Desativado','Cancelado','A verificar') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'A verificar',
+  `status_conta` enum('Ativa','Pendente','Excluida') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
   PRIMARY KEY (`idPersonal`),
   UNIQUE KEY `cpf` (`cpf`) USING BTREE,
   UNIQUE KEY `uq_cref_numero` (`cref_numero`),
@@ -381,8 +458,42 @@ TRUNCATE TABLE `personal`;
 -- Extraindo dados da tabela `personal`
 --
 
-INSERT INTO `personal` (`idPersonal`, `nome`, `idade`, `genero`, `foto_perfil`, `cpf`, `rg`, `cref_numero`, `cref_categoria`, `cref_regional`, `email`, `senha`, `data_cadastro`, `numTel`, `statusPlano`) VALUES
-(1, 'Enzo Krebs Silva', NULL, NULL, NULL, '46404867825', '592819953', '123456', 'A', 'SP', 'krebsenzo8@gmail.com', '$2y$10$22HXTGZN/bLyfjICc4.lIe9kLPW4c5ZjXNR4kgM6FcpDTlfNvT8Vy', '2025-10-01 21:44:46', '11933572694', 'A verificar');
+INSERT INTO `personal` (`idPersonal`, `nome`, `idade`, `genero`, `foto_perfil`, `cpf`, `rg`, `cref_numero`, `cref_categoria`, `cref_regional`, `email`, `senha`, `data_cadastro`, `numTel`, `status_conta`) VALUES
+(1, 'Enzo Krebs Silva', NULL, NULL, NULL, '46404867825', '592819953', '123456', 'A', 'SP', 'krebsenzo8@gmail.com', '$2y$10$22HXTGZN/bLyfjICc4.lIe9kLPW4c5ZjXNR4kgM6FcpDTlfNvT8Vy', '2025-10-01 21:44:46', '11933572694', 'Ativa');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `planos`
+--
+
+DROP TABLE IF EXISTS `planos`;
+CREATE TABLE IF NOT EXISTS `planos` (
+  `idPlano` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` text COLLATE utf8mb4_general_ci,
+  `valor_mensal` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `tipo_usuario` enum('aluno','personal','academia') COLLATE utf8mb4_general_ci NOT NULL,
+  `caracteristicas` json DEFAULT NULL,
+  `ativo` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`idPlano`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `planos`
+--
+
+TRUNCATE TABLE `planos`;
+--
+-- Extraindo dados da tabela `planos`
+--
+
+INSERT INTO `planos` (`idPlano`, `nome`, `descricao`, `valor_mensal`, `tipo_usuario`, `caracteristicas`, `ativo`) VALUES
+(1, 'Aluno Básico', 'Acesso gratuito a treinos pré-definidos pela plataforma.', '0.00', 'aluno', '{\"vinculo_personal\": false, \"acesso_treinos_basicos\": true}', 1),
+(2, 'Aluno Plus', 'Acesso a treinos personalizados criados por seu personal.', '25.00', 'aluno', '{\"vinculo_personal\": true, \"acesso_treinos_basicos\": true}', 1),
+(3, 'Personal Básico', 'Acesso para conhecer a plataforma e treinos básicos.', '0.00', 'personal', '{\"criar_treinos\": false, \"gerenciar_alunos\": false}', 1),
+(4, 'Personal Plus', 'Gerencie seus alunos e crie treinos personalizados.', '25.00', 'personal', '{\"criar_treinos\": true, \"gerenciar_alunos\": true}', 1),
+(5, 'Academia', 'Gerencie múltiplos personais e todos os alunos da sua academia.', '200.00', 'academia', '{\"gerenciar_personais\": true, \"gerenciar_alunos_academia\": true}', 1);
 
 -- --------------------------------------------------------
 
@@ -427,32 +538,6 @@ CREATE TABLE IF NOT EXISTS `refeicoes_tipos` (
 --
 
 TRUNCATE TABLE `refeicoes_tipos`;
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `solicitacoes`
---
-
-DROP TABLE IF EXISTS `solicitacoes`;
-CREATE TABLE IF NOT EXISTS `solicitacoes` (
-  `idSolicitacao` int NOT NULL AUTO_INCREMENT,
-  `token` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `data_expiracao` datetime DEFAULT NULL,
-  `idPersonal` int NOT NULL,
-  `idAluno` int NOT NULL,
-  `status` enum('Pendente','Aceita','Rejeitada','Em análise') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Pendente',
-  `data_solicitacao` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idSolicitacao`),
-  UNIQUE KEY `token` (`token`),
-  KEY `FK_Personal_Solicit` (`idPersonal`),
-  KEY `FK_Aluno_Solicit` (`idAluno`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Truncar tabela antes do insert `solicitacoes`
---
-
-TRUNCATE TABLE `solicitacoes`;
 -- --------------------------------------------------------
 
 --
@@ -775,6 +860,12 @@ ALTER TABLE `alunos`
   ADD CONSTRAINT `FK_Alunos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`);
 
 --
+-- Limitadores para a tabela `assinaturas`
+--
+ALTER TABLE `assinaturas`
+  ADD CONSTRAINT `FK_Assinatura_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
+
+--
 -- Limitadores para a tabela `itens_refeicao`
 --
 ALTER TABLE `itens_refeicao`
@@ -787,11 +878,10 @@ ALTER TABLE `nutrientes`
   ADD CONSTRAINT `nutrientes_ibfk_1` FOREIGN KEY (`alimento_id`) REFERENCES `itens_refeicao` (`idItensRef`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `solicitacoes`
+-- Limitadores para a tabela `pagamentos`
 --
-ALTER TABLE `solicitacoes`
-  ADD CONSTRAINT `FK_Aluno_Solicit` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`),
-  ADD CONSTRAINT `FK_Personal_Solicit` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`);
+ALTER TABLE `pagamentos`
+  ADD CONSTRAINT `FK_Pagamento_Assinatura` FOREIGN KEY (`idAssinatura`) REFERENCES `assinaturas` (`idAssinatura`);
 
 --
 -- Limitadores para a tabela `treinos`
