@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 30-Set-2025 às 01:48
+-- Tempo de geração: 02-Out-2025 às 01:07
 -- Versão do servidor: 8.0.31
 -- versão do PHP: 8.0.26
 
@@ -83,22 +83,35 @@ CREATE TABLE IF NOT EXISTS `alunos` (
   `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `senha` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `numTel` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `altura` decimal(3,2) DEFAULT NULL,
+  `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `meta` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL,
+  `tipoPlano` enum('Básico(Gratuito)','Plus') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
   `statusPlano` enum('Ativo','Pendente','Desativado','Cancelado','A verificar') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'A verificar',
   `idPersonal` int DEFAULT NULL,
+  `status_vinculo` enum('Ativo','Inativo','Pendente') COLLATE utf8mb4_general_ci DEFAULT 'Inativo',
   PRIMARY KEY (`idAluno`),
   UNIQUE KEY `cpf` (`cpf`),
   UNIQUE KEY `uq_numTel` (`numTel`),
   UNIQUE KEY `uq_rg` (`rg`),
   UNIQUE KEY `uq_email` (`email`),
   KEY `FK_Alunos_Personal` (`idPersonal`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `alunos`
 --
 
 TRUNCATE TABLE `alunos`;
+--
+-- Extraindo dados da tabela `alunos`
+--
+
+INSERT INTO `alunos` (`idAluno`, `nome`, `cpf`, `rg`, `email`, `senha`, `numTel`, `altura`, `genero`, `meta`, `foto_perfil`, `data_cadastro`, `tipoPlano`, `statusPlano`, `idPersonal`, `status_vinculo`) VALUES
+(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$zOlsSumK/y44UxqEJJ3Yh.cTPpfCHAPMP.4jxC8nTzzrHSvmBg.Aa', '11933572695', NULL, NULL, NULL, NULL, '2025-10-01 21:43:56', 'Básico(Gratuito)', 'A verificar', NULL, 'Inativo');
+
 -- --------------------------------------------------------
 
 --
@@ -338,6 +351,9 @@ DROP TABLE IF EXISTS `personal`;
 CREATE TABLE IF NOT EXISTS `personal` (
   `idPersonal` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `idade` int DEFAULT NULL,
+  `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
   `rg` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cref_numero` varchar(9) COLLATE utf8mb4_general_ci NOT NULL,
@@ -354,13 +370,20 @@ CREATE TABLE IF NOT EXISTS `personal` (
   UNIQUE KEY `uq_email` (`email`),
   UNIQUE KEY `uq_numTel` (`numTel`),
   UNIQUE KEY `uq_rg` (`rg`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `personal`
 --
 
 TRUNCATE TABLE `personal`;
+--
+-- Extraindo dados da tabela `personal`
+--
+
+INSERT INTO `personal` (`idPersonal`, `nome`, `idade`, `genero`, `foto_perfil`, `cpf`, `rg`, `cref_numero`, `cref_categoria`, `cref_regional`, `email`, `senha`, `data_cadastro`, `numTel`, `statusPlano`) VALUES
+(1, 'Enzo Krebs Silva', NULL, NULL, NULL, '46404867825', '592819953', '123456', 'A', 'SP', 'krebsenzo8@gmail.com', '$2y$10$22HXTGZN/bLyfjICc4.lIe9kLPW4c5ZjXNR4kgM6FcpDTlfNvT8Vy', '2025-10-01 21:44:46', '11933572694', 'A verificar');
+
 -- --------------------------------------------------------
 
 --
@@ -444,13 +467,40 @@ CREATE TABLE IF NOT EXISTS `traducoes_alimentos` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `termo_ingles` (`termo_ingles`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `traducoes_alimentos`
 --
 
 TRUNCATE TABLE `traducoes_alimentos`;
+--
+-- Extraindo dados da tabela `traducoes_alimentos`
+--
+
+INSERT INTO `traducoes_alimentos` (`id`, `termo_ingles`, `termo_portugues`, `created_at`) VALUES
+(1, 'sheets', 'folhas', '2025-10-01 01:25:48'),
+(2, 'filo pastry', 'massa folhada', '2025-10-01 01:25:49'),
+(3, 'nori', 'alga nori', '2025-10-01 01:25:49'),
+(4, 'lasagne noodles', 'massa para lasanha', '2025-10-01 01:25:49'),
+(5, 'sheet gelatin', 'gelatina em folha', '2025-10-01 01:25:49'),
+(6, 'bean curd sheets', 'folha de tofu', '2025-10-01 01:25:49'),
+(7, 'puff pastry dough', 'massa folhada', '2025-10-01 01:25:49'),
+(8, 'fresh lasagne sheets', 'massa para lasanha fresca', '2025-10-01 01:25:49'),
+(9, 'cooked lasagne noodles', 'massa para lasanha cozida', '2025-10-01 01:25:49'),
+(10, 'graham crackers', 'biscoito maisena', '2025-10-01 01:25:49'),
+(11, 'oven ready lasagne noodles', 'massa para lasanha pré-cozida', '2025-10-01 01:25:49'),
+(12, 'noodles', 'macarrão', '2025-10-01 01:26:28'),
+(13, 'pasta', 'massa', '2025-10-01 01:26:29'),
+(14, 'egg noodles', 'macarrão chinês com ovos', '2025-10-01 01:26:34'),
+(15, 'rice vermicelli', 'arroz vermicelli', '2025-10-01 01:26:40'),
+(16, 'soba noodles', 'macarrão soba', '2025-10-01 01:26:46'),
+(17, 'udon noodles', 'macarrão udon', '2025-10-01 01:26:51'),
+(18, 'ziti', 'penne', '2025-10-01 01:26:54'),
+(19, 'kelp noodles', 'algas marinhas', '2025-10-01 01:27:00'),
+(20, 'ramen noodles', 'macarrão lámen', '2025-10-01 01:27:02'),
+(21, 'elbow macaroni', 'macarrão cotovelo', '2025-10-01 01:27:05');
+
 -- --------------------------------------------------------
 
 --
@@ -467,10 +517,13 @@ CREATE TABLE IF NOT EXISTS `treinos` (
   `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Outros',
   `descricao` text COLLATE utf8mb4_general_ci,
   `data_criacao` datetime NOT NULL,
-  `data_ultima_modificacao` date NOT NULL,
+  `data_ultima_modificacao` datetime NOT NULL,
   PRIMARY KEY (`idTreino`),
   KEY `FK_Personal_treino` (`idPersonal`),
-  KEY `FK_Aluno_treino` (`idAluno`)
+  KEY `FK_Aluno_treino` (`idAluno`),
+  KEY `idx_treinos_aluno` (`idAluno`),
+  KEY `idx_treinos_personal` (`idPersonal`),
+  KEY `idx_treinos_criadoPor` (`criadoPor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -509,7 +562,7 @@ TRUNCATE TABLE `treinospersonal`;
 DROP TABLE IF EXISTS `treino_exercicio`;
 CREATE TABLE IF NOT EXISTS `treino_exercicio` (
   `idTreino_Exercicio` int NOT NULL AUTO_INCREMENT,
-  `idTreinosP` int NOT NULL,
+  `idTreino` int NOT NULL,
   `idExercicio` int DEFAULT NULL,
   `idExercAdaptado` int DEFAULT NULL,
   `data_criacao` datetime NOT NULL,
@@ -520,9 +573,12 @@ CREATE TABLE IF NOT EXISTS `treino_exercicio` (
   `ordem` int DEFAULT NULL,
   `observacoes` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`idTreino_Exercicio`),
-  KEY `FK_Treino_TreinosP` (`idTreinosP`),
+  KEY `FK_Treino_TreinosP` (`idTreino`),
   KEY `FK_Treino_Exercicio` (`idExercicio`),
-  KEY `FK_Treino_ExercAdaptado` (`idExercAdaptado`)
+  KEY `FK_Treino_ExercAdaptado` (`idExercAdaptado`),
+  KEY `idx_treino_exercicio_treino` (`idTreino`),
+  KEY `idx_treino_exercicio_exercicio` (`idExercicio`),
+  KEY `idx_treino_exercicio_exercadaptado` (`idExercAdaptado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -530,6 +586,36 @@ CREATE TABLE IF NOT EXISTS `treino_exercicio` (
 --
 
 TRUNCATE TABLE `treino_exercicio`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `treino_exercicio_historico`
+--
+
+DROP TABLE IF EXISTS `treino_exercicio_historico`;
+CREATE TABLE IF NOT EXISTS `treino_exercicio_historico` (
+  `idHistorico` int NOT NULL AUTO_INCREMENT,
+  `idTreino_Exercicio` int NOT NULL,
+  `idTreino` int NOT NULL,
+  `idExercicio` int DEFAULT NULL,
+  `idExercAdaptado` int DEFAULT NULL,
+  `series` int DEFAULT NULL,
+  `repeticoes` int DEFAULT NULL,
+  `carga` decimal(10,2) DEFAULT NULL,
+  `ordem` int DEFAULT NULL,
+  `observacoes` text COLLATE utf8mb4_general_ci,
+  `data_modificacao` datetime NOT NULL,
+  `acao` enum('INSERT','UPDATE','DELETE') COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`idHistorico`),
+  KEY `FK_Historico_TreinoExercicio` (`idTreino_Exercicio`),
+  KEY `FK_Historico_Treino` (`idTreino`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `treino_exercicio_historico`
+--
+
+TRUNCATE TABLE `treino_exercicio_historico`;
 -- --------------------------------------------------------
 
 --
@@ -713,6 +799,12 @@ ALTER TABLE `solicitacoes`
 ALTER TABLE `treinos`
   ADD CONSTRAINT `FK_Aluno_treino` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE SET NULL,
   ADD CONSTRAINT `FK_Personal_treino` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE SET NULL;
+
+--
+-- Limitadores para a tabela `treino_exercicio`
+--
+ALTER TABLE `treino_exercicio`
+  ADD CONSTRAINT `FK_TreinoExercicio_Treino` FOREIGN KEY (`idTreino`) REFERENCES `treinos` (`idTreino`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `videos`
