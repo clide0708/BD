@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Tempo de geração: 02-Out-2025 às 17:06
--- Versão do servidor: 8.0.31
--- versão do PHP: 8.0.26
+-- Host: 127.0.0.1
+-- Tempo de geração: 03/10/2025 às 03:55
+-- Versão do servidor: 10.4.32-MariaDB
+-- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -26,211 +26,177 @@ USE `bd_tcc`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `academias`
+-- Estrutura para tabela `academias`
 --
 
-DROP TABLE IF EXISTS `academias`;
-CREATE TABLE IF NOT EXISTS `academias` (
-  `idAcademia` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `cnpj` varchar(18) COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `telefone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `endereco` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `data_cadastro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status_conta` enum('Ativa','Inativa','Excluida') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
-  PRIMARY KEY (`idAcademia`),
-  UNIQUE KEY `cnpj` (`cnpj`),
-  UNIQUE KEY `email` (`email`)
+CREATE TABLE `academias` (
+  `idAcademia` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `cnpj` varchar(18) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `senha` varchar(255) NOT NULL,
+  `telefone` varchar(20) DEFAULT NULL,
+  `endereco` varchar(255) DEFAULT NULL,
+  `data_cadastro` datetime NOT NULL DEFAULT current_timestamp(),
+  `status_conta` enum('Ativa','Inativa','Excluida') NOT NULL DEFAULT 'Ativa'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `academias`
---
-
-TRUNCATE TABLE `academias`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `agendamentos`
+-- Estrutura para tabela `agendamentos`
 --
 
-DROP TABLE IF EXISTS `agendamentos`;
-CREATE TABLE IF NOT EXISTS `agendamentos` (
-  `idAgendamento` int NOT NULL AUTO_INCREMENT,
-  `idPersonal` int NOT NULL,
-  `idAluno` int NOT NULL,
+CREATE TABLE `agendamentos` (
+  `idAgendamento` int(11) NOT NULL,
+  `idPersonal` int(11) NOT NULL,
+  `idAluno` int(11) NOT NULL,
   `data_hora` datetime NOT NULL,
-  `local` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `observacoes` text COLLATE utf8mb4_general_ci,
-  PRIMARY KEY (`idAgendamento`),
-  KEY `FK_Agend_Aluno` (`idAluno`),
-  KEY `FK_Agend_Personal` (`idPersonal`)
+  `local` varchar(150) DEFAULT NULL,
+  `observacoes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `agendamentos`
---
-
-TRUNCATE TABLE `agendamentos`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `agua`
+-- Estrutura para tabela `agua`
 --
 
-DROP TABLE IF EXISTS `agua`;
-CREATE TABLE IF NOT EXISTS `agua` (
-  `idAgua` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int DEFAULT NULL,
+CREATE TABLE `agua` (
+  `idAgua` int(11) NOT NULL,
+  `quantidade` int(11) DEFAULT NULL,
   `data` datetime DEFAULT NULL,
-  `idaluno` int DEFAULT NULL,
-  PRIMARY KEY (`idAgua`),
-  KEY `FK_Agua_Aluno` (`idaluno`)
+  `idaluno` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `agua`
---
-
-TRUNCATE TABLE `agua`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `alunos`
+-- Estrutura para tabela `alunos`
 --
 
-DROP TABLE IF EXISTS `alunos`;
-CREATE TABLE IF NOT EXISTS `alunos` (
-  `idAluno` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `rg` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `senha` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `numTel` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+CREATE TABLE `alunos` (
+  `idAluno` int(11) NOT NULL,
+  `nome` varchar(100) DEFAULT NULL,
+  `cpf` varchar(20) NOT NULL,
+  `rg` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `senha` varchar(255) DEFAULT NULL,
+  `numTel` varchar(20) NOT NULL,
   `altura` decimal(3,2) DEFAULT NULL,
-  `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `meta` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `genero` enum('Masculino','Feminino','Outro') DEFAULT NULL,
+  `meta` varchar(255) DEFAULT NULL,
+  `foto_perfil` varchar(255) DEFAULT NULL,
   `data_cadastro` datetime NOT NULL,
-  `tipoPlano` enum('Básico(Gratuito)','Plus') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
-  `idPersonal` int DEFAULT NULL,
-  `status_vinculo` enum('Ativo','Inativo','Pendente') COLLATE utf8mb4_general_ci DEFAULT 'Inativo',
-  `status_conta` enum('Ativa','Pendente','Excluida') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
-  PRIMARY KEY (`idAluno`),
-  UNIQUE KEY `cpf` (`cpf`),
-  UNIQUE KEY `uq_numTel` (`numTel`),
-  UNIQUE KEY `uq_rg` (`rg`),
-  UNIQUE KEY `uq_email` (`email`),
-  KEY `FK_Alunos_Personal` (`idPersonal`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `tipoPlano` enum('Básico(Gratuito)','Plus') NOT NULL DEFAULT 'Básico(Gratuito)',
+  `idPersonal` int(11) DEFAULT NULL,
+  `status_vinculo` enum('Ativo','Inativo','Pendente') DEFAULT 'Inativo',
+  `status_conta` enum('Ativa','Pendente','Excluida') NOT NULL DEFAULT 'Ativa',
+  `idPlano` int(11) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Truncar tabela antes do insert `alunos`
+-- Despejando dados para a tabela `alunos`
 --
 
-TRUNCATE TABLE `alunos`;
---
--- Extraindo dados da tabela `alunos`
---
-
-INSERT INTO `alunos` (`idAluno`, `nome`, `cpf`, `rg`, `email`, `senha`, `numTel`, `altura`, `genero`, `meta`, `foto_perfil`, `data_cadastro`, `tipoPlano`, `idPersonal`, `status_vinculo`, `status_conta`) VALUES
-(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$zOlsSumK/y44UxqEJJ3Yh.cTPpfCHAPMP.4jxC8nTzzrHSvmBg.Aa', '11933572695', NULL, NULL, NULL, NULL, '2025-10-01 21:43:56', 'Básico(Gratuito)', NULL, 'Inativo', 'Ativa');
+INSERT INTO `alunos` (`idAluno`, `nome`, `cpf`, `rg`, `email`, `senha`, `numTel`, `altura`, `genero`, `meta`, `foto_perfil`, `data_cadastro`, `tipoPlano`, `idPersonal`, `status_vinculo`, `status_conta`, `idPlano`) VALUES
+(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$zOlsSumK/y44UxqEJJ3Yh.cTPpfCHAPMP.4jxC8nTzzrHSvmBg.Aa', '11933572695', NULL, NULL, NULL, NULL, '2025-10-01 21:43:56', 'Básico(Gratuito)', NULL, 'Inativo', 'Ativa', 1),
+(3, 'João', '12345678901', '12312312', 'joao@example.com', '$2y$10$jRJCPOSjvtiZ06F3W1TmBev4XSz3K2KapdeIK5YdZfsm70oISMXmm', '11941364461', NULL, NULL, NULL, NULL, '2025-10-02 16:52:53', 'Básico(Gratuito)', 2, 'Ativo', 'Ativa', 1),
+(4, 'Davizin', '57788671827', '12345678905', 'davi@example.com', '$2y$10$X515KP44coBWTH9lNvrvSezFKN3HbU1zLgzk7tHQ/AP8BRExxQ4ua', '11941364464', NULL, NULL, NULL, NULL, '2025-10-02 17:37:32', 'Básico(Gratuito)', NULL, 'Inativo', 'Ativa', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `assinaturas`
+-- Estrutura para tabela `assinaturas`
 --
 
-DROP TABLE IF EXISTS `assinaturas`;
-CREATE TABLE IF NOT EXISTS `assinaturas` (
-  `idAssinatura` int NOT NULL AUTO_INCREMENT,
-  `idUsuario` int NOT NULL,
-  `tipo_usuario` enum('aluno','personal','academia') COLLATE utf8mb4_general_ci NOT NULL,
-  `idPlano` int NOT NULL,
-  `data_inicio` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE `assinaturas` (
+  `idAssinatura` int(11) NOT NULL,
+  `idUsuario` int(11) NOT NULL,
+  `tipo_usuario` enum('aluno','personal','academia') NOT NULL,
+  `idPlano` int(11) NOT NULL,
+  `data_inicio` datetime NOT NULL DEFAULT current_timestamp(),
   `data_fim` datetime DEFAULT NULL,
-  `status` enum('ativa','cancelada','pendente','expirada','inadimplente') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
-  `id_gateway_assinatura` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`idAssinatura`),
-  KEY `idx_usuario` (`idUsuario`,`tipo_usuario`),
-  KEY `FK_Assinatura_Plano` (`idPlano`)
+  `status` enum('ativa','cancelada','pendente','expirada','inadimplente') NOT NULL DEFAULT 'pendente',
+  `id_gateway_assinatura` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Truncar tabela antes do insert `assinaturas`
+-- Despejando dados para a tabela `assinaturas`
 --
 
-TRUNCATE TABLE `assinaturas`;
+INSERT INTO `assinaturas` (`idAssinatura`, `idUsuario`, `tipo_usuario`, `idPlano`, `data_inicio`, `data_fim`, `status`, `id_gateway_assinatura`) VALUES
+(1, 2, 'aluno', 1, '2025-10-02 16:43:36', NULL, 'ativa', NULL),
+(2, 2, 'personal', 3, '2025-10-02 16:55:48', NULL, 'ativa', NULL);
+
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `devs`
+-- Estrutura para tabela `convites`
 --
 
-DROP TABLE IF EXISTS `devs`;
-CREATE TABLE IF NOT EXISTS `devs` (
-  `idDev` int NOT NULL AUTO_INCREMENT,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `cpf` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `cadastradoEm` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idDev`),
-  KEY `email` (`email`)
+CREATE TABLE `convites` (
+  `idConvite` int(11) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `idPersonal` int(11) NOT NULL,
+  `idAluno` int(11) DEFAULT NULL,
+  `email_aluno` varchar(255) DEFAULT NULL,
+  `status` enum('pendente','aceito','negado') NOT NULL DEFAULT 'pendente',
+  `data_criacao` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Truncar tabela antes do insert `devs`
+-- Despejando dados para a tabela `convites`
 --
 
-TRUNCATE TABLE `devs`;
+INSERT INTO `convites` (`idConvite`, `token`, `idPersonal`, `idAluno`, `email_aluno`, `status`, `data_criacao`) VALUES
+(1, '4b67550c51c8f7afafccaab8be75e7b4b17913f161a80445ba5e800c6a4996be', 2, 3, 'joao@example.com', 'negado', '2025-10-02 19:14:02'),
+(2, '26c84fcfddbdc4e245ee46fb684e0d48ad931eed7044b089cdb38fdad3ba20c3', 2, 3, 'joao@example.com', 'aceito', '2025-10-02 19:19:08');
+
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `exercadaptados`
+-- Estrutura para tabela `devs`
 --
 
-DROP TABLE IF EXISTS `exercadaptados`;
-CREATE TABLE IF NOT EXISTS `exercadaptados` (
-  `idExercAdaptado` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `grupoMuscular` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `descricao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cadastradoPor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`idExercAdaptado`)
+CREATE TABLE `devs` (
+  `idDev` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha` varchar(255) NOT NULL,
+  `cpf` varchar(20) NOT NULL,
+  `cadastradoEm` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `exercadaptados`
+--
+
+CREATE TABLE `exercadaptados` (
+  `idExercAdaptado` int(11) NOT NULL,
+  `nome` varchar(100) DEFAULT NULL,
+  `grupoMuscular` varchar(255) DEFAULT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
+  `cadastradoPor` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `exercicios`
+--
+
+CREATE TABLE `exercicios` (
+  `idExercicio` int(11) NOT NULL,
+  `nome` varchar(100) DEFAULT NULL,
+  `grupoMuscular` varchar(255) DEFAULT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
+  `cadastradoPor` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Truncar tabela antes do insert `exercadaptados`
---
-
-TRUNCATE TABLE `exercadaptados`;
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `exercicios`
---
-
-DROP TABLE IF EXISTS `exercicios`;
-CREATE TABLE IF NOT EXISTS `exercicios` (
-  `idExercicio` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `grupoMuscular` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `descricao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cadastradoPor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`idExercicio`)
-) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Truncar tabela antes do insert `exercicios`
---
-
-TRUNCATE TABLE `exercicios`;
---
--- Extraindo dados da tabela `exercicios`
+-- Despejando dados para a tabela `exercicios`
 --
 
 INSERT INTO `exercicios` (`idExercicio`, `nome`, `grupoMuscular`, `descricao`, `cadastradoPor`) VALUES
@@ -351,216 +317,151 @@ INSERT INTO `exercicios` (`idExercicio`, `nome`, `grupoMuscular`, `descricao`, `
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `itens_refeicao`
+-- Estrutura para tabela `itens_refeicao`
 --
 
-DROP TABLE IF EXISTS `itens_refeicao`;
-CREATE TABLE IF NOT EXISTS `itens_refeicao` (
-  `idItensRef` int NOT NULL AUTO_INCREMENT,
-  `id_tipo_refeicao` int NOT NULL,
-  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `quantidade` int NOT NULL,
-  `medida` varchar(25) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`idItensRef`),
-  KEY `id_tipo_refeicao` (`id_tipo_refeicao`)
+CREATE TABLE `itens_refeicao` (
+  `idItensRef` int(11) NOT NULL,
+  `id_tipo_refeicao` int(11) NOT NULL,
+  `nome` varchar(50) NOT NULL,
+  `quantidade` int(11) NOT NULL,
+  `medida` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `itens_refeicao`
---
-
-TRUNCATE TABLE `itens_refeicao`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `nutrientes`
+-- Estrutura para tabela `nutrientes`
 --
 
-DROP TABLE IF EXISTS `nutrientes`;
-CREATE TABLE IF NOT EXISTS `nutrientes` (
-  `idNutrientes` int NOT NULL AUTO_INCREMENT,
-  `alimento_id` int NOT NULL,
-  `calorias` decimal(10,2) DEFAULT '0.00',
-  `proteinas` decimal(10,2) DEFAULT '0.00',
-  `carboidratos` decimal(10,2) DEFAULT '0.00',
-  `gorduras` decimal(10,2) DEFAULT '0.00',
-  `medida` varchar(25) COLLATE utf8mb4_general_ci DEFAULT 'g',
-  PRIMARY KEY (`idNutrientes`),
-  UNIQUE KEY `alimento_id` (`alimento_id`)
+CREATE TABLE `nutrientes` (
+  `idNutrientes` int(11) NOT NULL,
+  `alimento_id` int(11) NOT NULL,
+  `calorias` decimal(10,2) DEFAULT 0.00,
+  `proteinas` decimal(10,2) DEFAULT 0.00,
+  `carboidratos` decimal(10,2) DEFAULT 0.00,
+  `gorduras` decimal(10,2) DEFAULT 0.00,
+  `medida` varchar(25) DEFAULT 'g'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `nutrientes`
---
-
-TRUNCATE TABLE `nutrientes`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `pagamentos`
+-- Estrutura para tabela `pagamentos`
 --
 
-DROP TABLE IF EXISTS `pagamentos`;
-CREATE TABLE IF NOT EXISTS `pagamentos` (
-  `idPagamento` int NOT NULL AUTO_INCREMENT,
-  `idAssinatura` int NOT NULL,
+CREATE TABLE `pagamentos` (
+  `idPagamento` int(11) NOT NULL,
+  `idAssinatura` int(11) NOT NULL,
   `valor` decimal(10,2) NOT NULL,
-  `data_pagamento` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` enum('aprovado','pendente','recusado','estornado') COLLATE utf8mb4_general_ci NOT NULL,
-  `metodo_pagamento` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `id_gateway_transacao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`idPagamento`),
-  KEY `FK_Pagamento_Assinatura` (`idAssinatura`)
+  `data_pagamento` datetime NOT NULL DEFAULT current_timestamp(),
+  `status` enum('aprovado','pendente','recusado','estornado') NOT NULL,
+  `metodo_pagamento` varchar(50) DEFAULT NULL,
+  `id_gateway_transacao` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `personal`
+--
+
+CREATE TABLE `personal` (
+  `idPersonal` int(11) NOT NULL,
+  `nome` varchar(50) NOT NULL,
+  `idade` int(11) DEFAULT NULL,
+  `genero` enum('Masculino','Feminino','Outro') DEFAULT NULL,
+  `foto_perfil` varchar(255) DEFAULT NULL,
+  `cpf` varchar(20) NOT NULL,
+  `rg` varchar(20) DEFAULT NULL,
+  `cref_numero` varchar(9) NOT NULL,
+  `cref_categoria` char(1) NOT NULL,
+  `cref_regional` varchar(5) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `senha` varchar(255) NOT NULL,
+  `data_cadastro` datetime NOT NULL,
+  `numTel` varchar(20) DEFAULT NULL,
+  `status_conta` enum('Ativa','Pendente','Excluida') NOT NULL DEFAULT 'Ativa',
+  `idPlano` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Truncar tabela antes do insert `pagamentos`
+-- Despejando dados para a tabela `personal`
 --
 
-TRUNCATE TABLE `pagamentos`;
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `personal`
---
-
-DROP TABLE IF EXISTS `personal`;
-CREATE TABLE IF NOT EXISTS `personal` (
-  `idPersonal` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `idade` int DEFAULT NULL,
-  `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `rg` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cref_numero` varchar(9) COLLATE utf8mb4_general_ci NOT NULL,
-  `cref_categoria` char(1) COLLATE utf8mb4_general_ci NOT NULL,
-  `cref_regional` varchar(5) COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `data_cadastro` datetime NOT NULL,
-  `numTel` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_conta` enum('Ativa','Pendente','Excluida') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
-  PRIMARY KEY (`idPersonal`),
-  UNIQUE KEY `cpf` (`cpf`) USING BTREE,
-  UNIQUE KEY `uq_cref_numero` (`cref_numero`),
-  UNIQUE KEY `uq_email` (`email`),
-  UNIQUE KEY `uq_numTel` (`numTel`),
-  UNIQUE KEY `uq_rg` (`rg`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Truncar tabela antes do insert `personal`
---
-
-TRUNCATE TABLE `personal`;
---
--- Extraindo dados da tabela `personal`
---
-
-INSERT INTO `personal` (`idPersonal`, `nome`, `idade`, `genero`, `foto_perfil`, `cpf`, `rg`, `cref_numero`, `cref_categoria`, `cref_regional`, `email`, `senha`, `data_cadastro`, `numTel`, `status_conta`) VALUES
-(1, 'Enzo Krebs Silva', NULL, NULL, NULL, '46404867825', '592819953', '123456', 'A', 'SP', 'krebsenzo8@gmail.com', '$2y$10$22HXTGZN/bLyfjICc4.lIe9kLPW4c5ZjXNR4kgM6FcpDTlfNvT8Vy', '2025-10-01 21:44:46', '11933572694', 'Ativa');
+INSERT INTO `personal` (`idPersonal`, `nome`, `idade`, `genero`, `foto_perfil`, `cpf`, `rg`, `cref_numero`, `cref_categoria`, `cref_regional`, `email`, `senha`, `data_cadastro`, `numTel`, `status_conta`, `idPlano`) VALUES
+(1, 'Enzo Krebs Silva', NULL, NULL, NULL, '46404867825', '592819953', '123456', 'A', 'SP', 'krebsenzo8@gmail.com', '$2y$10$22HXTGZN/bLyfjICc4.lIe9kLPW4c5ZjXNR4kgM6FcpDTlfNvT8Vy', '2025-10-01 21:44:46', '11933572694', 'Ativa', 1),
+(2, 'Maria Santos', NULL, NULL, NULL, '98765432100', '987654321', '124456', 'A', 'SP', 'maria@gmail.com', '$2y$10$AUkMD4CoxkXH4RFmcC5ZH.tqZaSegpvqgDvhiIgzig8brXVoQLlwC', '2025-10-02 16:55:48', '11888888888', 'Ativa', 3);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `planos`
+-- Estrutura para tabela `planos`
 --
 
-DROP TABLE IF EXISTS `planos`;
-CREATE TABLE IF NOT EXISTS `planos` (
-  `idPlano` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `descricao` text COLLATE utf8mb4_general_ci,
-  `valor_mensal` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `tipo_usuario` enum('aluno','personal','academia') COLLATE utf8mb4_general_ci NOT NULL,
-  `caracteristicas` json DEFAULT NULL,
-  `ativo` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`idPlano`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `planos` (
+  `idPlano` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `valor_mensal` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `tipo_usuario` enum('aluno','personal','academia') NOT NULL,
+  `caracteristicas` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`caracteristicas`)),
+  `ativo` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Truncar tabela antes do insert `planos`
---
-
-TRUNCATE TABLE `planos`;
---
--- Extraindo dados da tabela `planos`
+-- Despejando dados para a tabela `planos`
 --
 
 INSERT INTO `planos` (`idPlano`, `nome`, `descricao`, `valor_mensal`, `tipo_usuario`, `caracteristicas`, `ativo`) VALUES
-(1, 'Aluno Básico', 'Acesso gratuito a treinos pré-definidos pela plataforma.', '0.00', 'aluno', '{\"vinculo_personal\": false, \"acesso_treinos_basicos\": true}', 1),
-(2, 'Aluno Plus', 'Acesso a treinos personalizados criados por seu personal.', '25.00', 'aluno', '{\"vinculo_personal\": true, \"acesso_treinos_basicos\": true}', 1),
-(3, 'Personal Básico', 'Acesso para conhecer a plataforma e treinos básicos.', '0.00', 'personal', '{\"criar_treinos\": false, \"gerenciar_alunos\": false}', 1),
-(4, 'Personal Plus', 'Gerencie seus alunos e crie treinos personalizados.', '25.00', 'personal', '{\"criar_treinos\": true, \"gerenciar_alunos\": true}', 1),
-(5, 'Academia', 'Gerencie múltiplos personais e todos os alunos da sua academia.', '200.00', 'academia', '{\"gerenciar_personais\": true, \"gerenciar_alunos_academia\": true}', 1);
+(1, 'Aluno Básico', 'Acesso gratuito a treinos pré-definidos pela plataforma.', 0.00, 'aluno', '{\"vinculo_personal\": false, \"acesso_treinos_basicos\": true}', 1),
+(2, 'Aluno Plus', 'Acesso a treinos personalizados criados por seu personal.', 25.00, 'aluno', '{\"vinculo_personal\": true, \"acesso_treinos_basicos\": true}', 1),
+(3, 'Personal Básico', 'Acesso para conhecer a plataforma e treinos básicos.', 0.00, 'personal', '{\"criar_treinos\": false, \"gerenciar_alunos\": false}', 1),
+(4, 'Personal Plus', 'Gerencie seus alunos e crie treinos personalizados.', 25.00, 'personal', '{\"criar_treinos\": true, \"gerenciar_alunos\": true}', 1),
+(5, 'Academia', 'Gerencie múltiplos personais e todos os alunos da sua academia.', 200.00, 'academia', '{\"gerenciar_personais\": true, \"gerenciar_alunos_academia\": true}', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `recuperacao_senha`
+-- Estrutura para tabela `recuperacao_senha`
 --
 
-DROP TABLE IF EXISTS `recuperacao_senha`;
-CREATE TABLE IF NOT EXISTS `recuperacao_senha` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `token_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+CREATE TABLE `recuperacao_senha` (
+  `id` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `token_hash` varchar(255) NOT NULL,
   `expiraEm` datetime NOT NULL,
-  `tentativas` int NOT NULL DEFAULT '0',
-  `usado` tinyint(1) NOT NULL DEFAULT '0',
-  `criadoEm` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `email` (`email`)
+  `tentativas` int(11) NOT NULL DEFAULT 0,
+  `usado` tinyint(1) NOT NULL DEFAULT 0,
+  `criadoEm` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `recuperacao_senha`
---
-
-TRUNCATE TABLE `recuperacao_senha`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `refeicoes_tipos`
+-- Estrutura para tabela `refeicoes_tipos`
 --
 
-DROP TABLE IF EXISTS `refeicoes_tipos`;
-CREATE TABLE IF NOT EXISTS `refeicoes_tipos` (
-  `id` int NOT NULL,
-  `nome_tipo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `nome_tipo` (`nome_tipo`)
+CREATE TABLE `refeicoes_tipos` (
+  `id` int(11) NOT NULL,
+  `nome_tipo` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `refeicoes_tipos`
---
-
-TRUNCATE TABLE `refeicoes_tipos`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `traducoes_alimentos`
+-- Estrutura para tabela `traducoes_alimentos`
 --
 
-DROP TABLE IF EXISTS `traducoes_alimentos`;
-CREATE TABLE IF NOT EXISTS `traducoes_alimentos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `termo_ingles` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `termo_portugues` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `termo_ingles` (`termo_ingles`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `traducoes_alimentos` (
+  `id` int(11) NOT NULL,
+  `termo_ingles` varchar(100) NOT NULL,
+  `termo_portugues` varchar(100) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Truncar tabela antes do insert `traducoes_alimentos`
---
-
-TRUNCATE TABLE `traducoes_alimentos`;
---
--- Extraindo dados da tabela `traducoes_alimentos`
+-- Despejando dados para a tabela `traducoes_alimentos`
 --
 
 INSERT INTO `traducoes_alimentos` (`id`, `termo_ingles`, `termo_portugues`, `created_at`) VALUES
@@ -589,143 +490,101 @@ INSERT INTO `traducoes_alimentos` (`id`, `termo_ingles`, `termo_portugues`, `cre
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `treinos`
+-- Estrutura para tabela `treinos`
 --
 
-DROP TABLE IF EXISTS `treinos`;
-CREATE TABLE IF NOT EXISTS `treinos` (
-  `idTreino` int NOT NULL AUTO_INCREMENT,
-  `idAluno` int DEFAULT NULL,
-  `idPersonal` int DEFAULT NULL,
-  `criadoPor` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Outros',
-  `descricao` text COLLATE utf8mb4_general_ci,
+CREATE TABLE `treinos` (
+  `idTreino` int(11) NOT NULL,
+  `idAluno` int(11) DEFAULT NULL,
+  `idPersonal` int(11) DEFAULT NULL,
+  `criadoPor` varchar(100) NOT NULL,
+  `nome` varchar(50) NOT NULL,
+  `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') NOT NULL DEFAULT 'Outros',
+  `descricao` text DEFAULT NULL,
+  `data_criacao` datetime NOT NULL,
+  `data_ultima_modificacao` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `treinos`
+--
+
+INSERT INTO `treinos` (`idTreino`, `idAluno`, `idPersonal`, `criadoPor`, `nome`, `tipo`, `descricao`, `data_criacao`, `data_ultima_modificacao`) VALUES
+(10, 3, NULL, 'joao@example.com', 'TesteJoao', 'Musculação', NULL, '2025-10-02 17:36:30', '2025-10-02 17:36:30'),
+(11, 3, 2, 'maria@gmail.com', 'Treino', 'Musculação', 'dadsadas', '2025-10-02 17:42:13', '2025-10-02 19:39:05'),
+(12, 3, 2, 'maria@gmail.com', 'tetepersonal', 'Musculação', 'asdasd', '2025-10-02 20:41:42', '2025-10-02 20:41:42'),
+(13, NULL, 2, 'maria@gmail.com', 'asdasd', 'Musculação', 'sadsad', '2025-10-02 20:47:19', '2025-10-02 20:47:19');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `treinospersonal`
+--
+
+CREATE TABLE `treinospersonal` (
+  `idTreinosP` int(11) NOT NULL,
+  `nomeTreino` varchar(50) NOT NULL,
+  `idPersonal` int(11) NOT NULL,
+  `nomePersonal` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `treino_exercicio`
+--
+
+CREATE TABLE `treino_exercicio` (
+  `idTreino_Exercicio` int(11) NOT NULL,
+  `idTreino` int(11) NOT NULL,
+  `idExercicio` int(11) DEFAULT NULL,
+  `idExercAdaptado` int(11) DEFAULT NULL,
   `data_criacao` datetime NOT NULL,
   `data_ultima_modificacao` datetime NOT NULL,
-  PRIMARY KEY (`idTreino`),
-  KEY `FK_Personal_treino` (`idPersonal`),
-  KEY `FK_Aluno_treino` (`idAluno`),
-  KEY `idx_treinos_aluno` (`idAluno`),
-  KEY `idx_treinos_personal` (`idPersonal`),
-  KEY `idx_treinos_criadoPor` (`criadoPor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Truncar tabela antes do insert `treinos`
---
-
-TRUNCATE TABLE `treinos`;
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `treinospersonal`
---
-
-DROP TABLE IF EXISTS `treinospersonal`;
-CREATE TABLE IF NOT EXISTS `treinospersonal` (
-  `idTreinosP` int NOT NULL AUTO_INCREMENT,
-  `nomeTreino` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `idPersonal` int NOT NULL,
-  `nomePersonal` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`idTreinosP`),
-  KEY `FK_Treino_Personal` (`idPersonal`),
-  KEY `FK_Treino_nomePersonal` (`nomePersonal`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Truncar tabela antes do insert `treinospersonal`
---
-
-TRUNCATE TABLE `treinospersonal`;
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `treino_exercicio`
---
-
-DROP TABLE IF EXISTS `treino_exercicio`;
-CREATE TABLE IF NOT EXISTS `treino_exercicio` (
-  `idTreino_Exercicio` int NOT NULL AUTO_INCREMENT,
-  `idTreino` int NOT NULL,
-  `idExercicio` int DEFAULT NULL,
-  `idExercAdaptado` int DEFAULT NULL,
-  `data_criacao` datetime NOT NULL,
-  `data_ultima_modificacao` datetime NOT NULL,
-  `series` int DEFAULT NULL,
-  `repeticoes` int DEFAULT NULL,
+  `series` int(11) DEFAULT NULL,
+  `repeticoes` int(11) DEFAULT NULL,
   `carga` decimal(10,2) DEFAULT NULL,
-  `ordem` int DEFAULT NULL,
-  `observacoes` text COLLATE utf8mb4_general_ci,
-  PRIMARY KEY (`idTreino_Exercicio`),
-  KEY `FK_Treino_TreinosP` (`idTreino`),
-  KEY `FK_Treino_Exercicio` (`idExercicio`),
-  KEY `FK_Treino_ExercAdaptado` (`idExercAdaptado`),
-  KEY `idx_treino_exercicio_treino` (`idTreino`),
-  KEY `idx_treino_exercicio_exercicio` (`idExercicio`),
-  KEY `idx_treino_exercicio_exercadaptado` (`idExercAdaptado`)
+  `ordem` int(11) DEFAULT NULL,
+  `observacoes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `treino_exercicio`
---
-
-TRUNCATE TABLE `treino_exercicio`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `treino_exercicio_historico`
+-- Estrutura para tabela `treino_exercicio_historico`
 --
 
-DROP TABLE IF EXISTS `treino_exercicio_historico`;
-CREATE TABLE IF NOT EXISTS `treino_exercicio_historico` (
-  `idHistorico` int NOT NULL AUTO_INCREMENT,
-  `idTreino_Exercicio` int NOT NULL,
-  `idTreino` int NOT NULL,
-  `idExercicio` int DEFAULT NULL,
-  `idExercAdaptado` int DEFAULT NULL,
-  `series` int DEFAULT NULL,
-  `repeticoes` int DEFAULT NULL,
+CREATE TABLE `treino_exercicio_historico` (
+  `idHistorico` int(11) NOT NULL,
+  `idTreino_Exercicio` int(11) NOT NULL,
+  `idTreino` int(11) NOT NULL,
+  `idExercicio` int(11) DEFAULT NULL,
+  `idExercAdaptado` int(11) DEFAULT NULL,
+  `series` int(11) DEFAULT NULL,
+  `repeticoes` int(11) DEFAULT NULL,
   `carga` decimal(10,2) DEFAULT NULL,
-  `ordem` int DEFAULT NULL,
-  `observacoes` text COLLATE utf8mb4_general_ci,
+  `ordem` int(11) DEFAULT NULL,
+  `observacoes` text DEFAULT NULL,
   `data_modificacao` datetime NOT NULL,
-  `acao` enum('INSERT','UPDATE','DELETE') COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`idHistorico`),
-  KEY `FK_Historico_TreinoExercicio` (`idTreino_Exercicio`),
-  KEY `FK_Historico_Treino` (`idTreino`)
+  `acao` enum('INSERT','UPDATE','DELETE') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Truncar tabela antes do insert `treino_exercicio_historico`
---
-
-TRUNCATE TABLE `treino_exercicio_historico`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `videos`
+-- Estrutura para tabela `videos`
 --
 
-DROP TABLE IF EXISTS `videos`;
-CREATE TABLE IF NOT EXISTS `videos` (
-  `idvideos` int NOT NULL AUTO_INCREMENT,
-  `url` text COLLATE utf8mb4_general_ci,
-  `idExercicio` int DEFAULT NULL,
-  `idExercAdaptado` int DEFAULT NULL,
-  `cover` text COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`idvideos`),
-  KEY `FK_Video_Exercicio` (`idExercicio`),
-  KEY `FK_Video_ExercAdaptado` (`idExercAdaptado`)
-) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `videos` (
+  `idvideos` int(11) NOT NULL,
+  `url` text DEFAULT NULL,
+  `idExercicio` int(11) DEFAULT NULL,
+  `idExercAdaptado` int(11) DEFAULT NULL,
+  `cover` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Truncar tabela antes do insert `videos`
---
-
-TRUNCATE TABLE `videos`;
---
--- Extraindo dados da tabela `videos`
+-- Despejando dados para a tabela `videos`
 --
 
 INSERT INTO `videos` (`idvideos`, `url`, `idExercicio`, `idExercAdaptado`, `cover`) VALUES
@@ -844,60 +703,386 @@ INSERT INTO `videos` (`idvideos`, `url`, `idExercicio`, `idExercAdaptado`, `cove
 (113, 'https://www.youtube.com/watch?v=KSjVpHvJhLo', 113, NULL, '');
 
 --
--- Restrições para despejos de tabelas
+-- Índices para tabelas despejadas
 --
 
 --
--- Limitadores para a tabela `agua`
+-- Índices de tabela `academias`
+--
+ALTER TABLE `academias`
+  ADD PRIMARY KEY (`idAcademia`),
+  ADD UNIQUE KEY `cnpj` (`cnpj`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Índices de tabela `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  ADD PRIMARY KEY (`idAgendamento`),
+  ADD KEY `FK_Agend_Aluno` (`idAluno`),
+  ADD KEY `FK_Agend_Personal` (`idPersonal`);
+
+--
+-- Índices de tabela `agua`
+--
+ALTER TABLE `agua`
+  ADD PRIMARY KEY (`idAgua`),
+  ADD KEY `FK_Agua_Aluno` (`idaluno`);
+
+--
+-- Índices de tabela `alunos`
+--
+ALTER TABLE `alunos`
+  ADD PRIMARY KEY (`idAluno`),
+  ADD UNIQUE KEY `cpf` (`cpf`),
+  ADD UNIQUE KEY `uq_numTel` (`numTel`),
+  ADD UNIQUE KEY `uq_rg` (`rg`),
+  ADD UNIQUE KEY `uq_email` (`email`),
+  ADD KEY `FK_Alunos_Personal` (`idPersonal`),
+  ADD KEY `fk_aluno_plano` (`idPlano`);
+
+--
+-- Índices de tabela `assinaturas`
+--
+ALTER TABLE `assinaturas`
+  ADD PRIMARY KEY (`idAssinatura`),
+  ADD KEY `idx_usuario` (`idUsuario`,`tipo_usuario`),
+  ADD KEY `FK_Assinatura_Plano` (`idPlano`);
+
+--
+-- Índices de tabela `convites`
+--
+ALTER TABLE `convites`
+  ADD PRIMARY KEY (`idConvite`),
+  ADD UNIQUE KEY `token` (`token`),
+  ADD KEY `idPersonal` (`idPersonal`),
+  ADD KEY `idAluno` (`idAluno`);
+
+--
+-- Índices de tabela `devs`
+--
+ALTER TABLE `devs`
+  ADD PRIMARY KEY (`idDev`),
+  ADD KEY `email` (`email`);
+
+--
+-- Índices de tabela `exercadaptados`
+--
+ALTER TABLE `exercadaptados`
+  ADD PRIMARY KEY (`idExercAdaptado`);
+
+--
+-- Índices de tabela `exercicios`
+--
+ALTER TABLE `exercicios`
+  ADD PRIMARY KEY (`idExercicio`);
+
+--
+-- Índices de tabela `itens_refeicao`
+--
+ALTER TABLE `itens_refeicao`
+  ADD PRIMARY KEY (`idItensRef`),
+  ADD KEY `id_tipo_refeicao` (`id_tipo_refeicao`);
+
+--
+-- Índices de tabela `nutrientes`
+--
+ALTER TABLE `nutrientes`
+  ADD PRIMARY KEY (`idNutrientes`),
+  ADD UNIQUE KEY `alimento_id` (`alimento_id`);
+
+--
+-- Índices de tabela `pagamentos`
+--
+ALTER TABLE `pagamentos`
+  ADD PRIMARY KEY (`idPagamento`),
+  ADD KEY `FK_Pagamento_Assinatura` (`idAssinatura`);
+
+--
+-- Índices de tabela `personal`
+--
+ALTER TABLE `personal`
+  ADD PRIMARY KEY (`idPersonal`),
+  ADD UNIQUE KEY `cpf` (`cpf`) USING BTREE,
+  ADD UNIQUE KEY `uq_cref_numero` (`cref_numero`),
+  ADD UNIQUE KEY `uq_email` (`email`),
+  ADD UNIQUE KEY `uq_numTel` (`numTel`),
+  ADD UNIQUE KEY `uq_rg` (`rg`),
+  ADD KEY `fk_personal_plano` (`idPlano`);
+
+--
+-- Índices de tabela `planos`
+--
+ALTER TABLE `planos`
+  ADD PRIMARY KEY (`idPlano`);
+
+--
+-- Índices de tabela `recuperacao_senha`
+--
+ALTER TABLE `recuperacao_senha`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `email` (`email`);
+
+--
+-- Índices de tabela `refeicoes_tipos`
+--
+ALTER TABLE `refeicoes_tipos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nome_tipo` (`nome_tipo`);
+
+--
+-- Índices de tabela `traducoes_alimentos`
+--
+ALTER TABLE `traducoes_alimentos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `termo_ingles` (`termo_ingles`);
+
+--
+-- Índices de tabela `treinos`
+--
+ALTER TABLE `treinos`
+  ADD PRIMARY KEY (`idTreino`),
+  ADD KEY `FK_Personal_treino` (`idPersonal`),
+  ADD KEY `FK_Aluno_treino` (`idAluno`),
+  ADD KEY `idx_treinos_aluno` (`idAluno`),
+  ADD KEY `idx_treinos_personal` (`idPersonal`),
+  ADD KEY `idx_treinos_criadoPor` (`criadoPor`);
+
+--
+-- Índices de tabela `treinospersonal`
+--
+ALTER TABLE `treinospersonal`
+  ADD PRIMARY KEY (`idTreinosP`),
+  ADD KEY `FK_Treino_Personal` (`idPersonal`),
+  ADD KEY `FK_Treino_nomePersonal` (`nomePersonal`);
+
+--
+-- Índices de tabela `treino_exercicio`
+--
+ALTER TABLE `treino_exercicio`
+  ADD PRIMARY KEY (`idTreino_Exercicio`),
+  ADD KEY `FK_Treino_TreinosP` (`idTreino`),
+  ADD KEY `FK_Treino_Exercicio` (`idExercicio`),
+  ADD KEY `FK_Treino_ExercAdaptado` (`idExercAdaptado`),
+  ADD KEY `idx_treino_exercicio_treino` (`idTreino`),
+  ADD KEY `idx_treino_exercicio_exercicio` (`idExercicio`),
+  ADD KEY `idx_treino_exercicio_exercadaptado` (`idExercAdaptado`);
+
+--
+-- Índices de tabela `treino_exercicio_historico`
+--
+ALTER TABLE `treino_exercicio_historico`
+  ADD PRIMARY KEY (`idHistorico`),
+  ADD KEY `FK_Historico_TreinoExercicio` (`idTreino_Exercicio`),
+  ADD KEY `FK_Historico_Treino` (`idTreino`);
+
+--
+-- Índices de tabela `videos`
+--
+ALTER TABLE `videos`
+  ADD PRIMARY KEY (`idvideos`),
+  ADD KEY `FK_Video_Exercicio` (`idExercicio`),
+  ADD KEY `FK_Video_ExercAdaptado` (`idExercAdaptado`);
+
+--
+-- AUTO_INCREMENT para tabelas despejadas
+--
+
+--
+-- AUTO_INCREMENT de tabela `academias`
+--
+ALTER TABLE `academias`
+  MODIFY `idAcademia` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  MODIFY `idAgendamento` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `agua`
+--
+ALTER TABLE `agua`
+  MODIFY `idAgua` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `alunos`
+--
+ALTER TABLE `alunos`
+  MODIFY `idAluno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `assinaturas`
+--
+ALTER TABLE `assinaturas`
+  MODIFY `idAssinatura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de tabela `convites`
+--
+ALTER TABLE `convites`
+  MODIFY `idConvite` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de tabela `devs`
+--
+ALTER TABLE `devs`
+  MODIFY `idDev` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `exercadaptados`
+--
+ALTER TABLE `exercadaptados`
+  MODIFY `idExercAdaptado` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `exercicios`
+--
+ALTER TABLE `exercicios`
+  MODIFY `idExercicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
+
+--
+-- AUTO_INCREMENT de tabela `itens_refeicao`
+--
+ALTER TABLE `itens_refeicao`
+  MODIFY `idItensRef` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `nutrientes`
+--
+ALTER TABLE `nutrientes`
+  MODIFY `idNutrientes` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `pagamentos`
+--
+ALTER TABLE `pagamentos`
+  MODIFY `idPagamento` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `personal`
+--
+ALTER TABLE `personal`
+  MODIFY `idPersonal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de tabela `planos`
+--
+ALTER TABLE `planos`
+  MODIFY `idPlano` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de tabela `recuperacao_senha`
+--
+ALTER TABLE `recuperacao_senha`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `traducoes_alimentos`
+--
+ALTER TABLE `traducoes_alimentos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT de tabela `treinos`
+--
+ALTER TABLE `treinos`
+  MODIFY `idTreino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT de tabela `treinospersonal`
+--
+ALTER TABLE `treinospersonal`
+  MODIFY `idTreinosP` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `treino_exercicio`
+--
+ALTER TABLE `treino_exercicio`
+  MODIFY `idTreino_Exercicio` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `treino_exercicio_historico`
+--
+ALTER TABLE `treino_exercicio_historico`
+  MODIFY `idHistorico` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `videos`
+--
+ALTER TABLE `videos`
+  MODIFY `idvideos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
+
+--
+-- Restrições para tabelas despejadas
+--
+
+--
+-- Restrições para tabelas `agua`
 --
 ALTER TABLE `agua`
   ADD CONSTRAINT `FK_Agua_Aluno` FOREIGN KEY (`idaluno`) REFERENCES `alunos` (`idAluno`);
 
 --
--- Limitadores para a tabela `alunos`
+-- Restrições para tabelas `alunos`
 --
 ALTER TABLE `alunos`
-  ADD CONSTRAINT `FK_Alunos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`);
+  ADD CONSTRAINT `FK_Alunos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`),
+  ADD CONSTRAINT `fk_aluno_plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
 
 --
--- Limitadores para a tabela `assinaturas`
+-- Restrições para tabelas `assinaturas`
 --
 ALTER TABLE `assinaturas`
   ADD CONSTRAINT `FK_Assinatura_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
 
 --
--- Limitadores para a tabela `itens_refeicao`
+-- Restrições para tabelas `convites`
+--
+ALTER TABLE `convites`
+  ADD CONSTRAINT `convites_ibfk_1` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`),
+  ADD CONSTRAINT `convites_ibfk_2` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`);
+
+--
+-- Restrições para tabelas `itens_refeicao`
 --
 ALTER TABLE `itens_refeicao`
   ADD CONSTRAINT `itens_refeicao_ibfk_1` FOREIGN KEY (`id_tipo_refeicao`) REFERENCES `refeicoes_tipos` (`id`);
 
 --
--- Limitadores para a tabela `nutrientes`
+-- Restrições para tabelas `nutrientes`
 --
 ALTER TABLE `nutrientes`
   ADD CONSTRAINT `nutrientes_ibfk_1` FOREIGN KEY (`alimento_id`) REFERENCES `itens_refeicao` (`idItensRef`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `pagamentos`
+-- Restrições para tabelas `pagamentos`
 --
 ALTER TABLE `pagamentos`
   ADD CONSTRAINT `FK_Pagamento_Assinatura` FOREIGN KEY (`idAssinatura`) REFERENCES `assinaturas` (`idAssinatura`);
 
 --
--- Limitadores para a tabela `treinos`
+-- Restrições para tabelas `personal`
+--
+ALTER TABLE `personal`
+  ADD CONSTRAINT `fk_personal_plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
+
+--
+-- Restrições para tabelas `treinos`
 --
 ALTER TABLE `treinos`
   ADD CONSTRAINT `FK_Aluno_treino` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE SET NULL,
   ADD CONSTRAINT `FK_Personal_treino` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE SET NULL;
 
 --
--- Limitadores para a tabela `treino_exercicio`
+-- Restrições para tabelas `treino_exercicio`
 --
 ALTER TABLE `treino_exercicio`
   ADD CONSTRAINT `FK_TreinoExercicio_Treino` FOREIGN KEY (`idTreino`) REFERENCES `treinos` (`idTreino`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `videos`
+-- Restrições para tabelas `videos`
 --
 ALTER TABLE `videos`
   ADD CONSTRAINT `FK_Video_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`),
