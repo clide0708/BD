@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 03-Out-2025 às 04:05
+-- Tempo de geração: 03-Out-2025 às 06:30
 -- Versão do servidor: 8.0.31
 -- versão do PHP: 8.0.26
 
@@ -355,7 +355,8 @@ CREATE TABLE IF NOT EXISTS `itens_refeicao` (
   `quantidade` int NOT NULL,
   `medida` varchar(25) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idItensRef`),
-  KEY `id_tipo_refeicao` (`id_tipo_refeicao`)
+  KEY `id_tipo_refeicao` (`id_tipo_refeicao`),
+  KEY `idx_tipo_ref` (`id_tipo_refeicao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -379,8 +380,9 @@ CREATE TABLE IF NOT EXISTS `nutrientes` (
   `gorduras` decimal(10,2) DEFAULT '0.00',
   `medida` varchar(25) COLLATE utf8mb4_general_ci DEFAULT 'g',
   PRIMARY KEY (`idNutrientes`),
-  UNIQUE KEY `alimento_id` (`alimento_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  UNIQUE KEY `alimento_id` (`alimento_id`),
+  KEY `idx_alimento` (`alimento_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `nutrientes`
@@ -502,10 +504,12 @@ TRUNCATE TABLE `recuperacao_senha`;
 
 DROP TABLE IF EXISTS `refeicoes_tipos`;
 CREATE TABLE IF NOT EXISTS `refeicoes_tipos` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `idAluno` int NOT NULL,
   `nome_tipo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `data_ref` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `nome_tipo` (`nome_tipo`)
+  KEY `idx_aluno_data` (`idAluno`,`data_ref`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -525,9 +529,10 @@ CREATE TABLE IF NOT EXISTS `traducoes_alimentos` (
   `termo_ingles` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `termo_portugues` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `fonte` enum('dicionario','libretranslate','mymemory') COLLATE utf8mb4_general_ci DEFAULT 'dicionario',
   PRIMARY KEY (`id`),
   UNIQUE KEY `termo_ingles` (`termo_ingles`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `traducoes_alimentos`
@@ -538,28 +543,33 @@ TRUNCATE TABLE `traducoes_alimentos`;
 -- Extraindo dados da tabela `traducoes_alimentos`
 --
 
-INSERT INTO `traducoes_alimentos` (`id`, `termo_ingles`, `termo_portugues`, `created_at`) VALUES
-(1, 'sheets', 'folhas', '2025-10-01 01:25:48'),
-(2, 'filo pastry', 'massa folhada', '2025-10-01 01:25:49'),
-(3, 'nori', 'alga nori', '2025-10-01 01:25:49'),
-(4, 'lasagne noodles', 'massa para lasanha', '2025-10-01 01:25:49'),
-(5, 'sheet gelatin', 'gelatina em folha', '2025-10-01 01:25:49'),
-(6, 'bean curd sheets', 'folha de tofu', '2025-10-01 01:25:49'),
-(7, 'puff pastry dough', 'massa folhada', '2025-10-01 01:25:49'),
-(8, 'fresh lasagne sheets', 'massa para lasanha fresca', '2025-10-01 01:25:49'),
-(9, 'cooked lasagne noodles', 'massa para lasanha cozida', '2025-10-01 01:25:49'),
-(10, 'graham crackers', 'biscoito maisena', '2025-10-01 01:25:49'),
-(11, 'oven ready lasagne noodles', 'massa para lasanha pré-cozida', '2025-10-01 01:25:49'),
-(12, 'noodles', 'macarrão', '2025-10-01 01:26:28'),
-(13, 'pasta', 'massa', '2025-10-01 01:26:29'),
-(14, 'egg noodles', 'macarrão chinês com ovos', '2025-10-01 01:26:34'),
-(15, 'rice vermicelli', 'arroz vermicelli', '2025-10-01 01:26:40'),
-(16, 'soba noodles', 'macarrão soba', '2025-10-01 01:26:46'),
-(17, 'udon noodles', 'macarrão udon', '2025-10-01 01:26:51'),
-(18, 'ziti', 'penne', '2025-10-01 01:26:54'),
-(19, 'kelp noodles', 'algas marinhas', '2025-10-01 01:27:00'),
-(20, 'ramen noodles', 'macarrão lámen', '2025-10-01 01:27:02'),
-(21, 'elbow macaroni', 'macarrão cotovelo', '2025-10-01 01:27:05');
+INSERT INTO `traducoes_alimentos` (`id`, `termo_ingles`, `termo_portugues`, `created_at`, `fonte`) VALUES
+(1, 'sheets', 'folhas', '2025-10-01 01:25:48', 'dicionario'),
+(2, 'filo pastry', 'massa folhada', '2025-10-01 01:25:49', 'dicionario'),
+(3, 'nori', 'alga nori', '2025-10-01 01:25:49', 'dicionario'),
+(4, 'lasagne noodles', 'massa para lasanha', '2025-10-01 01:25:49', 'dicionario'),
+(5, 'sheet gelatin', 'gelatina em folha', '2025-10-01 01:25:49', 'dicionario'),
+(6, 'bean curd sheets', 'folha de tofu', '2025-10-01 01:25:49', 'dicionario'),
+(7, 'puff pastry dough', 'massa folhada', '2025-10-01 01:25:49', 'dicionario'),
+(8, 'fresh lasagne sheets', 'massa para lasanha fresca', '2025-10-01 01:25:49', 'dicionario'),
+(9, 'cooked lasagne noodles', 'massa para lasanha cozida', '2025-10-01 01:25:49', 'dicionario'),
+(10, 'graham crackers', 'biscoito maisena', '2025-10-01 01:25:49', 'dicionario'),
+(11, 'oven ready lasagne noodles', 'massa para lasanha pré-cozida', '2025-10-01 01:25:49', 'dicionario'),
+(12, 'noodles', 'macarrão', '2025-10-01 01:26:28', 'dicionario'),
+(13, 'pasta', 'massa', '2025-10-01 01:26:29', 'dicionario'),
+(14, 'egg noodles', 'macarrão chinês com ovos', '2025-10-01 01:26:34', 'dicionario'),
+(15, 'rice vermicelli', 'arroz vermicelli', '2025-10-01 01:26:40', 'dicionario'),
+(16, 'soba noodles', 'macarrão soba', '2025-10-01 01:26:46', 'dicionario'),
+(17, 'udon noodles', 'macarrão udon', '2025-10-01 01:26:51', 'dicionario'),
+(18, 'ziti', 'penne', '2025-10-01 01:26:54', 'dicionario'),
+(19, 'kelp noodles', 'algas marinhas', '2025-10-01 01:27:00', 'dicionario'),
+(20, 'ramen noodles', 'macarrão lámen', '2025-10-01 01:27:02', 'dicionario'),
+(21, 'elbow macaroni', 'macarrão cotovelo', '2025-10-01 01:27:05', 'dicionario'),
+(22, 'apple', 'maçã', '2025-10-03 05:59:25', ''),
+(24, 'applesauce', 'molho de maçã', '2025-10-03 05:59:27', ''),
+(26, 'apple juice', 'apple sumo', '2025-10-03 05:59:30', ''),
+(28, 'apple cider', 'apple cidras', '2025-10-03 05:59:33', ''),
+(30, 'apple jelly', 'apple gelatina', '2025-10-03 05:59:36', '');
 
 -- --------------------------------------------------------
 
@@ -581,8 +591,6 @@ CREATE TABLE IF NOT EXISTS `treinos` (
   PRIMARY KEY (`idTreino`),
   KEY `FK_Personal_treino` (`idPersonal`),
   KEY `FK_Aluno_treino` (`idAluno`),
-  KEY `idx_treinos_aluno` (`idAluno`),
-  KEY `idx_treinos_personal` (`idPersonal`),
   KEY `idx_treinos_criadoPor` (`criadoPor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -835,6 +843,12 @@ ALTER TABLE `nutrientes`
 --
 ALTER TABLE `pagamentos`
   ADD CONSTRAINT `FK_Pagamento_Assinatura` FOREIGN KEY (`idAssinatura`) REFERENCES `assinaturas` (`idAssinatura`);
+
+--
+-- Limitadores para a tabela `refeicoes_tipos`
+--
+ALTER TABLE `refeicoes_tipos`
+  ADD CONSTRAINT `FK_idAluno_Refeicao` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`);
 
 --
 -- Limitadores para a tabela `treinos`
