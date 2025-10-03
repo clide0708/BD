@@ -8,15 +8,15 @@ WHERE table_schema = 'bd_tcc'
   AND table_name NOT IN ('recuperacao_senha', 'exercicios', 'devs', 'exercadaptados', 'videos', 'traducoes_alimentos', 'nutrientes', 'pagamentos')
   AND table_type = 'BASE TABLE';
 
-TRUNCATE TABLE `academias`;
-TRUNCATE TABLE `agendamentos`;
-TRUNCATE TABLE `agua`;
-TRUNCATE TABLE `alunos`;
-TRUNCATE TABLE `assinaturas`;
-TRUNCATE TABLE `itens_refeicao`;
-TRUNCATE TABLE `personal`;
-TRUNCATE TABLE `planos`;
-TRUNCATE TABLE `refeicoes_tipos`;
-TRUNCATE TABLE `treino_exercicio`;
-TRUNCATE TABLE `treino_exercicio_historico`;
-TRUNCATE TABLE `treinos`;
+# TRUNCATE TABLE `academias`;
+# TRUNCATE TABLE `agendamentos`;
+# TRUNCATE TABLE `agua`;
+# TRUNCATE TABLE `alunos`;
+# TRUNCATE TABLE `assinaturas`;
+# TRUNCATE TABLE `itens_refeicao`;
+# TRUNCATE TABLE `personal`;
+# TRUNCATE TABLE `planos`;
+# TRUNCATE TABLE `refeicoes_tipos`;
+# TRUNCATE TABLE `treino_exercicio`;
+# TRUNCATE TABLE `treino_exercicio_historico`;
+# TRUNCATE TABLE `treinos`;
