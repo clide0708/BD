@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 03-Out-2025 às 06:30
+-- Tempo de geração: 06-Out-2025 às 00:32
 -- Versão do servidor: 8.0.31
 -- versão do PHP: 8.0.26
 
@@ -32,14 +32,15 @@ USE `bd_tcc`;
 DROP TABLE IF EXISTS `academias`;
 CREATE TABLE IF NOT EXISTS `academias` (
   `idAcademia` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `cnpj` varchar(18) COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `telefone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `endereco` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cnpj` varchar(18) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `telefone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `endereco` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status_conta` enum('Ativa','Inativa','Excluida') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
+  `status_conta` enum('Ativa','Inativa','Excluida') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
+  `idPlano` int NOT NULL DEFAULT '5',
   PRIMARY KEY (`idAcademia`),
   UNIQUE KEY `cnpj` (`cnpj`),
   UNIQUE KEY `email` (`email`)
@@ -62,8 +63,8 @@ CREATE TABLE IF NOT EXISTS `agendamentos` (
   `idPersonal` int NOT NULL,
   `idAluno` int NOT NULL,
   `data_hora` datetime NOT NULL,
-  `local` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `observacoes` text COLLATE utf8mb4_general_ci,
+  `local` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`idAgendamento`),
   KEY `FK_Agend_Aluno` (`idAluno`),
   KEY `FK_Agend_Personal` (`idPersonal`)
@@ -104,27 +105,29 @@ TRUNCATE TABLE `agua`;
 DROP TABLE IF EXISTS `alunos`;
 CREATE TABLE IF NOT EXISTS `alunos` (
   `idAluno` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `rg` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `senha` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `numTel` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cpf` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `rg` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `numTel` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `altura` decimal(3,2) DEFAULT NULL,
-  `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `meta` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `genero` enum('Masculino','Feminino','Outro') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `meta` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `foto_perfil` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL,
-  `tipoPlano` enum('Básico(Gratuito)','Plus') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
+  `tipoPlano` enum('Básico(Gratuito)','Plus') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
   `idPersonal` int DEFAULT NULL,
-  `status_vinculo` enum('Ativo','Inativo','Pendente') COLLATE utf8mb4_general_ci DEFAULT 'Inativo',
-  `status_conta` enum('Ativa','Pendente','Excluida') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
+  `status_vinculo` enum('Ativo','Inativo','Pendente') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Inativo',
+  `status_conta` enum('Ativa','Pendente','Excluida') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
+  `idPlano` int NOT NULL DEFAULT '1',
   PRIMARY KEY (`idAluno`),
   UNIQUE KEY `cpf` (`cpf`),
   UNIQUE KEY `uq_numTel` (`numTel`),
   UNIQUE KEY `uq_rg` (`rg`),
   UNIQUE KEY `uq_email` (`email`),
-  KEY `FK_Alunos_Personal` (`idPersonal`)
+  KEY `FK_Alunos_Personal` (`idPersonal`),
+  KEY `FK_Alunos_Plano` (`idPlano`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -142,12 +145,12 @@ DROP TABLE IF EXISTS `assinaturas`;
 CREATE TABLE IF NOT EXISTS `assinaturas` (
   `idAssinatura` int NOT NULL AUTO_INCREMENT,
   `idUsuario` int NOT NULL,
-  `tipo_usuario` enum('aluno','personal','academia') COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo_usuario` enum('aluno','personal','academia') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `idPlano` int NOT NULL,
   `data_inicio` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_fim` datetime DEFAULT NULL,
-  `status` enum('ativa','cancelada','pendente','expirada','inadimplente') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
-  `id_gateway_assinatura` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status` enum('ativa','cancelada','pendente','expirada','inadimplente') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `id_gateway_assinatura` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idAssinatura`),
   KEY `idx_usuario` (`idUsuario`,`tipo_usuario`),
   KEY `FK_Assinatura_Plano` (`idPlano`)
@@ -158,6 +161,32 @@ CREATE TABLE IF NOT EXISTS `assinaturas` (
 --
 
 TRUNCATE TABLE `assinaturas`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `convites`
+--
+
+DROP TABLE IF EXISTS `convites`;
+CREATE TABLE IF NOT EXISTS `convites` (
+  `idConvite` int NOT NULL AUTO_INCREMENT,
+  `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `idPersonal` int NOT NULL,
+  `idAluno` int DEFAULT NULL,
+  `email_aluno` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status` enum('pendente','aceito','negado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `data_criacao` datetime NOT NULL,
+  PRIMARY KEY (`idConvite`),
+  UNIQUE KEY `token` (`token`),
+  KEY `idPersonal` (`idPersonal`),
+  KEY `idAluno` (`idAluno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `convites`
+--
+
+TRUNCATE TABLE `convites`;
 -- --------------------------------------------------------
 
 --
@@ -189,10 +218,10 @@ TRUNCATE TABLE `devs`;
 DROP TABLE IF EXISTS `exercadaptados`;
 CREATE TABLE IF NOT EXISTS `exercadaptados` (
   `idExercAdaptado` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `grupoMuscular` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `descricao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cadastradoPor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `grupoMuscular` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `descricao` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cadastradoPor` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idExercAdaptado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -210,12 +239,12 @@ TRUNCATE TABLE `exercadaptados`;
 DROP TABLE IF EXISTS `exercicios`;
 CREATE TABLE IF NOT EXISTS `exercicios` (
   `idExercicio` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `grupoMuscular` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `descricao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cadastradoPor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `grupoMuscular` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `descricao` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cadastradoPor` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idExercicio`)
-) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `exercicios`
@@ -227,7 +256,7 @@ TRUNCATE TABLE `exercicios`;
 --
 
 INSERT INTO `exercicios` (`idExercicio`, `nome`, `grupoMuscular`, `descricao`, `cadastradoPor`) VALUES
-(1, 'Chest Press', 'peitoral', 'Sente-se na máquina com as costas apoiadas, segure as alças na altura do peito e empurre controladamente até estender os braços; retorne devagar.', NULL),
+(1, 'Supino Reto', 'Peito', 'Exercício revisado', NULL),
 (2, 'Máquina Declinada Supino e Crucifixo', 'peitoral', 'Deite-se em banco declinado; no supino empurre a barra/pegada para cima até estender os braços; no crucifixo abra os braços com leve flexão nos cotovelos e retorne controlado.', NULL),
 (3, 'Supino com Halteres', 'peitoral', 'Deite-se no banco, segure halteres alinhados ao peito, empurre para cima até braços estendidos e desça controladamente.', NULL),
 (4, 'Crucifixo com Halteres', 'peitoral', 'Deite-se, braços semiflexionados; abra lateralmente até sentir alongamento no peitoral e traga os halteres de volta com controle.', NULL),
@@ -317,29 +346,29 @@ INSERT INTO `exercicios` (`idExercicio`, `nome`, `grupoMuscular`, `descricao`, `
 (88, 'Cadeira Adutora', 'adutores', 'Sente-se e pressione as coxas para dentro contra a resistência da máquina para trabalhar os adutores.', NULL),
 (89, 'Adução no Cross Over', 'adutores', 'Com cabos baixos, puxe as pernas para dentro cruzando na frente do corpo para ativar os adutores.', NULL),
 (90, 'Mesa Flexora', 'posteriordecoxa', 'Deitado na máquina, flexione os joelhos contra a resistência para trabalhar os músculos posteriores da coxa.', NULL),
-(91, 'Cadeira Flexora', 'posteriordecoxa', 'Sentado, flexione os joelhos para trás contra a resistência da máquina para fortalecer o posterior da coxa.', NULL),
-(92, 'Flexor Apoio', 'posteriordecoxa', 'Apoiado na máquina, flexione os joelhos elevando os calcanhares para trabalhar o posterior da coxa.', NULL),
-(93, 'Stiff com Barra', 'posteriordecoxa', 'Com barra, incline o tronco à frente mantendo as pernas quase estendidas para alongar e fortalecer o posterior da coxa.', NULL),
-(94, 'Leg Press Horizontal', 'quadriceps', 'Empurre a plataforma horizontalmente com os pés, estendendo os joelhos para ativar o quadríceps.', NULL),
-(95, 'Cadeira Extensora Unilateral', 'quadriceps', 'Sente-se e estenda um joelho de cada vez contra a resistência da máquina para trabalhar o quadríceps unilateralmente.', NULL),
-(96, 'Rosca Concentrada com Halteres', 'biceps', 'Sentado, apoie o braço e faça a flexão do cotovelo para concentrar o trabalho no bíceps.', NULL),
-(97, 'Rosca Martelo com Halteres', 'biceps', 'Com halteres, faça a flexão dos cotovelos mantendo as palmas voltadas para dentro, ativando o braquial.', NULL),
-(98, 'Rosca Martelo com Barra', 'biceps', 'Com barra, faça a flexão dos cotovelos com pegada neutra para fortalecer o bíceps e antebraço.', NULL),
-(99, 'Rosca 21', 'biceps', 'Execute 7 repetições na metade inferior, 7 na metade superior e 7 completas para estimular o bíceps.', NULL),
-(100, 'Encolhimento de Trapézio com Halteres', 'trapezio', 'Com halteres nas mãos, eleve os ombros em direção às orelhas contraindo o trapézio.', NULL),
-(101, 'Encolhimento de Trapézio no Cross Over', 'trapezio', 'Segure os cabos e eleve os ombros contraindo o trapézio mantendo o movimento controlado.', NULL),
-(102, 'Encolhimento de Trapézio no Smith', 'trapezio', 'Com barra no smith, eleve os ombros para trabalhar o trapézio mantendo postura ereta.', NULL),
-(103, 'Leg Press 90°', 'posteriordecoxa', 'Empurre a plataforma inclinada a 90° para ativar os músculos posteriores das pernas.', NULL),
-(104, 'Levantamento Terra', 'posteriordecoxa', 'Com barra no chão, levante mantendo a coluna neutra e usando força dos posteriores e glúteos.', NULL),
-(105, 'Elevação Pélvica com Barra', 'gluteos', 'Deitado, eleve o quadril com a barra apoiada para ativar os glúteos e posteriores.', NULL),
-(106, 'Elevação Pélvica na Máquina', 'gluteos', 'Na máquina, eleve o quadril contra a resistência para fortalecer glúteos e posterior de coxa.', NULL),
-(107, 'Elevação Pélvica Apoiado no Solo', 'gluteos', 'Deitado no chão, eleve o quadril contraindo os glúteos mantendo os pés apoiados.', NULL),
-(108, 'Coice para Glúteos no Cross Over', 'gluteos', 'Com caneleira, realize o movimento de coice para trás, ativando os glúteos no cross over.', NULL),
-(109, 'Extensão de Glúteo com Caneleira', 'gluteos', 'De joelhos, estenda a perna com caneleira para trás contraindo o glúteo máximo.', NULL),
-(110, 'Glúteo 4 Apoios ou Coice com Caneleira', 'gluteos', 'Em posição de 4 apoios, eleve a perna para trás com caneleira ativando os glúteos.', NULL),
-(111, 'Cadeira Abdutora', 'abdutores', 'Sente-se e abra as pernas contra a resistência da máquina para trabalhar abdutores e glúteos.', NULL),
-(112, 'Abdução no Cross Over', 'abdutores', 'Com cabos baixos, afaste as pernas para o lado contraindo abdutores e glúteos.', NULL),
-(113, 'Abdução com Caneleira', 'abdutores', 'De pé ou de lado, eleve a perna lateralmente com caneleira para ativar abdutores e glúteos.', NULL);
+(91, 'Cadeira Flexora', 'posteriordecoxa', 'Sentado na máquina, flexione os joelhos para trás contra a resistência para ativar os posteriores da coxa.', NULL),
+(92, 'Flexão de Joelho no Cross Over', 'posteriordecoxa', 'Com cabo no tornozelo, flexione o joelho para trás mantendo o tronco estável.', NULL),
+(93, 'Stiff', 'posteriordecoxa', 'Com barra ou halteres, incline o tronco à frente mantendo as pernas estendidas e volte à posição inicial.', NULL),
+(94, 'Glúteo Máquina', 'gluteos', 'Na máquina específica, empurre a alavanca com os quadris para trabalhar os glúteos.', NULL),
+(95, 'Elevação Pélvica', 'gluteos', 'Deitado com joelhos flexionados, eleve o quadril contraindo os glúteos e desça controladamente.', NULL),
+(96, 'Elevação Pélvica Unilateral', 'gluteos', 'Com uma perna elevada, eleve o quadril focando no trabalho unilateral dos glúteos.', NULL),
+(97, 'Abdução de Quadril com Caneleira', 'gluteos', 'Deitado de lado, abduza a perna com caneleira para trabalhar os glúteos e abdutores.', NULL),
+(98, 'Abdução no Cross Over', 'gluteos', 'Com cabo no tornozelo, abduza a perna lateralmente mantendo o tronco estável.', NULL),
+(99, 'Cadeira Abdutora', 'gluteos', 'Sente-se e abra as coxas contra a resistência da máquina para trabalhar os abdutores e glúteos.', NULL),
+(100, 'Glúteo no Cross Over', 'gluteos', 'Com cabo no tornozelo, realize extensão do quadril para trás, ativando os glúteos.', NULL),
+(101, 'Agachamento Sumô com Halter', 'gluteos', 'Com halter entre as pernas, agache em posição sumô para ativar glúteos e adutores.', NULL),
+(102, 'Agachamento Afundo com Halter', 'gluteos', 'Com halteres, execute o afundo para trabalhar glúteos e pernas.', NULL),
+(103, 'Agachamento Búlgaro com Halter', 'gluteos', 'Com halteres, execute o agachamento búlgaro focando nos glúteos e quadríceps.', NULL),
+(104, 'Agachamento Terra', 'gluteos', 'Com barra, flexione o quadril mantendo as costas retas e volte à posição inicial, ativando glúteos e posteriores.', NULL),
+(105, 'Agachamento Terra Sumô', 'gluteos', 'Com pegada mais larga, execute o terra sumô para ativar glúteos e adutores.', NULL),
+(106, 'Agachamento Terra Romeno', 'gluteos', 'Com barra, flexione o quadril mantendo pernas quase estendidas para alongar e ativar posteriores e glúteos.', NULL),
+(107, 'Agachamento Terra Unilateral', 'gluteos', 'Com uma perna, execute o movimento de terra para trabalhar unilateralmente glúteos e estabilizadores.', NULL),
+(108, 'Agachamento Terra com Halteres', 'gluteos', 'Com halteres, execute o terra para ativar glúteos e posteriores da coxa.', NULL),
+(109, 'Agachamento Terra com Kettlebell', 'gluteos', 'Com kettlebell, execute o terra focando na ativação dos glúteos e posteriores.', NULL),
+(110, 'Agachamento Terra com Barra Hexagonal', 'gluteos', 'Na barra hexagonal, execute o terra com pegada neutra para reduzir tensão lombar.', NULL),
+(111, 'Agachamento Terra com Trap Bar', 'gluteos', 'Com trap bar, execute o terra para trabalhar glúteos e posteriores com menor impacto na coluna.', NULL),
+(112, 'Agachamento Terra com Barra Olímpica', 'gluteos', 'Com barra olímpica, execute o terra tradicional para ativar glúteos e cadeia posterior.', NULL),
+(113, 'Agachamento Terra com Barra Safety', 'gluteos', 'Com barra safety, execute o terra com maior segurança para trabalhar glúteos e posteriores.', NULL);
 
 -- --------------------------------------------------------
 
@@ -351,9 +380,9 @@ DROP TABLE IF EXISTS `itens_refeicao`;
 CREATE TABLE IF NOT EXISTS `itens_refeicao` (
   `idItensRef` int NOT NULL AUTO_INCREMENT,
   `id_tipo_refeicao` int NOT NULL,
-  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `quantidade` int NOT NULL,
-  `medida` varchar(25) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `medida` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idItensRef`),
   KEY `id_tipo_refeicao` (`id_tipo_refeicao`),
   KEY `idx_tipo_ref` (`id_tipo_refeicao`)
@@ -364,6 +393,41 @@ CREATE TABLE IF NOT EXISTS `itens_refeicao` (
 --
 
 TRUNCATE TABLE `itens_refeicao`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `medidas`
+--
+
+DROP TABLE IF EXISTS `medidas`;
+CREATE TABLE IF NOT EXISTS `medidas` (
+  `idMedida` int NOT NULL AUTO_INCREMENT,
+  `idAluno` int NOT NULL,
+  `peso` decimal(5,2) DEFAULT NULL,
+  `altura` decimal(3,2) DEFAULT NULL,
+  `braco_esquerdo` decimal(4,2) DEFAULT NULL,
+  `braco_direito` decimal(4,2) DEFAULT NULL,
+  `antebraco_esquerdo` decimal(4,2) DEFAULT NULL,
+  `antebraco_direito` decimal(4,2) DEFAULT NULL,
+  `ombro` decimal(4,2) DEFAULT NULL,
+  `peitoral` decimal(4,2) DEFAULT NULL,
+  `cintura` decimal(4,2) DEFAULT NULL,
+  `abdomen` decimal(4,2) DEFAULT NULL,
+  `quadril` decimal(4,2) DEFAULT NULL,
+  `coxa_esquerda` decimal(4,2) DEFAULT NULL,
+  `coxa_direita` decimal(4,2) DEFAULT NULL,
+  `panturrilha_esquerda` decimal(4,2) DEFAULT NULL,
+  `panturrilha_direita` decimal(4,2) DEFAULT NULL,
+  `data_medicao` datetime NOT NULL,
+  PRIMARY KEY (`idMedida`),
+  KEY `FK_Medidas_Aluno` (`idAluno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `medidas`
+--
+
+TRUNCATE TABLE `medidas`;
 -- --------------------------------------------------------
 
 --
@@ -378,11 +442,11 @@ CREATE TABLE IF NOT EXISTS `nutrientes` (
   `proteinas` decimal(10,2) DEFAULT '0.00',
   `carboidratos` decimal(10,2) DEFAULT '0.00',
   `gorduras` decimal(10,2) DEFAULT '0.00',
-  `medida` varchar(25) COLLATE utf8mb4_general_ci DEFAULT 'g',
+  `medida` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'g',
   PRIMARY KEY (`idNutrientes`),
   UNIQUE KEY `alimento_id` (`alimento_id`),
   KEY `idx_alimento` (`alimento_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `nutrientes`
@@ -398,14 +462,18 @@ TRUNCATE TABLE `nutrientes`;
 DROP TABLE IF EXISTS `pagamentos`;
 CREATE TABLE IF NOT EXISTS `pagamentos` (
   `idPagamento` int NOT NULL AUTO_INCREMENT,
-  `idAssinatura` int NOT NULL,
+  `idUsuario` int NOT NULL,
+  `tipo_usuario` enum('aluno','personal','academia') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `idPlano` int NOT NULL,
   `valor` decimal(10,2) NOT NULL,
+  `metodo_pagamento` enum('cartao_credito','cartao_debito','pix','boleto') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('pendente','aprovado','recusado','cancelado','reembolsado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `id_gateway_pagamento` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_pagamento` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` enum('aprovado','pendente','recusado','estornado') COLLATE utf8mb4_general_ci NOT NULL,
-  `metodo_pagamento` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `id_gateway_transacao` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `data_confirmacao` datetime DEFAULT NULL,
   PRIMARY KEY (`idPagamento`),
-  KEY `FK_Pagamento_Assinatura` (`idAssinatura`)
+  KEY `FK_Pagamento_Plano` (`idPlano`),
+  KEY `idx_usuario_pagamento` (`idUsuario`,`tipo_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -422,26 +490,29 @@ TRUNCATE TABLE `pagamentos`;
 DROP TABLE IF EXISTS `personal`;
 CREATE TABLE IF NOT EXISTS `personal` (
   `idPersonal` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cpf` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `rg` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cref_numero` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cref_categoria` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cref_regional` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `numTel` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `idade` int DEFAULT NULL,
-  `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cpf` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `rg` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cref_numero` varchar(9) COLLATE utf8mb4_general_ci NOT NULL,
-  `cref_categoria` char(1) COLLATE utf8mb4_general_ci NOT NULL,
-  `cref_regional` varchar(5) COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `genero` enum('Masculino','Feminino','Outro') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `foto_perfil` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL,
-  `numTel` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tipoPlano` enum('Básico(Gratuito)','Plus') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
   `status_conta` enum('Ativa','Pendente','Excluida') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
+  `idPlano` int NOT NULL DEFAULT '3',
   PRIMARY KEY (`idPersonal`),
-  UNIQUE KEY `cpf` (`cpf`) USING BTREE,
-  UNIQUE KEY `uq_cref_numero` (`cref_numero`),
-  UNIQUE KEY `uq_email` (`email`),
-  UNIQUE KEY `uq_numTel` (`numTel`),
-  UNIQUE KEY `uq_rg` (`rg`)
+  UNIQUE KEY `cpf` (`cpf`),
+  UNIQUE KEY `cref_numero` (`cref_numero`),
+  UNIQUE KEY `numTel` (`numTel`),
+  UNIQUE KEY `rg` (`rg`),
+  UNIQUE KEY `email` (`email`),
+  KEY `FK_Personal_Plano` (`idPlano`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -458,20 +529,56 @@ TRUNCATE TABLE `personal`;
 DROP TABLE IF EXISTS `planos`;
 CREATE TABLE IF NOT EXISTS `planos` (
   `idPlano` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `descricao` text COLLATE utf8mb4_general_ci,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `valor_mensal` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `tipo_usuario` enum('aluno','personal','academia') COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo_usuario` enum('aluno','personal','academia') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `caracteristicas` json DEFAULT NULL,
   `ativo` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idPlano`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `planos`
 --
 
 TRUNCATE TABLE `planos`;
+--
+-- Extraindo dados da tabela `planos`
+--
+
+INSERT INTO `planos` (`idPlano`, `nome`, `descricao`, `valor_mensal`, `tipo_usuario`, `caracteristicas`, `ativo`, `created_at`, `updated_at`) VALUES
+(1, 'Aluno Básico', 'Plano gratuito para alunos com funcionalidades essenciais', '0.00', 'aluno', '[\"Acesso a treinos básicos\", \"Visualização de exercícios\", \"Acompanhamento de medidas\"]', 1, '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(2, 'Aluno Plus', 'Plano premium para alunos com funcionalidades avançadas', '29.90', 'aluno', '[\"Acesso a todos os treinos\", \"Planos alimentares personalizados\", \"Suporte prioritário\", \"Relatórios detalhados\"]', 1, '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(3, 'Personal Básico', 'Plano gratuito para personal trainers', '0.00', 'personal', '[\"Gerenciar até 5 alunos\", \"Criar treinos básicos\", \"Acompanhamento de alunos\"]', 1, '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(4, 'Personal Plus', 'Plano premium para personal trainers', '99.90', 'personal', '[\"Gerenciar alunos ilimitados\", \"Criar treinos avançados\", \"Relatórios detalhados\", \"Suporte prioritário\", \"Acesso a recursos exclusivos\"]', 1, '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(5, 'Academia Premium', 'Plano completo para academias', '299.90', 'academia', '[\"Gerenciar múltiplos personais\", \"Relatórios corporativos\", \"Suporte dedicado\", \"API de integração\", \"Dashboard administrativo\"]', 1, '2025-10-02 19:55:48', '2025-10-02 19:55:48');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `progresso`
+--
+
+DROP TABLE IF EXISTS `progresso`;
+CREATE TABLE IF NOT EXISTS `progresso` (
+  `idProgresso` int NOT NULL AUTO_INCREMENT,
+  `idAluno` int NOT NULL,
+  `data` datetime NOT NULL,
+  `peso` decimal(5,2) DEFAULT NULL,
+  `altura` decimal(3,2) DEFAULT NULL,
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  PRIMARY KEY (`idProgresso`),
+  KEY `FK_Progresso_Aluno` (`idAluno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `progresso`
+--
+
+TRUNCATE TABLE `progresso`;
 -- --------------------------------------------------------
 
 --
@@ -481,21 +588,29 @@ TRUNCATE TABLE `planos`;
 DROP TABLE IF EXISTS `recuperacao_senha`;
 CREATE TABLE IF NOT EXISTS `recuperacao_senha` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `token_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `expiraEm` datetime NOT NULL,
   `tentativas` int NOT NULL DEFAULT '0',
   `usado` tinyint(1) NOT NULL DEFAULT '0',
   `criadoEm` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `email` (`email`),
+  KEY `expiraEm` (`expiraEm`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `recuperacao_senha`
 --
 
 TRUNCATE TABLE `recuperacao_senha`;
+--
+-- Extraindo dados da tabela `recuperacao_senha`
+--
+
+INSERT INTO `recuperacao_senha` (`id`, `email`, `token_hash`, `expiraEm`, `tentativas`, `usado`, `criadoEm`) VALUES
+(1, 'enzokrebs8@gmail.com', '6c62faaa62f217b6e1981ab6608ed26007cb962ea0c6acfc2d791d589a6e60e9', '2025-10-05 21:28:09', 0, 1, '2025-10-05 21:13:09');
+
 -- --------------------------------------------------------
 
 --
@@ -506,7 +621,7 @@ DROP TABLE IF EXISTS `refeicoes_tipos`;
 CREATE TABLE IF NOT EXISTS `refeicoes_tipos` (
   `id` int NOT NULL AUTO_INCREMENT,
   `idAluno` int NOT NULL,
-  `nome_tipo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_tipo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `data_ref` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_aluno_data` (`idAluno`,`data_ref`)
@@ -526,13 +641,16 @@ TRUNCATE TABLE `refeicoes_tipos`;
 DROP TABLE IF EXISTS `traducoes_alimentos`;
 CREATE TABLE IF NOT EXISTS `traducoes_alimentos` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `termo_ingles` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `termo_portugues` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `fonte` enum('dicionario','libretranslate','mymemory') COLLATE utf8mb4_general_ci DEFAULT 'dicionario',
+  `nome_original` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_traduzido` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `idioma_original` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'en',
+  `idioma_traduzido` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pt',
+  `data_criacao` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `termo_ingles` (`termo_ingles`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  UNIQUE KEY `nome_original_idioma_original` (`nome_original`,`idioma_original`),
+  KEY `idx_nome_traduzido` (`nome_traduzido`)
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `traducoes_alimentos`
@@ -543,33 +661,68 @@ TRUNCATE TABLE `traducoes_alimentos`;
 -- Extraindo dados da tabela `traducoes_alimentos`
 --
 
-INSERT INTO `traducoes_alimentos` (`id`, `termo_ingles`, `termo_portugues`, `created_at`, `fonte`) VALUES
-(1, 'sheets', 'folhas', '2025-10-01 01:25:48', 'dicionario'),
-(2, 'filo pastry', 'massa folhada', '2025-10-01 01:25:49', 'dicionario'),
-(3, 'nori', 'alga nori', '2025-10-01 01:25:49', 'dicionario'),
-(4, 'lasagne noodles', 'massa para lasanha', '2025-10-01 01:25:49', 'dicionario'),
-(5, 'sheet gelatin', 'gelatina em folha', '2025-10-01 01:25:49', 'dicionario'),
-(6, 'bean curd sheets', 'folha de tofu', '2025-10-01 01:25:49', 'dicionario'),
-(7, 'puff pastry dough', 'massa folhada', '2025-10-01 01:25:49', 'dicionario'),
-(8, 'fresh lasagne sheets', 'massa para lasanha fresca', '2025-10-01 01:25:49', 'dicionario'),
-(9, 'cooked lasagne noodles', 'massa para lasanha cozida', '2025-10-01 01:25:49', 'dicionario'),
-(10, 'graham crackers', 'biscoito maisena', '2025-10-01 01:25:49', 'dicionario'),
-(11, 'oven ready lasagne noodles', 'massa para lasanha pré-cozida', '2025-10-01 01:25:49', 'dicionario'),
-(12, 'noodles', 'macarrão', '2025-10-01 01:26:28', 'dicionario'),
-(13, 'pasta', 'massa', '2025-10-01 01:26:29', 'dicionario'),
-(14, 'egg noodles', 'macarrão chinês com ovos', '2025-10-01 01:26:34', 'dicionario'),
-(15, 'rice vermicelli', 'arroz vermicelli', '2025-10-01 01:26:40', 'dicionario'),
-(16, 'soba noodles', 'macarrão soba', '2025-10-01 01:26:46', 'dicionario'),
-(17, 'udon noodles', 'macarrão udon', '2025-10-01 01:26:51', 'dicionario'),
-(18, 'ziti', 'penne', '2025-10-01 01:26:54', 'dicionario'),
-(19, 'kelp noodles', 'algas marinhas', '2025-10-01 01:27:00', 'dicionario'),
-(20, 'ramen noodles', 'macarrão lámen', '2025-10-01 01:27:02', 'dicionario'),
-(21, 'elbow macaroni', 'macarrão cotovelo', '2025-10-01 01:27:05', 'dicionario'),
-(22, 'apple', 'maçã', '2025-10-03 05:59:25', ''),
-(24, 'applesauce', 'molho de maçã', '2025-10-03 05:59:27', ''),
-(26, 'apple juice', 'apple sumo', '2025-10-03 05:59:30', ''),
-(28, 'apple cider', 'apple cidras', '2025-10-03 05:59:33', ''),
-(30, 'apple jelly', 'apple gelatina', '2025-10-03 05:59:36', '');
+INSERT INTO `traducoes_alimentos` (`id`, `nome_original`, `nome_traduzido`, `idioma_original`, `idioma_traduzido`, `data_criacao`, `data_atualizacao`) VALUES
+(1, 'apple', 'maçã', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-05 23:21:21'),
+(2, 'banana', 'banana', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(3, 'orange', 'laranja', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(4, 'rice', 'arroz', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(5, 'beans', 'feijão', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(6, 'chicken', 'frango', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(7, 'beef', 'carne bovina', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(8, 'fish', 'peixe', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(9, 'egg', 'ovo', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(10, 'milk', 'leite', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(11, 'bread', 'pão', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(12, 'cheese', 'queijo', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(13, 'yogurt', 'iogurte', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(14, 'pasta', 'massa', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(15, 'potato', 'batata', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(16, 'tomato', 'tomate', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(17, 'lettuce', 'alface', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(18, 'carrot', 'cenoura', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(19, 'broccoli', 'brócolis', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(20, 'spinach', 'espinafre', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(21, 'avocado', 'abacate', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(22, 'strawberry', 'morango', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(23, 'grape', 'uva', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(24, 'watermelon', 'melancia', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(25, 'pineapple', 'abacaxi', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(26, 'cucumber', 'pepino', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(27, 'onion', 'cebola', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(28, 'garlic', 'alho', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(29, 'pepper', 'pimentão', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(30, 'mushroom', 'cogumelo', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(31, 'corn', 'milho', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(32, 'pea', 'ervilha', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(33, 'lentil', 'lentilha', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(34, 'oat', 'aveia', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(35, 'almond', 'amêndoa', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(36, 'walnut', 'noz', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(37, 'peanut', 'amendoim', 'en', 'pt', '2025-10-02 19:55:48', '2025-10-02 19:55:48'),
+(40, 'applesauce', 'molho de maçã', 'en', 'pt', '2025-10-05 22:37:51', '2025-10-05 23:08:06'),
+(42, 'apple juice', 'suco de maçã', 'en', 'pt', '2025-10-05 22:37:54', '2025-10-05 23:03:45'),
+(44, 'apple cider', 'cidra de maçã', 'en', 'pt', '2025-10-05 22:37:57', '2025-10-05 23:03:45'),
+(46, 'apple jelly', 'geleia de maçã', 'en', 'pt', '2025-10-05 22:37:59', '2025-10-05 23:03:45'),
+(48, 'apple sauce', 'purê de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 22:49:57'),
+(49, 'apple pie', 'torta de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 22:49:57'),
+(50, 'apple crisp', 'crocante de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 23:06:48'),
+(51, 'apple strudel', 'strudel de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 22:49:57'),
+(52, 'apple turnover', 'folhado de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 22:49:57'),
+(53, 'apple butter', 'doce de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 23:03:45'),
+(54, 'apple muffin', 'muffin de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 22:49:57'),
+(55, 'apple cake', 'bolo de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 22:49:57'),
+(56, 'apple compote', 'compota de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 22:49:57'),
+(57, 'apple tart', 'tarte de maçã', 'en', 'pt', '2025-10-05 22:49:57', '2025-10-05 22:49:57'),
+(58, 'red apple', 'maçã vermelha', 'en', 'pt', '2025-10-05 22:50:13', '2025-10-05 22:50:13'),
+(59, 'green apple', 'maçã verde', 'en', 'pt', '2025-10-05 22:50:13', '2025-10-05 22:50:13'),
+(60, 'fresh apple', 'maçã fresca', 'en', 'pt', '2025-10-05 22:50:13', '2025-10-05 22:50:13'),
+(61, 'dried apple', 'maçã seca', 'en', 'pt', '2025-10-05 22:50:13', '2025-10-05 22:50:13'),
+(62, 'apple slice', 'fatia de maçã', 'en', 'pt', '2025-10-05 22:50:13', '2025-10-05 22:50:13'),
+(63, 'apple wedge', 'gomo de maçã', 'en', 'pt', '2025-10-05 22:50:13', '2025-10-05 22:50:13'),
+(73, 'apple pie spice', 'especiarias para torta de maçã', 'en', 'pt', '2025-10-05 23:03:46', '2025-10-05 23:07:13'),
+(75, 'apple pie filling', 'recheio de torta de maçã', 'en', 'pt', '2025-10-05 23:03:48', '2025-10-05 23:07:05'),
+(77, 'apple cider vinegar', 'vinagre de maçã', 'en', 'pt', '2025-10-05 23:03:49', '2025-10-05 23:06:01'),
+(79, 'applewood smoked bacon', 'bacon defumado applewood', 'en', 'pt', '2025-10-05 23:03:50', '2025-10-05 23:03:50');
 
 -- --------------------------------------------------------
 
@@ -582,16 +735,15 @@ CREATE TABLE IF NOT EXISTS `treinos` (
   `idTreino` int NOT NULL AUTO_INCREMENT,
   `idAluno` int DEFAULT NULL,
   `idPersonal` int DEFAULT NULL,
-  `criadoPor` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Outros',
-  `descricao` text COLLATE utf8mb4_general_ci,
+  `criadoPor` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `data_criacao` datetime NOT NULL,
   `data_ultima_modificacao` datetime NOT NULL,
   PRIMARY KEY (`idTreino`),
-  KEY `FK_Personal_treino` (`idPersonal`),
-  KEY `FK_Aluno_treino` (`idAluno`),
-  KEY `idx_treinos_criadoPor` (`criadoPor`)
+  KEY `FK_Treinos_Aluno` (`idAluno`),
+  KEY `FK_Treinos_Personal` (`idPersonal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -615,16 +767,13 @@ CREATE TABLE IF NOT EXISTS `treino_exercicio` (
   `data_ultima_modificacao` datetime NOT NULL,
   `series` int DEFAULT NULL,
   `repeticoes` int DEFAULT NULL,
-  `carga` decimal(10,2) DEFAULT NULL,
+  `carga` decimal(5,2) DEFAULT NULL,
   `ordem` int DEFAULT NULL,
-  `observacoes` text COLLATE utf8mb4_general_ci,
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`idTreino_Exercicio`),
-  KEY `FK_Treino_TreinosP` (`idTreino`),
-  KEY `FK_Treino_Exercicio` (`idExercicio`),
-  KEY `FK_Treino_ExercAdaptado` (`idExercAdaptado`),
-  KEY `idx_treino_exercicio_treino` (`idTreino`),
-  KEY `idx_treino_exercicio_exercicio` (`idExercicio`),
-  KEY `idx_treino_exercicio_exercadaptado` (`idExercAdaptado`)
+  KEY `FK_TreinoExercicio_Treino` (`idTreino`),
+  KEY `FK_TreinoExercicio_Exercicio` (`idExercicio`),
+  KEY `FK_TreinoExercicio_ExercAdaptado` (`idExercAdaptado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -649,9 +798,9 @@ CREATE TABLE IF NOT EXISTS `treino_exercicio_historico` (
   `repeticoes` int DEFAULT NULL,
   `carga` decimal(10,2) DEFAULT NULL,
   `ordem` int DEFAULT NULL,
-  `observacoes` text COLLATE utf8mb4_general_ci,
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `data_modificacao` datetime NOT NULL,
-  `acao` enum('INSERT','UPDATE','DELETE') COLLATE utf8mb4_general_ci NOT NULL,
+  `acao` enum('INSERT','UPDATE','DELETE') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`idHistorico`),
   KEY `FK_Historico_TreinoExercicio` (`idTreino_Exercicio`),
   KEY `FK_Historico_Treino` (`idTreino`)
@@ -671,10 +820,10 @@ TRUNCATE TABLE `treino_exercicio_historico`;
 DROP TABLE IF EXISTS `videos`;
 CREATE TABLE IF NOT EXISTS `videos` (
   `idvideos` int NOT NULL AUTO_INCREMENT,
-  `url` text COLLATE utf8mb4_general_ci,
+  `url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `idExercicio` int DEFAULT NULL,
   `idExercAdaptado` int DEFAULT NULL,
-  `cover` text COLLATE utf8mb4_general_ci NOT NULL,
+  `cover` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`idvideos`),
   KEY `FK_Video_Exercicio` (`idExercicio`),
   KEY `FK_Video_ExercAdaptado` (`idExercAdaptado`)
@@ -809,16 +958,24 @@ INSERT INTO `videos` (`idvideos`, `url`, `idExercicio`, `idExercAdaptado`, `cove
 --
 
 --
+-- Limitadores para a tabela `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  ADD CONSTRAINT `FK_Agend_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_Agend_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE;
+
+--
 -- Limitadores para a tabela `agua`
 --
 ALTER TABLE `agua`
-  ADD CONSTRAINT `FK_idAluno_Agua` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`);
+  ADD CONSTRAINT `FK_idAluno_Agua` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `alunos`
 --
 ALTER TABLE `alunos`
-  ADD CONSTRAINT `FK_Alunos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`);
+  ADD CONSTRAINT `FK_Alunos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_Alunos_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
 
 --
 -- Limitadores para a tabela `assinaturas`
@@ -827,48 +984,63 @@ ALTER TABLE `assinaturas`
   ADD CONSTRAINT `FK_Assinatura_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
 
 --
--- Limitadores para a tabela `itens_refeicao`
+-- Limitadores para a tabela `convites`
 --
-ALTER TABLE `itens_refeicao`
-  ADD CONSTRAINT `itens_refeicao_ibfk_1` FOREIGN KEY (`id_tipo_refeicao`) REFERENCES `refeicoes_tipos` (`id`);
+ALTER TABLE `convites`
+  ADD CONSTRAINT `convites_ibfk_1` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE,
+  ADD CONSTRAINT `convites_ibfk_2` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `nutrientes`
+-- Limitadores para a tabela `medidas`
 --
-ALTER TABLE `nutrientes`
-  ADD CONSTRAINT `nutrientes_ibfk_1` FOREIGN KEY (`alimento_id`) REFERENCES `itens_refeicao` (`idItensRef`) ON DELETE CASCADE;
+ALTER TABLE `medidas`
+  ADD CONSTRAINT `FK_Medidas_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `pagamentos`
 --
 ALTER TABLE `pagamentos`
-  ADD CONSTRAINT `FK_Pagamento_Assinatura` FOREIGN KEY (`idAssinatura`) REFERENCES `assinaturas` (`idAssinatura`);
+  ADD CONSTRAINT `FK_Pagamento_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
+
+--
+-- Limitadores para a tabela `personal`
+--
+ALTER TABLE `personal`
+  ADD CONSTRAINT `FK_Personal_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
+
+--
+-- Limitadores para a tabela `progresso`
+--
+ALTER TABLE `progresso`
+  ADD CONSTRAINT `FK_Progresso_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `refeicoes_tipos`
 --
 ALTER TABLE `refeicoes_tipos`
-  ADD CONSTRAINT `FK_idAluno_Refeicao` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`);
+  ADD CONSTRAINT `FK_Refeicoes_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `treinos`
 --
 ALTER TABLE `treinos`
-  ADD CONSTRAINT `FK_Aluno_treino` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE SET NULL,
-  ADD CONSTRAINT `FK_Personal_treino` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE SET NULL;
+  ADD CONSTRAINT `FK_Treinos_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_Treinos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `treino_exercicio`
 --
 ALTER TABLE `treino_exercicio`
+  ADD CONSTRAINT `FK_TreinoExercicio_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_TreinoExercicio_Exercicio` FOREIGN KEY (`idExercicio`) REFERENCES `exercicios` (`idExercicio`) ON DELETE CASCADE,
   ADD CONSTRAINT `FK_TreinoExercicio_Treino` FOREIGN KEY (`idTreino`) REFERENCES `treinos` (`idTreino`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `videos`
 --
 ALTER TABLE `videos`
-  ADD CONSTRAINT `FK_Video_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`),
-  ADD CONSTRAINT `FK_Video_Exercicio` FOREIGN KEY (`idExercicio`) REFERENCES `exercicios` (`idExercicio`);
+  ADD CONSTRAINT `FK_Videos_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_Videos_Exercicio` FOREIGN KEY (`idExercicio`) REFERENCES `exercicios` (`idExercicio`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
