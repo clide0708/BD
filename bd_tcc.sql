@@ -84,7 +84,7 @@ CREATE TABLE `alunos` (
   `email` varchar(100) DEFAULT NULL,
   `senha` varchar(255) DEFAULT NULL,
   `numTel` varchar(20) NOT NULL,
-  `altura` decimal(3,2) DEFAULT NULL,
+  `altura` decimal(5,2) DEFAULT NULL,
   `genero` enum('Masculino','Feminino','Outro') DEFAULT NULL,
   `meta` varchar(255) DEFAULT NULL,
   `foto_perfil` blob DEFAULT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE `alunos` (
   `idPlano` int(11) NOT NULL DEFAULT 1,
   `idade` int(11) DEFAULT NULL,
   `treinoTipo` varchar(255) DEFAULT NULL,
-  `peso` decimal(3,2) DEFAULT NULL
+  `peso` decimal(5,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
