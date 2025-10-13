@@ -2,7 +2,7 @@
 
 Como posso truncar todas as tabelas do meu banco de dados MySQL (com exceção das tabelas 'recuperacao_senha', 'exercicios', 'devs', 'exercadaptados', 'videos', 'traducoes_alimentos', 'nutrientes', 'pagamentos' e 'planos') de uma só vez?
 
-SELECT CONCAT('TRUNCATE TABLE ', table_name, ';') AS stmt FROM information_schema.tables WHERE table_schema = 'bd_clidefit' AND table_name NOT IN ('recuperacao_senha', 'exercicios', 'devs', 'exercadaptados', 'videos', 'traducoes_alimentos', 'pagamentos', 'planos') AND table_type = 'BASE TABLE';
+SELECT CONCAT('TRUNCATE TABLE ', table_name, ';') AS stmt FROM information_schema.tables WHERE table_schema = 'bd_clidefit' AND table_name NOT IN ('exercicios', 'devs', 'exercadaptados', 'videos', 'traducoes_alimentos', 'pagamentos', 'planos') AND table_type = 'BASE TABLE';
 
 TRUNCATE TABLE academias;
 TRUNCATE TABLE agendamentos;
@@ -15,6 +15,7 @@ TRUNCATE TABLE medidas;
 TRUNCATE TABLE nutrientes;
 TRUNCATE TABLE personal;
 TRUNCATE TABLE progresso;
+TRUNCATE TABLE recuperacao_senha;
 TRUNCATE TABLE refeicoes_tipos;
 TRUNCATE TABLE treino_exercicio;
 TRUNCATE TABLE treino_exercicio_historico;
