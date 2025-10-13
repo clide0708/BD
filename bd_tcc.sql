@@ -17,6 +17,8 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
 --
 -- Banco de dados: `bd_clidefit`
 --
@@ -358,6 +360,26 @@ INSERT INTO `exercicios` (`idExercicio`, `nome`, `grupoMuscular`, `descricao`, `
 
 -- --------------------------------------------------------
 
+--
+-- Estrutura da tabela `exercadaptados`
+--
+
+DROP TABLE IF EXISTS `exercadaptados`;
+CREATE TABLE IF NOT EXISTS `exercadaptados` (
+  `idExercAdaptado` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `grupoMuscular` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `descricao` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cadastradoPor` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`idExercAdaptado`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `exercadaptados`
+--
+
+TRUNCATE TABLE `exercadaptados`;
+-- --------------------------------------------------------
 --
 -- Estrutura da tabela `itens_refeicao`
 --
@@ -1065,3 +1087,4 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+SET FOREIGN_KEY_CHECKS = 1;
