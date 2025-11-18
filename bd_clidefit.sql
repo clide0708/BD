@@ -1,61 +1,141 @@
--- MySQL dump 10.13  Distrib 8.0.43, for Linux (x86_64)
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
 --
--- Host: localhost    Database: bd_clidefit
--- ------------------------------------------------------
--- Server version	8.0.43-0ubuntu0.24.04.2
+-- Host: 127.0.0.1:3306
+-- Tempo de geração: 18-Nov-2025 às 07:52
+-- Versão do servidor: 8.0.31
+-- versão do PHP: 8.0.26
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
--- Table structure for table `academias`
+-- Banco de dados: `bd_clidefit`
+--
+CREATE DATABASE IF NOT EXISTS `bd_clidefit` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `bd_clidefit`;
+
+DELIMITER $$
+--
+-- Funções
+--
+DROP FUNCTION IF EXISTS `calcular_distancia_aproximada`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `calcular_distancia_aproximada` (`lat1` DECIMAL(10,8), `lon1` DECIMAL(11,8), `lat2` DECIMAL(10,8), `lon2` DECIMAL(11,8)) RETURNS DECIMAL(10,2) DETERMINISTIC READS SQL DATA BEGIN
+    -- Fórmula de Haversine simplificada para distância aproximada em km
+    RETURN ROUND(6371 * ACOS(
+        COS(RADIANS(lat1)) * COS(RADIANS(lat2)) * 
+        COS(RADIANS(lon2) - RADIANS(lon1)) + 
+        SIN(RADIANS(lat1)) * SIN(RADIANS(lat2))
+    ), 2);
+END$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `academias`
 --
 
 DROP TABLE IF EXISTS `academias`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `academias` (
+CREATE TABLE IF NOT EXISTS `academias` (
   `idAcademia` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_fantasia` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `razao_social` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cnpj` varchar(18) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `telefone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `endereco` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `foto_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `sobre` text COLLATE utf8mb4_general_ci,
+  `tamanho_estrutura` enum('Pequena','Média','Grande','Muito grande') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `capacidade_maxima` int DEFAULT NULL,
+  `ano_fundacao` year DEFAULT NULL,
+  `estacionamento` tinyint(1) DEFAULT '0',
+  `vestiario` tinyint(1) DEFAULT '0',
+  `ar_condicionado` tinyint(1) DEFAULT '0',
+  `wifi` tinyint(1) DEFAULT '0',
+  `totem_de_carregamento_usb` tinyint(1) DEFAULT '0',
+  `area_descanso` tinyint(1) DEFAULT '0',
+  `avaliacao_fisica` tinyint(1) DEFAULT '0',
+  `cadastro_completo` tinyint(1) NOT NULL DEFAULT '0',
   `status_conta` enum('Ativa','Inativa','Excluida') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
   `idPlano` int NOT NULL DEFAULT '5',
+  `treinos_adaptados` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`idAcademia`),
   UNIQUE KEY `cnpj` (`cnpj`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  UNIQUE KEY `email` (`email`),
+  KEY `idx_academia_foto_url` (`foto_url`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `academias`
+-- Truncar tabela antes do insert `academias`
 --
 
-LOCK TABLES `academias` WRITE;
-/*!40000 ALTER TABLE `academias` DISABLE KEYS */;
-/*!40000 ALTER TABLE `academias` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `academias`;
+--
+-- Extraindo dados da tabela `academias`
+--
+
+INSERT INTO `academias` (`idAcademia`, `nome`, `nome_fantasia`, `razao_social`, `cnpj`, `email`, `senha`, `telefone`, `endereco`, `data_cadastro`, `foto_url`, `sobre`, `tamanho_estrutura`, `capacidade_maxima`, `ano_fundacao`, `estacionamento`, `vestiario`, `ar_condicionado`, `wifi`, `totem_de_carregamento_usb`, `area_descanso`, `avaliacao_fisica`, `cadastro_completo`, `status_conta`, `idPlano`, `treinos_adaptados`) VALUES
+(1, 'Evoque Ribeirão Pires', 'Evoque Ribeirão Pires', 'Evoque Academia - Ribeirão Pires', '45345345345344', 'evoqueacademiarp@gmail.com', '$2y$10$EsJG9y2oR8DvJKjrB1EI2OdWEuqwqwJthM3/3GVDymzGk5RuSxhsK', '11940028922', NULL, '2025-11-18 03:28:08', '/assets/images/uploads/perfil_1763447155_691c11738fc7c.jpg', '', 'Grande', 150, 2019, 1, 1, 1, 1, 1, 1, 1, 1, 'Ativa', 5, 0);
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `agendamentos`
+-- Estrutura da tabela `academia_horarios`
+--
+
+DROP TABLE IF EXISTS `academia_horarios`;
+CREATE TABLE IF NOT EXISTS `academia_horarios` (
+  `idHorario` int NOT NULL AUTO_INCREMENT,
+  `idAcademia` int NOT NULL,
+  `dia_semana` enum('Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado','Domingo') COLLATE utf8mb4_general_ci NOT NULL,
+  `aberto_24h` tinyint(1) DEFAULT '0',
+  `horario_abertura` time DEFAULT NULL,
+  `horario_fechamento` time DEFAULT NULL,
+  `fechado` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`idHorario`),
+  UNIQUE KEY `unique_academia_dia` (`idAcademia`,`dia_semana`)
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `academia_horarios`
+--
+
+TRUNCATE TABLE `academia_horarios`;
+--
+-- Extraindo dados da tabela `academia_horarios`
+--
+
+INSERT INTO `academia_horarios` (`idHorario`, `idAcademia`, `dia_semana`, `aberto_24h`, `horario_abertura`, `horario_fechamento`, `fechado`) VALUES
+(14, 1, 'Domingo', 0, '08:00:00', '22:00:00', 0),
+(13, 1, 'Sábado', 0, '08:00:00', '22:00:00', 0),
+(12, 1, 'Sexta-feira', 0, '08:00:00', '22:00:00', 0),
+(11, 1, 'Quinta-feira', 0, '08:00:00', '22:00:00', 0),
+(10, 1, 'Quarta-feira', 0, '08:00:00', '22:00:00', 0),
+(9, 1, 'Terça-feira', 0, '08:00:00', '22:00:00', 0),
+(8, 1, 'Segunda-feira', 0, '08:00:00', '22:00:00', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `agendamentos`
 --
 
 DROP TABLE IF EXISTS `agendamentos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `agendamentos` (
+CREATE TABLE IF NOT EXISTS `agendamentos` (
   `idAgendamento` int NOT NULL AUTO_INCREMENT,
   `idPersonal` int NOT NULL,
   `idAluno` int NOT NULL,
@@ -64,56 +144,43 @@ CREATE TABLE `agendamentos` (
   `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`idAgendamento`),
   KEY `FK_Agend_Aluno` (`idAluno`),
-  KEY `FK_Agend_Personal` (`idPersonal`),
-  CONSTRAINT `FK_Agend_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE,
-  CONSTRAINT `FK_Agend_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE
+  KEY `FK_Agend_Personal` (`idPersonal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `agendamentos`
+-- Truncar tabela antes do insert `agendamentos`
 --
 
-LOCK TABLES `agendamentos` WRITE;
-/*!40000 ALTER TABLE `agendamentos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `agendamentos` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `agendamentos`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `agua`
+-- Estrutura da tabela `agua`
 --
 
 DROP TABLE IF EXISTS `agua`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `agua` (
+CREATE TABLE IF NOT EXISTS `agua` (
   `idAgua` int NOT NULL AUTO_INCREMENT,
   `idAluno` int NOT NULL,
   `quantidade` int DEFAULT NULL,
   `data` datetime DEFAULT NULL,
   PRIMARY KEY (`idAgua`),
-  KEY `FK_idAluno_Agua` (`idAluno`),
-  CONSTRAINT `FK_idAluno_Agua` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE
+  KEY `FK_idAluno_Agua` (`idAluno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `agua`
+-- Truncar tabela antes do insert `agua`
 --
 
-LOCK TABLES `agua` WRITE;
-/*!40000 ALTER TABLE `agua` DISABLE KEYS */;
-/*!40000 ALTER TABLE `agua` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `agua`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `alunos`
+-- Estrutura da tabela `alunos`
 --
 
 DROP TABLE IF EXISTS `alunos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `alunos` (
+CREATE TABLE IF NOT EXISTS `alunos` (
   `idAluno` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cpf` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -122,18 +189,23 @@ CREATE TABLE `alunos` (
   `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `numTel` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `altura` decimal(5,2) DEFAULT NULL,
-  `genero` enum('Masculino','Feminino','Outro') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `meta` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `foto_perfil` longblob,
+  `meta` enum('Perder peso','Manter peso','Ganhar peso','Ganhar massa muscular','Melhorar condicionamento','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `treinoTipo` enum('Sedentário','Leve','Moderado','Intenso') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `foto_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL,
   `tipoPlano` enum('Básico(Gratuito)','Plus') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
   `idPersonal` int DEFAULT NULL,
+  `idAcademia` int DEFAULT NULL,
   `status_vinculo` enum('Ativo','Inativo','Pendente') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Inativo',
   `status_conta` enum('Ativa','Pendente','Excluida') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
   `idade` int DEFAULT NULL,
+  `data_nascimento` date DEFAULT NULL,
+  `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
   `peso` decimal(6,2) DEFAULT NULL,
   `idPlano` int NOT NULL DEFAULT '1',
-  `treinoTipo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `treinos_adaptados` tinyint(1) NOT NULL DEFAULT '0',
+  `cadastro_completo` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idAluno`),
   UNIQUE KEY `cpf` (`cpf`),
   UNIQUE KEY `uq_numTel` (`numTel`),
@@ -141,29 +213,37 @@ CREATE TABLE `alunos` (
   UNIQUE KEY `uq_email` (`email`),
   KEY `FK_Alunos_Personal` (`idPersonal`),
   KEY `FK_Alunos_Plano` (`idPlano`),
-  CONSTRAINT `FK_Alunos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE SET NULL,
-  CONSTRAINT `FK_Alunos_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  KEY `idx_aluno_status` (`status_conta`),
+  KEY `idx_aluno_meta` (`meta`),
+  KEY `idx_aluno_treinos_adaptados` (`treinos_adaptados`),
+  KEY `idx_aluno_data_nascimento` (`data_nascimento`),
+  KEY `idx_aluno_genero` (`genero`),
+  KEY `idx_aluno_foto_url` (`foto_url`),
+  KEY `FK_Alunos_Academia` (`idAcademia`),
+  KEY `idx_aluno_personal` (`idPersonal`),
+  KEY `idx_aluno_idade` (`idade`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `alunos`
+-- Truncar tabela antes do insert `alunos`
 --
 
-LOCK TABLES `alunos` WRITE;
-/*!40000 ALTER TABLE `alunos` DISABLE KEYS */;
-INSERT INTO `alunos` VALUES (2,'Enzo Krebs Silva','46404867826','592819954','enzokrebs8@gmail.com','$2y$10$.Z3h8OKPkc/mcsZ.WhDmm.Mh0Wl2sHUe751qfOQD/z78tuGd67p8.','11933572695',177.00,'Masculino','Ganhar peso',_binary 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAMgAyADASIAAhEBAxEB/8QAHAAAAgMBAQEBAAAAAAAAAAAAAQIAAwQFBgcI/8QAQRAAAQQBAwMDAgUDAwIGAAUFAQACAxEhBBIxBUFREyJhBnEUIzKBoUKRsQdSwRXRFiQzYuHwFyU0U/FDY3Jzgv/EABoBAQEBAQEBAQAAAAAAAAAAAAABAgMEBQb/xAAkEQEBAAICAwADAAMBAQAAAAAAAQIRAyEEEjETQVEUIjJhQv/aAAwDAQACEQMRAD8A+enlMPKFIgLk2gGUUaUrCADKIwiBlRUGu6KgxSZUKMInPCOPCPdAAiFKRAQQfyjVZRA7o/fhQDsiAiFKQThMgAjSCDlEDuoEwHZUAc5RrwjSNeEAr90w4UARARQClJ9oS154QRoRPKnKYDGUVOSi3ugOUR4AwgIRpBNygne0RzagCNIIoeM8o12RAUQO6nfCOEPsoIOVYkHKdUQBREI1hVAKgCiICKBFn4RpEDlFEKMlFQogKNQtIluFKxhG7UVWQgrKCRwo/CiFpSuUUFFAhCsoqFQLSnARNWgghKXyiR5RpQJWQieEUDlNqFd1KyiOKU+6UL5QKYIeVBDkod0R5QOVNg90DkFE+EOMKgFKThMR/ZAjOE2bKeUO6cjwlIOVEs2hHlQDlTsp9klWJwlPCb78oEIbAWOygyDwj2woBlCgeyhRofZQ+Fd7NlrhKU2VCADhT4mtE/hA8p6soEZV2uw5QCJtDtZUT4lUoefhE/CVVUd2pAhE8IFAbwgOUODwiLtUMAgpm0e3ymwCEPCKHKuxO6KHdH4QYR8qUoiFtzHKP7oD4RAQMBahFIolUQIVZRHCgQQg+UWqc/ZFBEeyAtHPdVRCav7JU4+VESu6hCPCNcKAUijSNIBWQmUHCYBUQfZEI0iBaqhQtMO6hQHdFQ+FAKOUe+UeeFACAiB2CIHkI1hAtIkeEaFohAAM5TUo0YCPelUQDhHuoBSKKIwEKsKdkwCgUijlEqFQDyiIP1JwlAynQRGsIUiqgUAiFEUE8oJqURUA7qEWoCocKNIgcJrtClEAoVZymPKDsZWQjh4SuCsGeEpUVXm/hC/KdKQgHZSqyjWVKyoFpSkVKxhFA4CHYJq8qVSgSqKhTfKCAUp2UKigBQrhMUvIQQeVPspwp90AKGEeVO6GgrKHZNWEENl+EKKbCBFIABRUJChvsichAtof5THKBGUXYHjjKnblQi8qImkBpQooYPKqlukCO45TUECcqJrRShlNXhCkPoHm7Qx3UzwEazlBKBQGFPsp91RCSgOUa8IigiAcqKE+EEUVEBwoQVQe6iGUQqMYyLQ4UZ5TcrbmjeEcqBGs4QFEpfsmA4QEKDn4RPCgRERBQAo5UoqroyNIXwi1ARyioioJab4ShHugITA/2SgpgiiDyiCoAiOENGCPwhfZRVRCKiIHfuggGUawpWUVAKpGso2FO+EEAUARHyjWVUCqR72j8IgKhe+UwGFKRQCrRARApRQRS6URI4VQOxTdgiAEwwilv4RH2TIIgH4RCKg/lACLRrCgTHhFKOMKKZtGlF2BApTAGUUCoJaQ8hPhK4LCgHUl5ypSH3RUPCATFTirUoSs5QPwrCQltQKoEaRFIEKNI13S5QQoXaZD91AKS2PCY/dAiwgB8Id0T8qVhQISonIQ7IFvGVO6PCn3pUC80geOEaQrlBClJ/sm4qkDygF2SEMUmrKB/hAAcEqE4Uo2pY5KgHZC+yKhVNlIU7In91FALQKP3U7KhSUOO6YC1HBAh5rsoQiiRwqFCFeE/CHygAHlREnsFMIF7UhaZQ/KBbAwjyUAUb8IC6qQCChKoy8H4RChyoujmKYZQATAdkAquEwQpMOEQDymHCA5RwqARlEfChFhFVRAyopVhMoAEbUpGkA5TtGLKATDhFAjKZtIgKVSgPIpSq7qAWmIRUF8pmj+yjcDOURgKg1hREcIXlBAUTlDuiOVBAOE3YqDlEcoiAcI0ioqJWeERwoCUc2qIMKBRGkQAjSNWoMoACbTAIAZTgIAEQFEzUAUCJUQCkwCBRQRSlERgopas+ETgokBBRQQNIqEWVmqXIUOQihSyEQITHlSuyilJxSBFpy1AhQVmwl+6Z58INu/hBCmHCDxSDT2QMlTBBRQ+EKwiQh9lBKQpG0OUApQg3aNKFAvZA8Jip2UCkZQPCfsgcjKIUkoJqCBGVQOyU2nIS1j7IBwELtMhtsIoWgRhNtyocIF7UhSYcoFNIFIbUyhQLSgH9lADaYj2qha/shdonshSACh2Q7co8oEIJ90M8InjCFoIRX3UROUEAtBHlAeFRKsWoMKcYQP2QTupSKHyqM3KNIfZEELo5mCI4Sj90bAQMEeEAU3dBAoB8IWmHCogwVAUQCSjt+FRBymCFIoILRAz8oqBRUAPhH7ojlH7qCBOlHKZFTujX90KTAUiCAFAKRpRFQHKndGqCnB4QAHHymCW7tMOEBtTj7qcohEEfKIwFO6Io9lUQIhQYRvKCI/dAFTlUEKd0QjRtBKRCigyglkphwlsAIoDeVFFEBUU7IIDnsjlBT5RpFOyF5TH5UoXsooUFhUQKhQ+yiohZRKCgBJU7InikqgWgTlMcDCB5Q+6gV1lAco83SjRhFMCVMoFRQAqEI88qIFPCnZFDjlQQ8IAIo/dArgoih90AQKJQpBKwp91FOyAHKUfKbugcIB3U/yj2QvGUAKHfKIR7KhOVKUHPyp90E+/CHdAgeUeVUG7KF2gDahCAHKnApGkpH9kE7oFucohA88IBwlIs2mpQ8IJ/lQIY7qGuAgKXgo9kDRwgFf3UookBDN/Con2UpQ2DhA82VRmHCKAxyjVro5j2RF91EeUERHNKBFAwA7o1jBSgFEKgjhEXSIRQQKcKVZRAtUEeUQoLRUUaRooFGsKKgophdIAWmaCiIAmyiiMooZpGvITeAgcIAETxhS8ooFA7o4TUptRAHCI5ClKBEMKtEFKiEDD7ood0eVRLRAUARVBRvhAI0gKCiPdAR8qIFHsip3RpTsoggCKCGfIQ0gI+yBcC/bY8rkde6jLomwtbCXmWT0204DNXz24WGLqWo00jXazp07GO/rH5g/hRY7z9VGwkFwBHyufq+vwQ6r0YY5NTJVkR1Q+5WLq07H9M1GqhiDi2M04HuuN0rpxjhjM0npyvG7yHA9ior13Teqwa8ubGHNe39THchdDheE0M0X/iTTfg/buaWybTjC9zuFgFZoNWoULF4RUUEp5RJpVvftFmlKCXDslNnNqtp9pPfymD9+BwFk0g55UP6U4ApVTEtAKGljRTaUUuwoMhRU7IfdG1O1qAFABFRBO6BCKmEC0pyUeVPCCIIkZQHgoFU7IkKdsoBRQRHwEOOUEOEpxym5QPOUCqInGVP3QD+VCj/CHP3QKUE6UfCCEBADwmNpaQLwp90UOVQEeVPuoeVUClEyS6KAKUe6b5QJQLSCY5GUC3AygFUh3ROFEEtBQ4UGeVQCLQ2phgIKjMMpvsgccIjhdXNAjxhQfdEAWoCoFKymAQSs/CIUCKA/ZG1Ac9kQqJalIhMioE3Ype6YcqKI4RaFPCf7IABlNSA5TIaSu6KHik1KKlikEaRIyqiIFFT7oAPlEcpiMKUiJ2UrCJCNZRC1ZwmApEIqgV5TDlCkw5VECleEO6cWgFqE4UpK45pAdw8FEFBovnhMBnCKime6hOUrpA05ICB6H7o0KVJnYBfKDpwwW4hrfJwhF5+FW9+1cXUdZMkpj0UTpDxvcdrL+642v1HX2Az/AIrRY4ia27/dRXp+oQQ6qH0tVGJWmqae3yuB1XSM0zd0Gvn07QMNcd4/ZYeg/VQ6zMNM6IRTEW4l2BXyqtdO3X9Ybo55iNPA3e8s5c7sEoyaodQl00gbIx0bm+8NIG77hW6XWaV8Al1WqMb2jaYn+21o1Wk6XtM8QMJAoBhO93yV5vqmmJia4hzS7FPFfuppXsei6XTOMmu0c8LRVMBNH5W2P6t6SZ/wmo1LRPe3cB7b+68D0/qrtD0afTxlv4gOLAHDsV5r03k7Q0uf3rlNf1Nvvgm9oLSHNPBHhW+q0ttptea+mC7TdM0jNRI53qR2wO5Hwur+IbG3dftAsrDTW+cOYasHsCsbtS1zg5zhtGHfBU1PUIPwxkkpgYA4h2LHwvm2u6vJL1Fz9FNI5hd7hWK7JrY+kGYOfQf7OaWuNwLaHA7rxfR/qOMxkaqEY9pce3yrurfU8eija3TvbPLJ+hjDwpYu3sRMCdpNOHKWQ2x1Hsvnmm6h1/VP9+qg07Cc20WP3Kumk6nE0/8AntzvIIpT1qbe/B9oPlRrqBul4GL6g6hontGsidJFVbv/AJXpun9V02th9WB9mstJyFNaXbthQclUwyh0YI5VjSSfCgbsgpw5G1BLUICFWplBCEEe6JHhAqFZR7oZQRAg8pkD8oBhTFIkIBACgaITd1P5QIeMBCk/CBQJtUqkfsieDaBOxUv4UFm1EE5Q70j9lOyAIc8BE/CmSFQrq/dDujm0MhVEPwgUSfKFoB2UtEoAeeEANBAc5RIQpBOyHdMAUpBQAnKlqAWiAkAAUFqBQYK0M4RQATYXVzAWmHCGKTBQSimCARAyqCjXlSkQgldkRgKDCKKIRHCKlKKICI/hAXwnaQMIBwnHlKm8KKITAIBN9kEClgKKUgPdEcqBHCCUoAiEQFUQKD5R7/CKIUBMEB8pqRACKgUPKoKlZU7KKiHBCYoEWoD2KKP2Vbv1gJ/0qpzh6gLjQq0ItOENw4HK8tq+ra/Xa/8AD9LMcEbf1SyNv+ys1E/Uekhms1Mker0IIbLTNr2X/V9kV6bAwTgqmRwaQQAQPKV8rHxxuY8Oa8WDa859YdWGhjZHE73ubuJaoKvqLrUhf6OllYx4cPaMrg/jNXvMk8xkA/8A3DgfYLzup1s+pc54HpgnHk/dTUacsjbLqrkd2s4H7Km3U13VtXqjsdqQC3gBwXJPUJ2SAzSPezIIB5Cp0mpjhkcXR2D4WVz2uceaPnsrpNu9qdKzpuij1um97JXBu0c1V/8AC5s3WZmvmkga1hlAa4lt4+ERr5CyKOR26GMEBvzVLmytIjL9uLpJEtbdJr9dPI3bqHmRvGV6j0eqdc0kQkfG57MNc4bTjsV5DSaYGP8AEMeGhruCaK9NpOt79MYY3e6sXg2s5S/prG/1yOu6WWLU7pmBrxg7eD8rofScmlZqnz61ttApju275XO6lq3vkLTfySud6hDSwWG81autxN9vRdZ65M/UfkO2hh9lHDfsuro/rTSNhj/FMlc8t/MDWjnyF4Zzg6q57qMeIZmu2teB2PBU9Ie1en6x1v8A6xJHGwPZCDngGlr1v4TSRw+m6IxkeboLg6eaJmtjkdRie3aa4BKy64btU+v0g0Psppdunq5YRE58TtzLoDuuYXOIEoDqbi/CqeKaK7+FXc0h2NtzeaWtFrSNS/cHOe53jcbW/p2r1D52sj927kE0FxRyQRVdlu2mPTwytDmuPuDlLEj6BpJJdd0kCVtOPAOeF53qu7oPVIdTpWljHACSO8Eru/TmobqoIowCS3ALuyx/WmlDtE57qBY7lc/209f06YSadk0Xuie0O+1rohzXC2leM+j+rMZ9OwsncC5hLa7kWtrOvgS0Iy35PBCxZ209KSCc8oF+abdrjwdRdMC/bcXkkLVotUyXf7S1wKmhuZIbzSsD7wsJma5/sPBpw+VeJWh4F4UGnkqWhYJwiCgCh8oqIFrCiJSu4QAHdaPCDBQ4RKBTyp2RKgFIFUUJyj9kC0gcpqUqkC0pSOO6B4QKf5UARKgQAjhRNd1aHbhAAED8qHwgflVClABNSlZQLXcqEIk5UVAKU8pih3QLV8olS+cKWgXgKfdE5UP2QAUh3UrCOK+VRmvsiOFByourmakQMWhyrAqAE37IIgKiJhyhWUe6AjlEcIAJmVeVKqApgh3RbSjQiu6cBLSNKAgFMPlABGggIRHlABMMIIB5RUCI4QRTlEBEBBBZRClIlUT7qVlQDCNIyKiPZTuqJ2QRtQgFETsocJMh4Fik3dFEcIgXaqYd2537JmktNDv5TanB7FYOpvDInEGi1hWyR5ZGXPoNGSV8u+sesah3UHRROLWub/CD1nT36WJkxe5gBb7SfuuJ9QfWEMGjl0OjjE0kg2uLstr/ALrxbNfqdPDJF6hMb+zsrDGfdu7hXSbeq6b1XVaDSB2q1Jca9sZFgLLrtbrdWTIXNDKuxjC47GP1LzI9+G912G/mxBttaxgGEHNinjLgJQ4tH+3lDUyulPp2/YOGv5Cu1EWnaDgiS+3BCodM0nABA/hUZZRtPFV2VTuQrtU8blUxu8HyFUWPIoVyq5HvMbWA+0Hd+6YRkZN0oWAAUAEFQLg0t/pOaRbYraVb6I2bjKwH/aqrLcWEQHlx7pLJVjmEtuwR4VLnEn7KixmHJjnNKtjnNcHNNOHCt373Enk5KCxgLY8mgT3W/Tx6J0Y/E6x8b+4Av+y50kj3tYwtG1goFGL3NaK94N38LNXbfLFADuisxnDSRRKpe15hkfFcenDtuf6ingufZFO7bC1xcSOSV2/yOoPYHN2aWBtUOXfAUt0utvMOjpoIFA91og1B9L0pHEsHF9lo628esG7dhHDPA7LltcA73Cwr9R1undWm6fMTpnW3wV1eo9Tb1PQvEjwxjB7h3d9l5QUSKC2x6czaeSUE0zBaB5WbjFlek+k59BFp905Yy3EBrjla9f1zp0Wskja0EVggWLXjJNO9szWFji41Vd/svSaromm02nidqfUZMf1sdghYsn1qbdDU9Qhi0X4mIltfqYP6keg9fjGjd+L3XeHDsuVG3pY6ZKw726sP7Gxt8rkSbY3ljJA5hyHDCTHZa+ldP1TdXK1+ncDGTmsrvhjPToZJXxrp/Vdb0gn8M5u0my1w5Xvvpn6r0ut0wbqXsh1INFjjV/YrOWFhK9Q1tDvjCUvcHVVpIp2TOdsP8q4PaVzaO1wI+UzTfCpNNJJ5CZrxf3QWpX4BKa8YSPzQQEWp91OFCgClKYUQBQconCiBSEpTk1wl75QAoUiiBlAlHso2wPurOEOyBUKxaY8qHikCWpXdFQjsgWj3UHhE4QPKBSLQpPlKSb+FQHIJq4QQA2QlqgmOVO2VQtYwh2TFDm0QAFC3PKCIPhUZk1IIt+V1czd0RygDlEFUFqZAcIqiDlN3QATAKCYpEDuoBhEDOVGolWmGFFAEUwpH5QaESOFAeeEUAEwygIUpQcohAQMIhBG0DX2RCHhEKgqclD9kwQEBRQIhVEClIqKiUlfYBoWmQKgxyFz2lt0/wcJI9YyP2zuogYPlZOt6j03xxk7Wk5I5Xm5JZJpnEuOwC7JyoumnU/WUeh14hki3RMeWuc0916fR9Rj1gb6IORfyvkvUI71Mxo+nK68+V6b6dkgGjG6ST8Qw4I/wqj2upeZPY3cCeK7r5T1t7NX9V6jcfy4RtN/H/wAr2cvXXRs3uaNzRWT7h8r53rXR+vJLC9znyE7ye9m0hWLWv3SPIoAnAS6dli+15QkrdR/ui0uDS2sLbDowGIgtbx3Cd0zBA71HWRwByVzIpCyQOZ+pM5zi4WbPhTTW12r1ZkfbWgNqgsxcNvNFNqSA4bWkClmL80RlXSbXhoeACQtbdINNE2R8jHh39Lf1f2VGnaJHgkGr4C7GkYx2obNLE+No/qe3AWbVk257Q7UakARubHxkL1Ok6Ho49O6TUamNzwPbGBRXP60934QuY9z4xRLgKXnXal0Zpksn75U7q3UW63TxidwjfTflYnsoc2U8k5lyT7koNjwVtkjxjCVjdxrutTGjZuJH2Swwlz/hDTOGuJwCrGtIOeV2tBoTqpGNl/I0wPvcAteo6fpZZCzTF0UQFXzansunnww7S6rrlT1Gs5wtUsELDI1ssn9uSsc0fsBHPdEXMPqkW4BqubrJYCfQO13FjlY4tQ+Agxe2hVkXZTGXeC4kX8ILY4H6iQ7nNb3dI44H/dZ9Uxkcm2N4e0dwbU3Fx9+R2CpeSXcAfAQOy+2FdDPJDITG4ixRHlUR5IHlXHbDJtcLcqN+vmbO2F8D3NexoDgTm/hL1Dq2o1j2u1Em52wAnyQsjpPzB4PxSksILC9lkA0po2pMnvuyVZG8EmznssrsFBXRtsmdYpNpY45QWyO2P/pJ4/dZdxPC2aOBk0oD3iNtWXHsoO/9KdZfp9Q3TPe4Vhji6xfgr3ui1omZuc4l15XyXUtEctQBwaOHEZPytHTOqanTSAOkcWXkd1yyw323K+vuk3kNYcnm1okaRHghcbpuob6UT5MlzAd33XYYd0Yo2uTTSK2jOEoy5JvpmE8YIblQMcpaT0oUC0ooVEAQOCmUKBAP7o0jwh35QABE/CgpQoFoqdkxCA+UC91ETVoIJXlD7InhLdFASldhFA5ygCBNYU7qEd0EtAooFUKOULoI8od1RDyp3UKhOUiBhD9lLQpaGccJgMIIjsujmYDCasoBEcYVBGEVAp3VBRtTwiVFhgilHKYI0PAUGSp+yNLIZMeEgHdN/hBADSYNShP8oC1FAYTWgHdMEEw4QEIhL3TBaB5UUpFEQBGkOUwVEARpQKIChVolLuoElQcDrb4BM9s5FBpcP2XAjlZJpY3tbTXHIOLC6f1g8RxmQii5obdeSuT1r0dP0mL05AH7288orn9Y0zZoJDE0tLTlvz2K4/TeqSaSRwDS95PtA5Ct6x1CSJzYWv3PkAJIXIi1c2ic50YZ6jhy5tkK6ZrXqNfqZ5Xgx28+eQueTtcQee61nXvm0T3SNaJBy9oq1yRukksmyVUrs6HRR6rSzkPHqVYBKzPnjlYxsjKezBLeCruhxCXUvjMgj9t2TSyyCpHe01Z4Cik9B8jh6dAngldbRdB1moYX1vb3IYf8rDptT6D7c0gfZdqH6oEMLmNdLuIobUv/AIRzepaNsLAxxe14PAbj+65z4oWn2k/urNd1CXUu3SOP2WeIF5APcrUSt3TWOM42yGPPIFr0w6kYIHttr3kUXOHZcLRMDqZ6jYYrzIRZwtuqghdKYopI4NMG7i97rcVm9tS9OVrZ3SONO9vgcLnPNrZqzAH7dOXlo/qfgu/bsscgAA9wyOy1GaqqncqE05Q5UDS54aOSrUaIQXVZoLfpHMieG7HH7FV6bRPfKyJx2uK0nTTaTUubLGW+D5WdtSOo14eAxxMenGXZySuLr9c57jHB7YRx8rQ4GVgab938rNqtJuDXMFHghSRaxh7vNhO12QSLb3CG0D9GfNoPJIAB9oWmQJADq/SeyfTtjkO0hsY7uKqcLBCznlB2I9Lp3NcGSse//eQQR+yzyaJ4jkea9hA8XfcLJptRJDIHRODXDg1a6E/UptbI12pexzwKsNDf8KDM2I3VZ+Es9ukz+ql1pmu1Gx+lhJkAAAZ3Kz67R6uLa/V6cxuOb21/dUZo9JLNEZGWQ3kuNLMXyMtu87fC2nUN9MxuaT8//Cwu9x+UKqOShWVZVFPG3dwEQrQ0Cxav0rz6zRj91Ngb7e5VFuBJHIQdN+rDZQXjcB2VskMbT68eHXbWkrmROAkaXi8jC166QfiZI2EFjTQI7rNjT1f0p1kyB2j1IcHBpIdWK7L2PTtSz0WRb2+qchocLP7L5IJp3v8AZJsJG2x4V3TNLqp+tQs6cXP1DXA7xwAObKxcN9tSvsg3Fw2i6VgcXXwB8LNp/Ujip3JFF3ytcLA2MVlcGjx3tFpkAjhAO6FI91CgBUKihQKRhKBlOUEA44QFFNx9kAPKCEjygUSEBygn3QdkJilGECqGgio7wgUlC/hFDugF0gUfhTF/CoHCUpjygqB80gQj9lO6BfhA/KbAQPwiFUHKlUocFaFA+Uas2gEW/K6uY0mH8I0p8BVUrGEwSj54ThF0iZueEKwiPlRRTBDujwFKDwp3U/wjyoD9uUUAjhAQmHCUJhwgJRAUCIQRMEMohUEIgoIqgqFREKogTBLXhMggPlEIdlBhA3ZVTvAZwrLVTvcSFB5z600/q9Na8WPcLK8n13/zHStPMyPbtdyO9L3PX4w7QSxSvYy+HOdQtfMuq9Rli0junhwLmvLtw8HsrC1zuoahup1ofCzaCk1sbgwGQ2TxjhW9NdCNR+c2mhpz8peqapuqmqIERMw2+T8rTLLHZjewn2HP7oxQbX2XBoHhK0ELRGwvBxgDjyiN2ig07mO2uZvP+8q90f4ciQxNc3j34pc7S6CbWH8kgOHIcaV34/UwQO0s7t7AdrmuHH7rLS2efRSTbpINh/8AabC5+qGkY9zoN4J48JNRRkBaAAfCDI2zgjwLWtDG8u3WOfK0w2WbjkhVOaG3QwrIHkCu3hVmOhCXEMjAH7qyTUsgLnei2Wbi3n9P2VDS4kOILRYAKr18YilBYba4XystMb3WT5VPdXuYaJAsqpo3YpWM0jeVr0LGepvkFkGwFp6d0mbVhzw6JjG87nUf7LM4/h3YFkHulWRsm1s3qk4Dh3pUN1M0r3erK51drwqZ9RLqngbPdVDaENMGxzfmWQRRpRdupHKCWg1YbhYdTqTJd4N0QtL3erA0Aj2jlc17HiX3NP3SFPGwPNkkFWmNrY6BtyeBskjS1jdrB3KEm2EbbLpT44CqM5HKbRw6eSZo1MmyPua4Vcjtra7lVWqjrdQ0nT4XkaOUzNqw7NLlFpBNA0O/ZGKV7MNOPC7cbdPqembC4teZAewBKiufoOpT6GZkkTst4wtms6jrOsagOllbuqvcaCw6zRPil2NaXDsRlZDuYcEhEdHVaV8FesY3E92OtZ9jt1RsJPwFQJpO7yfvlbNHrPSnbM8WG/0juUGZ0UgBLhQHNp9PKWNLA2yTfCd8rp5HSSZJNntajZRHvdQ9Z2GnwilL7kDj2QcBu3Hug+OWIAStIJzlLG/YbLdx+eyIjRbrPlFz7eKGFbJOJIY4mMy2y53cqhrgDnlFjfpgHMfhbeidcd0ed7mxB7Xc1yuT+ILWlrO/KSQFrWEkHcLrws62u3176c6/pesQP9K45GVujdz913WHZi8FfEvp/VO0fWNPMCa3U75C+1QPbLC14FX2XDPH1al208qEUFG4HKhPnhYaBEKFSsIAeeEDlH/CndAEpKJ5UCoH6uVFCooIeUMIoAIB3QPCYjwhwECG6URPCiKBSlHvlAmuyAHlAhSv7o/siAR4S8BMksHgKgnKCNJayqJhQFNWEoNOKIHcKVmkSgqKBhEeUOEQuzBgbRHKUJhyq0arUHPCg5TV3UQR8o4UCI4UE5KPZQco96RUHCYDwphQKAi+/CiKgQEDwiFKTDlBAmGEoTBAUaUAUVBQRRVAH3TgYShEIg1jlQKKUqDaAItSkm4h2QoJqJo4InSTPayNosuJqgvm/wBQ/Wep1k34bpAdDpxYMle9/wBvAVn+pXXd2ob03Tm2tAdKfnsFj6V0tui6SNVqcamRpkdf9Efb9ytSf1m15XUMm9b1NQXOcTdudZSnabvlPrdT6+pe8fpJpg+E88TG6Zjm3ZNOJVFT3NZAXf8A0pdKPXfRApVSDdjsliLm5bY+UG/UQ/hyC4Ne1wwWuulR6rmPG00oxr3M2tJ80l9J5c4kHa0ZPhBr0euOnlbJW4dwq9bK2acyRgta43RWMkgo5qkkNmfIS4n+k8Ktshbe3lBv6SE7GEuwLKqDFE+Z20Oa35dwtGigDtSI8uPGOFm3kGiV7Hp0nT39DEkepa3qEDrbE8VuHwaWbWpHDnkdp436SSPaWvJBK5s26/aLCv6nq5dVq3yzm3uKpiJOALSBGscT7inEf5gAquwTOdWAB9+6Rg3O/lUdB7dWYQ1wjijuqFArNr9HLA6Jr3NdububsN2rHTOLdrrrjlI6UCVtCqFFRTdG02okklljDdkLbkDnAGj4+UmsZHNrXu0sb44XH2tfyvV9F0HTpdFPK94ZK7Tucxzj/UOy81HqalDnt3OB/YBZl2tx1GeOf0ZdgJaBwfBW2bWvlawTOLwOCAF02SdLdpSNVpHPcTY9JtEn5K8/PCYZMAhhyATZC0zoZNQ8+1jnAeFTQqiLKQy7uBRVoqh2cqjNI0lyXbS0Pwqy3IocqiqsrZpJCbHNdlS5ifTewuJPIpQdnp0mt1UTtNpgTE8+4kDJ+65uv6dPp5S2ZoB+OFvh1HoQsDB7W8NugSqOoanU6lokmDQ26AbVKaVynQ0eQg0G65POE73ku7D7IxzyM3bXVubtP2VZKxxNAZJXp+j9O050MzsS60j20D7fsvNaU7ZBi16Lperlhl9PSvA3D3EnCmXxqOPqoNRHKY5IniTs05KxyNc121wr4XqNTp5WSSOYXBrgbkIq15mRuTjKmN2WaNp6B++EsjKOUYDscbHZPI4PaMZC0igDwm224Eq0MHpjmyVYdOGRBxd7u48IMzSfVaG3dr7d0pr26aHe8m2AiwvjMD2tdZZZsZvsvq/TuuaXU6KKSywRgAA+OFx5JtrF6MEUiSsmn1en1I/8vM15HYFaf1D5XFoUfuqw47iO6dFFAWRwj90EClRGipSAIfCPCBQA88qBEhAYKCFA/CJ7pSglUlKJKh5QAoWp9lO3yilNKFQiwplArsfdK032TE/uiKAVQoQ78Kc3SX3bgAcKhkP4RPB8oCyM8IgEd1PuibwEDg5Vgp70pWFAjwurAj5T/ZKBYTAUrtU+6bKUZ5TBQEchMEAKRtRTYQrKgymQREDKg8IhBAmHFKcIjKBipdIAUjSAhMEqYKhhwogEbVEtFRHsqiIoKHPCCcpglBCYIJeFRqXlsL3t5aLVpOaVOrIGlm87Hf4UHxTTMd1b6iAktzppi532B/7L1f1Nrg/oWrlYwtkeWx8fpaMBeV6HqBoOres/+lr2/YldHUaga7SNZJOxsIq2D9TqWqy8uAbC3wQTzwPDb2NG42tR1HT9Gfy9K6Qjl0hH/Crh6hLqJPw8EbWxvNbfumzTnt2u4+2Vt0Wlikl2zSbW+PKt1vT26Sd0TgWEC85yuXLO7cc/Cv0djVGCGUP9J4bVNINBY5Jw4Os+0isK3SOkfo3xtFsdnbzlc+zFJZbY7gqAP9xB7eEjn7e62xQGdwbBG515J8K2TpMkHu1DavIHlU0xaeF0w9jSXHstGlgkM4FZujldTQaYwQhzxRcugOjSa2X/AMmx+QPcB/V2S2RqY2uP1fokmgkjkJJikANX+klaDGGRMDRVYdQ/m11pnTaKFsfXtNMNPuMUrmcnw7PcFcbqbmukjl00vqAezcBVjthYmW27j6uRqg71jdWqwA5zQL3fC2sgdNJ7mmyV9C+hvoMdVcZZi2OMf1dyVcspjN1McLlenzyfSSxRNlkHtcaCbpLI5NfGyd7Y43Y3u4C+4df+iIT0SfRsjBcG7o5Ry1wXw3UaSXTTyQahm2VhIIPdTHkmfxc+O4NGpDYtTJGS2Rgdy3gqqXa5zSxtfKpJLasoeobyVph1ehj1odRG6Smt4B+VzgY4GWdzZwSHWMEL0/0X0JvUHkzcE4F1a7v1F9JQtiZKYQ1v6TnuFz9pLp19LcXhmalghbta4SX+xXXHRJ9T0s67VPiazhrGyAO57hceRoi1XpaeiGGhYV+oc97GF7todgLo5ubqhpNOGjTBz5rpzzwPsspJDmvo0fPdapYDuphDr+F6TokOld00aTXacSguLr4I+xTekmO3lJA11OYaPgpWkULBLvK7vUehBs5/ByVF2EnKxx9Im3DfI0NHjlD1rG2LfIB8Z+E08YhDOKcuxDoWwigL8nyqdd090sAMTfc3NeVTTku3vo4LfCvmjc+HcWxxs4oLHucw4sfCshe0PuRhdXGURUWdgoyMvkDG8ldGeGN49RjXMBH6SbsqrTMDdSXCwO19lNmmHh1eFu0kgYC57i0DuOf2Vesi2SWKys2xxy4q/TWnT1nVJZGlkTyGVWTa5nOeVADwVHGhjlSTSUzReBygHC8JQ8sNjlKwuv7qot9Rxxwm3E1ZVROeMphe1FaIiwub5JorRLLLG/045SGc0sMfYgq8OJzV0s2LG7pvVNRptawk7Zdw2u4B+CvrHRuoR6/RRzsODg+Qe4K+PxQu173MDf0N3A34XqPorqT4YZmlw2OBLmE8nyFzzxalfRW5l+FaSuH0fqkepdK58nuaaql2HSMd+hwP2XHWmjg2iUG/pChNIDahrulslFBLwlJtGsIIIheUyCAKIoIFIylqz8om7UKAVSHdFxygUVDylIRBzgKHlBVi8ZTGvCBAtHPjCqBhAeU3ZDsqATnKnKhCCREJvCU5KYoHhaFIBHKIQafKYBdGDhTlRE12UWoE3YJQE4wqQawiAVD2pQWFBOEwyMIBFFEIgd0OeyYBXSbEfKYc8JAnGQgP2UUCNKKgTBBEKg9sIhQKKgjlEpUVUFEKFRBKvhI9xDflWcpXtxlBW72gu3Z8LkdW1xbppHbi2ICnGsrZ1TUjS6V0rhgDlfNtf9RPk/8AUiPpiyGg/qPypCuB1MNbrZzESW7rCy6Vr3Oc8n2N5so+p6r3udy42g4bWGl00ytjjEj7eHEXx2WrVaWHTua/SvcyUDdVrPFqfSiLK3Ejnws7ssc8u9xPCg0auc6lvqSyOdPxnuFz3MJsgFaY3HZwNq0gtdEQ0Nvncnw+seldI1+DQKtc2zi3LTBBvG4iguhp+ml43iwP5TayLvpQRRa0S6qKZ8bf6GN5K6XV93U+rtkez04Y24j8LR0zQyHbHESXckL0HS/pzU6ouLY/1GySueWcx+u2HHcpqOR0vpL+qaqOBrS1pNX4X1P6T6R/4ViOj6ixs+nkNxavZwD/AEu+Vr+kPp1nTSJJaM3+F7JwbsLS1pa4VRFheDm8j2uo+hw+Pqbrw3+omp6P076J10E7oZ/XjcIWbg5xkdxQ55Xx+bpZidA46f027W7mkcmsr7R1XovTIOot1n4CAytzvLLI+Vx+tP0+rbbI2g0QMLfByTGMc3H7V84boIhJujFt5F9l7f6K1skU7IGt3NBuxwFgi6TIJGxbLJ7r3v0p0E6WpXsAHIC68vJLNMcfFZXS1jq0sglqyLyF8f8Aq36fGrmdMyPcXWTQX17qmlnc5w7vOB4CXT9H3ZLBXGVx4+SYfXXPj9un5qm+mNbuLWSx7LxvwQtfTfpR4mDtY9r2j+lt5X6RH0rpCS8xMPkLXpPprRRG/wAHEAfK7Xy8XKeJ2+PdE6VOZmN0OnILeA0FfUH/AEyddoGDUgNl205pGCvWabQwQAejEyOsYAW0AbNrW5+68vJ5Htdx6sPH1O35l+rP9NOpQayV/SnxiNxLqkdVeRa8R/4b10Dy3VvY0g9jZX6x+qodvSp3RsG8jtlfDtR0p8+qJfYBP6l6uDmuU7eXm8eS9PJaHpUbXANt3lzl63pP0w+cRncwBw85V7el6fTxUZHOkBz4WnQ6eRszDpd97hR7Lpnn10xhxs3U/o7UxxmSMgtAteVm0bo3lrgQV960THS6UMmHuqsrz/VPpGLUzl7MA8rhh5OusnS+Pv4+Rs0bnkBoXc6P9Lz6wOsUwcHyvcQfSsWne3u5ek0Whj0cQYBgrPJ5fX+rWHjf18H679D6zSSl4hJByC0rymr0UkMlSNe0g0dwyv1F1PSxajTGNwHx8L5j9U/TjXRlzXfmA3QHIV4vK9usmeXxdTeL5Y3TuLQ6S6HAW3RaKPUOAcSCeD4W7W6KeIBpADBiljY98Bto9q9Ptv48npq9qOo9Mk0+T7h2pcx8ZFWF7fRayDqETIpm0W9+64vWtI2KQ7W0OyY5/qrlhPsebeyikLDRWuRuVU4WF1lcdMjrtNGwl1lXbPhLe3DgT9lWV80bXtfJw+xVcJYZXxN9gBsUQRdqr1TQHAR3ULKBnMrIFJ9JMY3UaLXYcD4VMkjg2gTSUk1YQ26mllbDISw23j5Ri1Bhk/JoNBvK5jHuqrW3pumM4e9z9oaa+5WbFlep6d1OHSwOF1K7kDuvSaPqUU8cR0u6q95rkrx40p/BkwxF8gvFZryqOkdQfppg4uPp3te3u35XK47bfVNPIZACSK+FfVhef6XrS1wa8e12Q8cFd1krXEUuetKakUeVLUAtRFBAOEO/wioBhAB91CoRlBBMFL+yNKOPCAFKQjnuphFDsoVCggBwhlE4KXPZVE+Uo5TUKzygBlAD/KGUxyECVUL2RpQ+EMqioJqQaE66saDCYURwlTN5TQlZTXyoM8qdzaKN2jWVG0eEaUB7/CYnikqNKwFFCsooCEwSgphyiGCZIOU6KlIhQcooqBFS1AqCEUAiFURFRRAVCgjSDm9Yi9bSPid/X38L5T9T6aLT9Ykhhv0w0OHwV9d6iR6Ozuf8L5Z9WSs1HVpJm17AGUPhWJXmYGuZI4kLoaGKMyFsrwI3DOENOY3vIkNjmkJnxxj2A+7n4WkZta2OOUhhDq7jus93glGRxN4VWc0iNLNPvi3Mc3ByLytMTGgASCyO3dc6ORwdS63SGetqmbwTXdS9RZ262h0JZKx07TsoEN8hdiCFziA1p5wAF0NB046na45I/wALvdA6LNPrTKW7WNPtJXDLkkm69WHFa630n0VmljbNqG7p5OAewXt+naeONgDKBBNlc/R6YRFpOXLrxMaQQV8zl5Lldvp8XHMY16fY4vc3saVrnktJbz2WDRWN7OKctwIC4PRpydRFqtS8tfA1zO+eVjn6S/U6qIGFrGNFml6VmeSrWtb+oldJyWMXilcLS9L9HUtIYK72vS6YANADKAWYyAEYWljtzccKXkuTWPHIhgY6XfVmqV8MIAJKqLyMAK1kntWfZr1i1rA11nlXt2nk391mD/j907X5A2j7ps0tcxrW21t/CFe3xf8ACZz27KrP3QBBFKmlGo07JWFsg3WvL9W+kNJqHF0W6Mk8A4XrxQNKuWgCbWsc7j8YywmX14Fn0XCw2SXO7Ela4elxxNDA0Ne0+F6l4LWms/Cw2JL3CvureXKszikZfTtodQBHICM0rI20Buceyc6eMmyCD8GlX6TWk7R/dcrW5jpmhhpznvy538KakAswaIWh2G4WLVXRKztrTNKXHC5Wq0keov1BnyuoX7uQQs8gAs0ky1WbNvIdS6HE7cJBbey8fqeiNjmc0MLoSvpWtcQadwuJqwGk4wV6cOaxwz4ca8XL0ERuDorb3FLjdZ08zBTmkgd19Iia14orndU6aJGuGDfldsOe77cc+Ca6fKHtybSBgLl3+rdJdC4lowuFI18bxYXuxzlnT5+WFxuqZ2ldIzdGFmlicw7Xcrr6DUNsblp1GkbK0uFELXszcHlpGEOBJwlLw40OAuhrINhI7LmvbRwtyuVmjN9xoqZCjBZ5QJyQqiF4xtBWnRTGN7XNPfIWYhpAs0tMcI9MPY1wYTtLiMKVY+m9CcyJjHvbbw2vsuF9Y6JkT4+o6dgAIDJWgYJ8q/S9b0sWnja31XvqjsbZWTr3Vm6jpL9PEXgukBp7aK5Te23Z+ktQ7VdLjDQXbTQteqha4jwVwfo7RnRdIjaT+blzv3Xo4WkDK5X6sWtBDQCp+yIyiopeAgmsFAoIogESgB5RPCihQISgUUCgHBQOU3dA44QDCU57onKiKWqUuyjhBEAoInlKVRD9ktJ7wlP8KohGAhSJzhTjlUZ7IOE4JKXF/KIFrqwf9kXfGEBhEjikBCYZSgZ+Ew+EUQUwQryiooqd/hRT9lUMoFBlA4KB0QlGUwQMEyUBMgIRQCKKgRUCNKiDyj2QCKqIioFCgAPdG8JPsobpBi6nKItLqJXcsjJA+V8WdKXR+pIbL3ElfYurkSt9Amtwokr5N1zpjunzFu/dFuO37FXFK5pf/t5tBznnlNFGS4VwrtVCYgO4K2jKB5SnBVnZaWxscDXjFojLDGXvDRlxK9Z0PQiOFxIPqc2F53TBpcKoEnjyvoH07GzUT6ZkIoE7Ta5ct1Hbhx3XvPpbpIj6dHbTukNknml62OCPTxgBoGEuhg2RtA4a2grJSTyvk8mVyr6+GMkSOj3WqNwurWFrgMLRG6yFxyd41Xsk3DuKWlh8rI12aV8ZWW4vsjhMCT3SNCtY3GVGhjZTgXZC0774CVoNCgrWNJPygAJNqyO9tFN6VcoV7qTQsCZpF4CUA1eFG2kFlt5Kfe3AbeVUGgqFna1UWnBtL+pqlGhRRApq0KZAObWaZlWQtErSMFU4c0/CyMb2yE8AtCWRpFAilqotksH2nshO2wFlXPlBACwzMK6cja4Wd8ePlQcp+DVKiTIOFu1DKPysclZCJXK1bS77hcvUFr2ua5q7kwGbXK1EQLit4sVyGs9N1A0mkeeLtXSwGz3WZ7COVuVmxzOpaRs7SCAF4zqnTw19Vwvb6gGjnC5mp04ebdyvRxcljy8vHMngJ9O6E20UtOi1ZB2vXZ12jpxFLjajTbCSBle7HKZPBlhcVOppznGrHcLkzR1IR2XVDgOeCufrRbzS64uOTOGBpyU8rGhw9MHb8qkB10ArA0j7rbmrcDeAtXryjSCB0hEIdu2fPlZjfZKwHPyg6I6rJHAI9NGIyMGTuVu6RDL1KUakm2wVgjkriAtDaNkr1P0trYGaWTTwsIlc7cbOThYynTUe16XqhqNr202m+4eSu5p37mjyvP8ARWRNie0tPqNddhdrStN8UCvPXRtrwlcioVAto2p9kCgKndTChCCIDKKnZApQ+4TIIFPwgeUTyhjwgU4U5RrKCKWsKf4RKB/hEAoHlEpThyoNIE5+EyUqoh5sIZOVEbHFLQzuBvCIUGbJTALoxoVG4KND9kSAhoyI+EvZEcqKZFBT7IbQlMClGSmpUFEKClKRBCYIAJmoohFAJgootTDKVuAitA91OFEaRBUUCioIRrCFo9kFe33oljuxBTUiPhBg1EBc57TttwsGl4P680bnNa4MpzBeP6l9HniLmW3Duy4nV9G3URxmRpEjMcchSD5JpA0/rJr4U1jgKa0H911+qdFm0eqfJDE70zZDeVyNWHNDXk0eCCKK6SssoNPHm1bJI7cSywDyFXe7kJ5GltB2DSov6cPU1MbaFg4tfZPobpUcL4ZqLnC+eAV8l6EwN1Ac8Dbn+6+4fRlt0UbjgUvNz3Uerxp29mwENACqmOaCLXENNHlVONnK+ZY+pijb3BaGChapiC0xjdQC510lWsGR5WhjXCkYYqcLGVtjisfCzrbpuMzQS5aogrmwtIwrmwVlamFPYIm+aWmKO0kbMq9mD8K+qew+jZoKHTnwtDAduFZYAzynqbYQwtwVNmeFsIa9pvCqDSDlT1NqPT/ZHZwrHWUzW38ppdq2ttMWXwVbTQyu6FA1/lXRtRJHuHFUszmUThdGgVmlAyLUsNsrG7gRmwUXxV+rgq8AWhqCCKtT1NuZNGGuo8LPKAt0xAsHKwaoktFJ6p7MU4FkLnTR5+V0S28kkqmaMGqT0Z9nGljdm8LHJGTa78kYrAWV8IBNlT10bcCWPlc7VNJda9HqotwwBhczUQA/cKpt5ycc2ufKaK7euhLXGguHqhRJ4pdMHPJk1EbX54K4uvhAvyutJJkrn687ha9XHvby8mrHl9UNjsLE6SnG+Culrm8rjzYK9uL52YGTa6wkMh88oONC/Kr5K6RzWjKduQqw7PwoHbchB0On6J2r1Ucbvaxx9x8BbetdHPTpYpdO4lrjhw7Fa+i6hmqc2mhkrR/ddPWNk6gWaNjbcKIPjyueWXbUju/SIkf09r5hZfm16eNovGKXN6PoxotK2G9wbm/ldaPjIyuFvbZigcolClFRTkqFDKIPdTwp3UKCFBTKBRU8hKTfCJQ4HygF9lMlS1DzhAD9kqKhKqh3Qcp3UKIBvjuoRSndRAOyUDPyiFCqiDAUUpQrQzgBMMJee1JvC6VmGChGbUHOEaUEymCVMcKgqHlRQqIcZR7JQc0mRYgTBLaZqKKIQ7pggITBInCoYKXlQKd1QcIoIqoNooKBARyioOcI1hACFKRRCAA4pUTsDzSvI8INwMhEczqMJ9KOmhxbwfheB+uOltiIlhYA2rNGwF9H1eAe7V5HrE8DNBOyQAvb+kDukulr5mxji4Vwr58m6yjL7JMgA8mlHEPBrK2y6XRGudqYmGtrzQ+6+4/TwEfT4CBVhfEOg+7XaRoYRTxZHceV95jY2LTRtZwAF5vI+PX4ztRv9t2kNl2O6qieNgvA8qvQ62LUah7Y7LWf1HAK8FwtfRmUhtV1GHSzR6cW+Z3Ydh5K36bVNaDRD31gBcLVdBl1OqlnnkcGuztYMnxfwu39OaJ3vZK9tg0KbtNfuus4ZrtzvJVT+uxaWQxamdjZRki10NL9Q6d4oPFd7IWTr30rpdZE50cvpTN/ravnUfU9T0zqLtJLpCHNJHqmPduC6Tgl+MXlsfbtLq45Yw5pFfflaGzMcOaXx7TfWjNE0uOndKAcEGsrcf8AUCb9UkcYaBwxwNfcqzgWc76y2Rtcp2PC+XQfXccjm5bETRLHG16Hp/1XpJ3lhfsdzR4P2T8TU53tmyEcHCnqf38rgt63A4Mc11h2P3WtnUI3O23RIsWs3ha/K6nqZQLjyVig1TJACCM8K/dazeFZyHdKPmkBISfCrJUa5Z/Fpr8m1+6gma7FKguruoHjlPxyr7ry+u6oldaVzvlUTy7b8K/iS8i4PpUySZKxP1oBokWs02tAvJ/ZT8LN5WqV4srDqZcEAhcvqHWmwNJfmiuFP9RRyOuIuIPY4pX8LP5XpTMGtPu/ZZ5dWxuSRS8dquvvhkdtDSb4vC5+o+qIjJt3nf8A7SFfws/me4k1zKJ3N4xlYP8Aqse8gmnLwc31CHHO5h7hwx/dYNb19hbY1Aa48WE/Az+ePfazq8cFuNG1w9b15kZ3Oy3y1eBl65O559Si04sFPoBqJ52zMje6G8jsn+Pr6n59/Huf+pR6oXm658rm61jZAdpB+y5/UNQ2GBu329rKw9D1s008jJrrt4Kz+LXca/L+j6kFi5erfY5K7Wvbucdo+VwtVgldMI5Z1ytXlpXH1LaNhdfULmaoL14vDmwv+UqZ3KU8rrHIW5KYHsUmeycMc4cf3Qeh+n9PulJDgwHG/wAL2nTo9Po2uf8AiIy48mv+V840Om1m7/y8np5rnC6el6Z1Mal0Ae2SqLqdYyuOUblfUtBO7U05lenXPldFoxyvP/Tpk0ukjgljkL/Iz/K9A3IvhcK2YFC0UAoJyoFMKICcIKIIIgUThBUC0CieEp5RUP6lOESlPKAUh90yU/dVQKg55U5U7ogeVApwoiBV57KFE/dSs32VgUcqI1aBB78LQorKIUCIwFtBBpG7KTumVZNdBG0vKYBA3ZRBMBSAgI9kGohRURCFeeEzUURyj3UU4QMmAwlaFYAiIiFFFqAqDhFRURRRRAw7ojhKKKIGUDBSlAiiFPKJFqVlFBW+EO8ryf1b0eOSCSdjnMc0Z/8AcvWyP2CycLwv1t1Yt6c+EE+oXVQ8eUV8/wBQPy7J70AhpKbIN/FYVM0jnSZNgK5gLg02KC2y6PS2f/mWkDCbEjSfsvvGnf6mlaey+GdGJZ1WIv5sL7l081omCjfK8/kR6/GL1jqLdD09z7O8imgd1T9JaXUzxmZ5Ia82DWU2s6aeoayKL+kC3Dyvb6GCKHTxta2tjduBS44zp6qt6fAyFuG+o7u5xsrU/TRGT1Q0sk8tWTdGJKa5zXHwrTNs5df3WpEqw+99Eh3z3Xm/qDoQ1gc4em1xxZFrtnVC8KmXVBwNkG12wmq5Zdvm+q+mJIW23ZJXLQeV57XdLmgLnwxOru3avqms2kGly9RG08tB+V6Z242PmLnTMo7YvjHC1aXUyxSR+52wZ3B2QvWa/RQyP3Fov4Cwu6ZBeLb/ACnqTbZpepOcwOO5zmuBBC7LusPdppHxuI2cXz8rgwaH0iC1+4DsV0I2jZtDB5z5UuMbmVep6V1J5EYBpjW2SfK9TotWJQKNr55pBW1rj8lel6XqAw0LpcssI3M3rLtAuo4WWGXeBZwtG012XCx2xuyOdZNoGSu6qlJF1+9LFLOW5Cy1a2TThuSVytbrwBea8rLrtWQKJXn9dqycE7e/K6Y47ccsnQ1WuYXAscRnuuZ1Pq5ihc5rw2sklcifqEjS9tAisOBXH1zzN6bXWWA2R5K7TCOdyYuodQ9ST1XyPLySQLXC1fWdQXOAa1zyKs8UurqtIJnl8ws/0jsFmboAHFwGfJK1MI53KvNT6vXGXe+Rw8CsLGHah53bpHOu7tevPTGuPk+VdB0rTNzI3c7lX0jna8d6usZYO599uVs0fSdXq/e9rQzwV7KPRxNvZG0fstmk0jWYFeVLjIslea0/0uZC0hrvlev6doGaXTiJrWx/K6unMTGBtC65CqmDJndv3K8+d274zTy3V+kOfL+tz2nJAdhYGaU6Iluwisg8r108bLsAYC5msDHRkGMF3wuWm9vH9Q1xjltrvuFTIWzMD2mw4X9lZ1zTEvL2sDTX91y9BIW743fsukjlle1erZtJXJ136fldrUj91xdfV0F0xcM3PKA5TOS5XVxbNJpzqJWRsoFxq17CL6VhEbJDM9xcaa3C8noZIDJGJd7W9yD3XtumyubKxsOqG92Guc2x9lzy23Fc/SHdMY6GVzXte7c7Ga7L0X0rooo9B7MyOcSSuNG+TU9SOnmnY/NOcBQrkr1X03Fs6cCBQc9xA+FxyrboxwtjIIGe5T3lFTlcwOFAoogFI8hRRBByl7piEK7oAUCmKVAOQgm+yUqqB5U4Q5KiAOxlAfKasoVlVQS98JjygiAVD5UPKn7oIcqAKILSQSUOeVEFSqEbNqVSGey6MGACJCgpEooooC6yiEQfCcDNpQ1MFFgilMhQZRFoqG6RCiOEBHKJFlQBGlAzRSbhKCmGVUHsopwpaqGCiCg5VBUyVKRVVBhOlCKIKKCiKKmFEUFOostIbV137r5D9Xskb1J++9vbPZfYJQK91LwP1d0oayT1IrEvAHAKQr565lncCPsr2n0w2wK5QniEUzmEZacqFjnMrutsujo3VqIZHginAr7voM6WOuKBXwRjiHRG+AGgfZfdegvEnTtK7/cwf4XDmerx/wBu502Ork4ce/wuyJwxoB4XNiaWsFJZ5KblZxnTvtsn1TRkLny64Ms7rXO1GodS5kon1ElRA5wukxkNurL1aNnLq/dUjqwkfULXyH/2NJV/SvpyFzmyappmf4umheu0WnjhZUeyNo7MC55c0xvSzD2eYgg6lqqMPTdS++5bX+VVrtF1PTx75um6gDyBa9/omse4Dc5xPyrOpyaaGIh7PcRdnlZnlWLeF8c1euERI1EM8XncwrNHrtPL/wCnKCvoXVfwWoh21uJ85Xzf6g6S2GYyacCiey7cfk+31jLisbY5wCDdhbIZmuHyvM6Oc36biQ7sCujHKQa4K9G9uL0ED6IN/C73TW76PC8poZ9zgHfwvW9JFAXwufJdRrGben0QsCl0xHbeFzNG4NDaXYhduC+dnzPbhxVh1MZAPAtee1kwaXVWML03UpGhv+V4/q8wYXfKxObtrLirkdT1Qb+o5XmddrC95s/C1da1oY03zS8dqOoXI7OV7uLOWPFyTVdV81H/ALrLLOLyuY/WmslZ5NXu7rv7OTqmdpKQzC6BXHE7nna3ldPS6QFgMxJPgcLcm2LV7ZWj+oJ2zxn+r91a2FjQNrWj9lp0/RtXq27omEjzSZWY90xly6ZW6mMY3D91e3Wxt4c0n4K6mn+kXOYDqHbb8FUaz6Oj2OMcpBXnvPg7TiyZfx4AwUh1pJw40Vwup9D6j00l8Ti9g8H/AIWPRdTLnFsxAcOxwmNxz+JlvHqvVP1pIyss84LTnJXPGpa4YOUssntV9YlyZ+ovBZRyvMuFS2PK7mrcc3yuJN+olTTFppPc0rh9RP5tLtMdYpcLqBvUOHgq4xzzrIeUCiQhycLo5LYTVXRC2Ta19BjHlgHg91ija5xposrtdH0ulinL9fF6hAw2+6zVket+iOnw6nTP1Oqi3AuoF1hxXu4o2RxtbE3axuA3wuP9NNDtI32gVkBq7tLy5XdddaAIqd0CsiBQqcoFARwoogO6A8BA0oggg8FB3wp3U4QD57oFFAqqBQRKVBMpbUPOVFVDCKDjSmURHIUoAVAglKd1LRC1EAqEInPCgFqlZePuihai6MiE7eUo4TikNCiDlBHuoogIoD4R7ZQMB4TJR5RGEB7JggBhEKBkaQCYIiBFSlLVQUyVHlUFQIIgqqYKDKAU7qhqRS90QiDdKUoj2RUHCP7oI90Urmgjj91yesaF0sDnR7QfJPC7NBYuoyiKElzC5pQfNOo/TU0McsoJeSLsZXE1enk0b4hOPdttfR5NcZ3tjgLSdtu8NHBXi/q1rGljA5rnC/c3/lWVLHLhIc0Wc8r739Mxj/pHT2/7WC1+e9OTgVdL9I/T8VdO0LQK/KaT/Zcuau/A67AAMqieMvJoLosgtoKLoSBdLnMno05Meg35cr2aaPTj3AfZXSziBtkV8rxX1R9TTacubC0yAjAaM2lty6iyft6s9a08MpYXtAA8ryMn+oej6X1LUxTl8ulkALXx5LXdwV4tnTep9e1t6qR+nDhYANYXsNB9DaDRwkvYdTJt/VJ5penh8G8nbhy+V+PqRk1P+rzYIz+B0xMjXe1zzWFzOof6s6nVakzSxtd7drWtPAXzLVtMWv1LJG7S2RwIrjK7n1bF0eDof003pJY7WP08kutLXWQ8vwD4wOFqeNj3P443yc9zX7d+b/UaSV4cNPtA+Vt0n1YzVxCR8UpvwLXzbTx7qcQvpn+mPTY9V03VyyMDmiTa0n7LOPBjbqOk58/2Im0+rc10T9knh2F02RSSwmSiHt5xg/usvW+mafSah/o4aTdXwVZ9Pa+WHUCIHfA404OyAVuz8bWN9nb6OwucN10vc9PiqILFp+mxxwiRoy7NLtaVm2IBfP5uffUerj4v62ac00LpaeQ8ArmQi3UutpWAfdeHPuvoceOo5vVATZvK8d1YkOIK9p1UfqXieruqQg5XOfW8p08Z14E2RxwvHzwv3OdtK9t1EFzsi1znaZphdbbPK9nFyXF4OXj9q8RLKWGiqDqNxXc1/S/W3OjFV5XmJidLKWvGQvdhnMo8GeNxr0vSIXBvqEAfLjQXQOtgYSJdRGAOaXlNH+I1ke+y2HdtB+V7f6d+k9NqIS+RzntIyD3Xr47txqiL6i6NpGF00ksj69u1uLXpen/6tdL6f0/04NOS8tAIe0c0vnn+pmih0PWdNptKz04hCHV+64fUPp6XR/SvS+uP1MTo9fJKxkIb7mbDVkqcnH7zSTk9K+ldQ/1N0U0MLIQ7eHF0jj47BHRfWel1W73hribAPYL4wKI+VfoGOl1scQJ93heS+Ni74+TlH2Wb6h0s/tEjXWvM9d0Wn1LTqNOWtlB7HleYn0c2njL2OojsUYNROGt9QOAPfsUnD6Xpcub3+t+kkkB2u7Lf6hIorNogHk23K0yRYwuu3Nj1TsFcqSy74Xal05LVzpoC0m8KJWJlglcTW/8A6h/3XfcynLga/Gpk+6uLnmzFFhAOUO6C25tYmr/0xtsUup0CGSbVNLY3PF7bXL0MXrztZkkmgB3K+vdB0el0MbRDpg123Dj3Pdcs8tN4zbb0mKTTxMjdGGsA5XVJwqcu5VgBoWuF7dDKYUUHlZRPsgigTaCKE2oggiA5yiggBUUUKAJaROUMqqhQKhKHfhAvdT7onhAqqBCgv9lAp3VQKpHlRC8IJ/lRTtlHmlYiAKDmkVByqMfP3R7qVaPHZdGDNRHOEgKdqKKYDKUIhRTVSIQCg5QOCjylzSNm/hA4RCQOI7Jg4EcEKB/sUw4SB3wiHIhwUUocCmVEyiMYQRVBryoioFVRFRQhVBvwilTAoaEKIBMgnCgURRUCo1sYk072kWCFeEr+EHG+kfpR0upm1WseSx5IbG3Ar5Xf639JaPW6b0zpobIoHblcmbq2q6ZO18Z9o5Z2IXvPp/qMHVtKyePDXYI8FeDyJyS+0fW8acdx1X55659Ma3oXUGNkBOmeabIOB8Ffe+iM/wDJaUXkRN/wF2+sdAg12lLJAxzCOCLXN6ZHsd6YFNb7f7KTmueOqzlwTjy3P27enZ7AUJ4nkGlq0oHp8K9rNxFBY99Okw24knT3PbcgFLjdQ6e1gc8RR7+ztq9yWCqPdc3WaH1AaWseXtMuPp8xlidFIJRGDRoEDK9Bp+rxNaGagVjkcLZrtCIne5mAuRNoYNxc53u7Z7r6HB5GWHcry8nDjn1Y+c/6m/TcTteeq9Hc2RstetEOQfIC8O3peq9L1TpNQIj/AFekaJ/svu7dHpInF265eBec+V3NJBNN+Xo9NM6A0DvYACfOVvk5plfZw/Br4/O3T+j9Q1szYoNHO1hNF7mEABfYek6Sbo3R4NHotI41lz3Yt3de5b0bUm/XnZE13tcGizX+Fqj6Vp4m0GvkP+6R1/wvNl5Nx/5d8PHn7fPmfSmo6xPv1sxAP9LOP7r2nQ/o/pPS4QZDvc3NE4tdQ1DgC/AAVbhJMaPC8mfNll9r14cUx+Kn/mzkMHsC2Mj48BSKERjHKvA2hcdu0hoW04ZXSheGttc2M2KB+60GUBqxXbBn6tI0nBwV4brJIeayF6rqEthwXluo+8G1iLlOnn5Wb7sBZdmwlp4K3g0+nKvUNB9w7LrHCxyZICH4GCs2u+kdJ1ePc2QwzVhw4XcYwOorVHCRlmFuZ3H453jl+vnbfpLq/SJDXpzwk2NjiM+aX0n6MoaMNmBZJ3a7C0Rbi0B4B+62t0EJbvj3A1+old8fMzn1wy8XG/Hlf9XvpebW6CLqmjiL36cbXtaMlvlfE55ZpNPHp3TSOgiLiyInDCeaHa1+o4dZqNND6JJMRwQWh1rw/wBT/R3091LVSSsa/TzVZdEdt38L04+Xjk8ufiZPhYbtGV6P6R6NPLKdfM0shYKZu5J8r2DfojpGi/ODtRqNpx6jsK/WRSBgjYA2NuABwu2PNjtz/BlPrzXWXtbGY2iz5XHZNK5giB9jTYHyvQavSOJIeQQVl0fTw6cA4CZcm+ycd+Ox0DRO1EIdIc+V1pelbGjB/stvQIRCA0tti9T6ET4KAXhz5rK9mHDNdvDO6a1zaAz9lwup6EsJAC+jy6drQcArzXW4Lc7FKYc26mfDNPAaqMtul5fqONXJ917XqLKcRwV47qUZ/FyeV7OPLbw8mOumAWU7Y3OVjI1ojbtba67cpi0dCbJH1GFzcEOuyvrfSnRyQAueGvHLSbXzToLzJr4YhkPdTh8L6hp9HC1oDWN2DAXDku25HSZkdk1JWxhgAbaO09yuTQoj7oDilLURD8KVSnZRACh3RKVAxSqdlEEtQ8KFA8KgHjKUkooHJwigclQnlThA8oIhwp9lKVVCUMqHmu6iqJlTCgU7KiI9kFAfKInyjfdDsp+yoyNNcprSnKgXRgwCYKBEIsglEFDlEfCimaURzlKOUyBhzSnZQIgoICOEwQHdFQGkQEUaKBWgpqRpGlYgBMFLUA+VQUc0gpZVURaZC8ZQQNlQKKKg35RtBSkBvymtLSnCBkbSo8oK/wAFHq5gyUD3Cr+Vj6PLqOga17GgmIn3N7V8LftpwPhXfULGxwte3JIU6+V6OG39Pa9J6tDrNK10T7b/AIWPQ5leR/uK+edA6nJoNdTifSeaI/5X0Ppps2eCvFy8cwvT2zO5fXf049gWqLhZYTgAcLXH4XnrvFgCYsBabRjCta3GVNNs34ZrxZFqDp2neffAx33aFuYBhOMfpC1NxLjGOLQxg+yGNtce0K0QYz/C1sIF7sIuLS0lX2rMwjnyxRiyBkrJJDknP7rdIReRZWctLyew8LncnSYRgOm3POTScsEYpbHt2tWOQ25RdaAc2VXI7NJ3EBuVnBL3fCukXRmgn2k2pGzgrVFETkhYsdcXD10LyTnC851BjmknsvaayIi6GF57qcAINjCxrtcvjyGpO1+FQ6Tc2q/srOqflucDx2K4o1dPI3WV2kebK6dOOQNfXZdTSOuivPxTB58hdXQTYonHhSzRLt3oog5oKvhbsdTcfCp0z7YKW2NgOQuW3WRdGxkhBINqybQse/c5jXhwrITQDIXR0xD2gOHC1jazli4D+gaOYe6AtH/tNLFL9HaR7a3TjPZ69o0AI7QeAF098v1WPSPAyfQ2hIv85zh5esc/0hHH/wCm2q4X0SRuVj1Lw0fZX3y/rPpHi9D01+mGyQLZs2Nq7XT1EgecBc94NklZ3s0yS0ScLgdaZ7TS7s5p13lcPqb7aQrj9Yz+PC9XBDyAvI9RberdYole16rHYe7uCvIdSF6t1eF9Li+Pmcv1hawUgcn7IzGsBWaGMzaqGIcveGrrXPT1/wBHdMPpuc5o3y1Tj/SF9EEbRGGAYApczpuh/DQsYLdXk8LqMoCl58rtStcWmnZHZWWEDkhQ4UEtBRRRBQtRBBLUSooJ3QR+6ioF55Q7KKdkUDhCwiUKQTCU/wAIlBUDA+yhyplS0UO/yp3tRAc2iJRtEcoX8qHBpaEJ8KD5UUB8oJeEQLCCYKoxDhMMJAU4XVmIDacHKQeEa+copwaRBQDkQQpoEc2m7UheAiPKgYcIhAc/CI4QMihymQAE1jCI3j+pFHCABz+9Ih5PIUCJAREtOOEg8pgVVN2RCVpTFBKtHugFO60HChQCIygg5RpBEIDSKUIoCFKU7KDKBlum0jOp6Rgbu3MFOWC/7Lo9Gm9Kdzf942rGfzbvwZayZJ+ixjRsLGgvbm/K9L0uyGWOAl1unMMWB90/TCAvHlbZ299mq78HC3RNwFz9MbXQjdgeFwrtivZwnafKRpFJxkWo6w4KZp+VVurjngBXNYA0A9kXRjIKrlZ3vLbFp3YNBVOAvPKlJAOcqYaw1yiiGk/ZZaUSElmVkcKyV0HR3grmdRk9P2t/UtSMZM+qkxQ5T6ZtrPFE5x3O5W+BtOBrC3Iy2QRDau107QiVpAw6jk8LlxNAAK6EGpfEymmvkLX47fhnn1qVy+ps2FwIBIwV5jqjRt4XpuqSCTcSaJXmeqHYx1kcLlcLK179PCfUIpriAvJPifuLmi7XqevSF7qB+65UAG08LpjNRwy7rnaef05ADdru6WQW1wXO12k3M9WIe4cjyruhyeoA0g2DSzn8Mfr2WgeHALqMNBcPSNc0NIXXjO6l5tvVG7TOIJvhdCJ9A8LBph7T4WhrqpaxK1hxsK0PpZmyUOVZuvgrcYpNVLsFXlYHu3DOSVpnBc61nc3IVYZJGCyVz9SCAaXUmb7TRXN1PGUSuVqXEAngrznUn5JXb6jIGv57WvN9QkBY7kLeE7ceS9PN9Tf+od15bqJAmJ70vSdQfVjuvL9QO7UG19DjfO5PrE/IWroA3da0Q/8A7zf8rPQXT+k4fV+pNCwf7yf7AldMvjk+yN+yagqWPN0VbdhedoTwgoECSEQULQu0e6iAgVLwpaq2JQpBQlC+2UQ3KFqWpYRQKnZQlC0EUQNIWPKAcqBSwoqqE0lORwiSPKH3RAUHKiioCNHyoQoibTgKApULo4WlMSEQgCm8IjGjwlCIXZg2CmakHKcKNDVJgVApygI5RBwgUwUDWEQlBTAqBlAgiDhAwTJeyIQFHshSiogOEw5QClIHCKW8ogoCD4RQ72EQqCEQgmVEKiiiAtRQCIKA9kLRvCgCCBbOlV/1CAO43BYwr9M8xzxvGCHArOfcb47rKPpWs0DJYQDm15jQjbI8eCQvSDUF+mY6+Ra85oiHSyVn3H/K+dhn7dPsc2Mmq7OlJtdSI4AXO05FCu63ROx9lmphWodlY3CpabCubws6dZVkYF33VhNhVA4R3I2gzwkINpqRAs4UUrGeVcxlosbzaubjsrIlqiUBjC48DK89Z1E7pTx/SPhdfrsvp6MgGi4hq5UZa1oPhdJjtyuWjPDWDKglaw0SsHUNYxl24WF5mb6q6YNYID1DTetdbN4tejHiccuXT38OozldGN7ZI7Frx2j128DPtPddGLWlrSA40u+OOnO8m1nVZ9rjXC8j1fWj0nAlbeq6y3OzleG671CrpwNLP4ptLyMeu1HqvIHZZ9O4OmDbXPg1Qe9xc9jT8kBX9MY52ofKHB2eQbWMuH+JjzO96dRHCxaTbF1DazAJ/ldBjvysleb6jqjBrWPZy02V5s+O6d5nH0jRsDowe9LZDGTZKp6MPVhYexAK7bNNgUF4tdvVjelUI2MSuu7BytTotoVD2/K3rS7OHe2jynifgqgXfwnJDRhWJVrnKqQWMFKZBWOVS+UHF0VWKpmcQSKXM1juVumfza5eteCDnK1Ixa4PVHEPvwF5XqM/uIXpeqvJY7GV4/qLiDVUu/HHm5a5WtlySOF5rWuvUvPldzVnuvP64/nEr24R4M72RpC9N/p9D6v1LG+sRROf+/H/ACvKRm3L3n+mMIdq9bL/ALWNaP3K1n8Yj6CWj90aFIKLztD9kCpSBQFSkoChCjKI1YS5rlCj5IVWmr7oAHxhKQfJQLXdnFBZtvsgRXZJ7h/WUDvI/WUFlG+FNpOKVTmvIr1HUk2PAH5jkFxbXIS7cmgkG8cPP7qbpT/WFVEirwhgeUA6Uf1fwoXS+R/ZUQ0UOMIb39w1QyjksQokWpRHdD1W/wC1QyACw1EKLvklSyCjvBIwoaKIF3aYA0oAFLrCojRZVlJQUbVGIJgkHKYFdmBCcJAmCimKYJAcIi0DpgOyUInlQMKTYPCVt901KKKItS0bwgKndRFARwiPlAJgqAEVCgEBRvCihCoYFQYKA4yiCgZMOEgKcKiUplFQIAmUKCAo2gEQgITt/U37pAipfjUuq9zp3u/BxuH6aXM0BqV/y4q36dEmva2BzqazP3SRNEXUNTEeWPIXzccPW19bPk98Y7WnPtC3QWsMFBo8FbYjikpi1tTCwVU1ysBWXSVa1xJT3hVM5Vqy6Q7QMKwDKqbghWtOeFGlsY8p3kAUEgcAEpfnhXY431KT6MRokB+f7Liv1WyI0vUdThbqtHJEcWLB8FfPtRqg4SRWN7CQV6/HsyeXmllfLP8AVT6i1k856bpHOigIuVzeXfF+F8ta0McQ/nyvtnVfp1uv1ReQHOOFk/8Awv8Axp3bAAPml7JZj9ePPjuV6Zv9LvqjWnTfgeofm6VhqGc/qH/tPkL6S/XljaBv5XB0X0e/pmmZHGwbWDhXujdG3a8EELeNmXxNXHqquq657w7/ALr5l9W9Zkje/TaUXL3dWG//ACvc9ZL/AEy1pye68LrNEwyPLsuJskq5YueV28BI975HOle4vvJJXq/oqWfTzGRkjww/0XgrNqujMfPuAIB7L0fQNNHp5Gbh7fhSOUlle5heJdH6oFOrheT60NrjeO69S/VRN09RimgZyvEdd141eoMMB3f7nDsscuEvx6MMtfX1L/TrqR1/T4tx/SKX0OFo2C18a/04nOm1Aj4aeQvsGllBaAMil8jl45hk+lxZ+2ITN99dlkkjo2ujI2+FTIywViu0c84VUjsK+VtWAssgr9llCCQWQq5JADg5VLiWvN8KqR1OwtRipqH+yu64+slLTnhbtQ/Fu4XI1rvUFDHldMXOuVr5g8EtugvKa9+6U9qXf6hL6d0boUvKa19h5JySV6eOPHy1ytU78xwBwvP66QGchua7rtSOySuEIi9xP7r14vHlQgyV9I/0vjI0OtlIw6TaD9gvnrQI2kr6t9A6Y6b6bgLgQZSZP7qcl6SPRBRQUFFwaS6QUKHdAUeULwhvo+EQdtcpe6BlBwEQgiiJQQCgpQUJyoUAQ+6YpEEISnKdKVVLnyoQiVOyoVQ0oclSkKBAJylLQieVEQoCYikaUVQFFB91EBHCIQCZUYQUW4CTunbkLswYFMEoRFWgZtJu4Vf2Vg4UUw/hEJbTAqAgpxaQYR5KKcIj4Qamb/CaDBQoIgoI00mzhKOUwQEhEKIKglQKIhBCFByp4TKiJglRCBwUUtIhAQooCoglKd0bUCA0UR8pcgpgUHofpnUGN++62nbaZ0of1nUv/wB7r/hdD6a/Bf8AhTq0j9C6bVRubT91NBPFLhshfpOqSsc4uunCzdX2XLm8e4T2v7enh8iZ/wCv8eqgNtFLawcUsGgcCMnOF0RyvFXuxOFew4Wdh9y0N4WK6RY2laFS0q5pWXSU/ZO05VdqAqNbWl2UHHOEoRRUIsG1436m+kP+o6r8TotQdPOeSOCvYl1C1RJLSuOdwu4mUmX1890/0t1bSuubU6eUDwCCV63pkD2RAPA3d10Cd6eFgvC6Xmyy6rnMJA/DNcKItea6/wBCD7fFgr2AwFi1bxTr5W+LkuN2xyYTKPk/VelTjBYeOV47qPTZGucdhBX3+PSR6hpMjQf2XN6l0LSuH6Ba9d8qaeS8Fr83a50mmf7mmu1rI3qc4NRx3XdfZvqP6X007HVHVeF5/TfSenju24WL5WJ/jV879TqOuG0l+zu1vdbtF02dgoQvH/8AyvqnTuhaaPaAwWvRaXpenDLMbVzvlt4+L/Xg/pDpszNQ2RzC37r6hpbZG3ys0enjiPsbS1McDS8fJye929nHh6TTew2zKrcka+sJifasOjJMOSschDgTa2ztDmEHuuR6LdNEI4r2jybKM1TqaBWR8mD5V05cG13XPlk7HlWMWq55Nw2kmuaXM1jzeK4WyU004srlamWyV0xjlk4nU8uIv5+68t1F1Bwpel6je5zrC8v1AlxI7r18cePlrlymmOPwsGmjG8ZWrUl3oP2guPgKzpHS59SXyPDooWA2+rXpjyVjELtRqWQsFue4NAX2rRQDTaOCFn6Y2Bo/YL519H6Nk3X491O9MF4rhfTFz5L+jFDwhaJQXNoCpXCiPdBEK8qKIgY8KfZFCkBQPwogSgP3QJQHKn2RdIfhD7ojlAoAUCmSuOVRAgeUbS/1KiC7QciMoO/lCh9kLoo2gmkT7onjCCFqgohAHyiAOQiD8KDwUDwoCqMXdM3lLaIJtdmDd032SogoCMJhlAIjCBgPKYcpbTA4pZUQmCWsIgHumhYEwKQFFFOilCKCcJmlKiOUDclEKKAoCAjaCncKgphwl4R7qoYZCiA+EUUWlMkCa0DWoVFEARCn2UtAUbQUtB7v/T/X9C0+l1UHXp3sjfI14jztdQ719l53W9U6d1Tr2qm6RpTptMX+2+XDi1x7wn6bEyLUlzBW7lTltyx7a4Z65b/r2ugdVLrMOFxdA62hdeMggL5+UfUxrRGVcwrO3lWMKy6StIFp99YKqY6lCQSs6a2ssXYTsJVIICsjOCppr2XC0DlAOtI45wlh7BK6gsrnXaueb5VW3dwsrsY2natkDK5VMYx9loaaCBpnBrcdlytQ8knNkrXq5aaReSuS+UB9EpMiyutox+V8qaiIEEkqaCjEMq2ejG5bt6ZkeY6hF+vGFx3RUzgL0WrbYIXBlNPc0nC5VdaZofbIulDJkLnuAHCuiJBFFQjpusx2EkLwbpVCSmhtpmHaMd0a21B4R9XBWMktKR0vbshte+QnhY9Vn7pzJXBWeaTCsjNrFM7JXNmeGvK2ahx3HK5euIAscrUjnaplkLQ7v3XI1MhAJPda55CGZXM1cm6Mi8LrjHPKuV1F+DWAvLayU+o6j8LtdQlNGivOTm3levjjxctZtUXiMBjtpLhlbumSyfhpWO1AcKrB8rBqacwArX0LoOq6nqAIGFkd+6Q4AC7bkeax6/8A0+0O1s+tcDZPptvwvZUqNBpI9FpI9PEKYwV9z5V5+Fxyu61OgUU7olZUvBRUURAURSlBFOELUJQQoKFBFFQFC7UKolhSwUOVEEJPZQ+Sh3QcTnagh5QtBpcRlEFUDuoVO6BQpSp4UJQtWIbugigaQEI8coCv3URBpQcoZUtUYgmHKW8YTDhdnMQUUopPhARwiEOyOUUwTgpBaYqKckKd0oRrCCwYRGUoTY7KBgEyRMOMook4UtT/AAogblMlBRtURN2SgqKoZMlyoEDXSgNoXhQYygc4Uv8AhAZPwoSgYFFIDYU7opjyiMpQbUBpEPaCgyoOFVMrdOSJW15VITxGpAQs5fGsfr12gdbG+V2IyaXB6c+421yu1DZq14so+hhW1nCdvKo3UrGO4WNO0q+6Q3eErgTVdkrSe6ml2tYSStDDhZmmir2kUrMU9tLQ7CH3SWB9k1gj4S4VPZW8XhOyOhwi+WOJhc9wwuRrOt7MRVXypOK1uZuzbY224gBZ5tfp4sudf2Xk9X1Ced2H+1Zvc45ccrrPHn7X8j2X4rS6kgB1H5WfU9MdM4ugkH2XknOdE8AO4WrRdS1ETnGNwJAOCpl40vxqcj0umgk04rUSNaO1FU67WwxmnTgfYrwvVOsamWU73myVz36iR+S4krH+Nf61eSR7f8U2Qe2QOH8rDOze81S81FrHwjcCtWl600ENkJNrN4Mp8Y95XSk9tWmjd7bCUzwaiNpY4X4Rj9ho8LjcbPpteD7hZWndtFnhZHPAIpNrJD+HOzBSQ2skl3OsXSpc7OSjprdAC/krPOKJIKaPY0klfZVGUOafKzSOAaQSqPVO0jsrIm01UgLiB2XI1cgsgrdM42uTrCPVPhdJGMqzTygtwVyOoTAN2+cBXzS2854XP1btxLzw1dcY4ZZOL1CTaCuKTuct/UZA5xNrC39XwvTjOnjyu69p9D6DTzdNnmngjld6tNLhdYC9dG1rAGsaGt8ALifRkJh+n4bFGRxf/K7zaWLe2EUUP9lKwoAUEeEEEQtEpUBQPKJ4QtAqin2U5KKiBKJSlUQKXaBNIIGvwhaFoElAawhfhC/JQtUEk90LNqFD7ICMqHKFHupdIUrucIInlC1Yg3YpFKCEcICpanKiIIPZQgEZ4UUtUYhlEXwl7o33XZzMEVAiOEDNRSgZTBAQcpsUgoMBFOKpM2kgynCKZMDhVtTAqBwiOcoXQRBRRRQCg5UDDkIhDNo0tCXlMBaUDCZqIl5R7IE4RCCIoX4RCCWmsJVEB4RCVEYQG6RtC1FQbULktqou9yK0A2maaIVLHZVndRXo+jye0AlehiOAvI9Inpu0/qBXpIJLoLzZ49vbhl06DXeSr4v1crCXktrutELzvB+FzsdpW9hsYVUl3aMR9qYi1NLaq9XCzz68xNNFWStq8YWN2nE36lcemLusGo+qIdIQZntaPkqt/wBXwSxu9B4PlXdT6BodXpnN1OnZI093C14Sf6KbDKXdP1MkLSf0nIXbHkw+VceO12Zuuv1DiQ8/ukj1TpDZdayaT6S1gIL9WD9mr0Ol+mtRE0NbNEbFknkLr74fp0mGTLDPX6kJda1hGVul6O50P50npmvbQ5Xmtb0TViUNZqaBP+1PbD9umPFlXS/GetIQOVfHKyHdYLnEEYNUudB0jXaVwcZGlp5Lgud1afU6d3uieQP6mjCs9b8a/FZ9JrZNmpLMVzaDdQzaCT3XMkme+3uY+quq5VGkj6jPI0R6OTYTdkLXrHPLG16BxDoieL4XOn9rsGvldOWLVQaVskkJcaqm8j9l5/XaunHax4oVRbwfKzZHPuOjpda+Nxa13uXb0fUQ0NZM63HuV4eOdsTN8klOPcqO6gWEnfazeGZRzuen0Z2qjcbDsLXp3h4HcL5O3rc0coJfbfFr1301106h+07Sfkrll4+mfy7e2AG2xwsuqbcTiE8Um8VwEk5sEC6XmuLrjk40zqBslZjItGsGTS57n4Kxp02aeT28ria2baTZW7UT0CR9lwta/Li49uy3jHPK6ZZZxvJsmxa5usmJjfkgXwr55AAOxK5esloc2vRji82eTnap1upVRhzyGsFucdoHyUZDueSu39IaIarrETnNuOL3u+44XX5Hnr6BoIG6bQ6eBvEcYb/C0hJaIBtckMUCoFFACVEUDygloWETwhSCIKVm0D8IqGkPlDlRBCgopSCJbRIQNUqJdJDwmrlCsKhSoiaCgqkACIQ7o2giChPhC8oiGkpxwjylVB7KBSvCGUD9lLQCKIl+FLQtHhUYUwS/ymHC7OYhMCl7pggNphwlAtMLQEJgUvdFFPaYY+UnZEIpx5TCkgKYZQOCP2TJBwiCoHChQFoppRRAUvCgQMCoELKYKoiI4S8IjhBCiDYQJU4CBvtyp3QCKIil5UUpFTsjaCAyqGQ2NvhHsiEVGtAOBSJQ4RUFujl9KcE8Fep00u5jXNOQvHP4vxldrpWq3MAGfKzlNu3Hl+nqWPuiVeHVlq5cMt0FtY5cLHpldCCWwtEbrtc9ju9rXAbWLHSVa5gclbGKOFeAqyXNfxhTSgGNLaIx4WPXaIO2GMZHhb65KjXLWmplpwnEtLmjCtZPTHAA2RXPZdJ+ljLi+slcuSN0bqrCunowzlbdLKxz2Nma01g4uwtDtBpJXhzWi6JI/wBvhc+Ox7l09A1wB3d8p67d5lpln6aPTsOFLFqekAxkuDST2K7eqwzJwsErwIwQb7crGtOky3GSbpMMT4NzQbrG1JN0lw1zI3bWXYafJAulum1JeGlx/Rwsk2qf67ZTlzeD4wnY5uvj2sqT9TeBS4rmQywzRyxsILaFDNg2D/K6+qAc973kuc4k5XLm9rscKW1yzkc/UdK0upA3wsIOSCO64HUPpHRzWYvUiJ5LHkL1AmIJAF3yiYHPBHNhT3ynyuGWON+vnkX0Hp5Z6k1+r233cP8AsvffTP0x0rowa+HT+rJX65SSVbpNGIngvJsHhdH1TQAwFLyZ37XG44T5GuNsbSdsYA+6z6pw3HGERI4Bpbx3tZ55Nxz2U2xY52rbTXOJwuRLhh+66uplBJ4XG1j/ANSuk3ph1slNA+V5/WzDdV58LodSn25ByvP6uYAXfuJ4XTHFxzzU6iUudnsudqZLJyrJpbKyPNld5HmyyKMuyvoH0Vo/Q6WZ3inTmx//AI9l4fQaV+s1UcEYtzzX2HdfVYIxDEyNuGsAaP2UzrK0nwiDhKjS5g3al4Q4U4QRQlCioUE3Ibj5UQIRTXhKTlS0CgJIQwgQoEEQJRJKU5VQUFD8IWVRChlFCygCiNd1DQGEC2p8Id1CcoD2SqElLecqwHKlqXlS0AymCCF9kBHlSwUMocIhxVKEpWpiFRhaaTBVgeUwXZzWAhEJQE1/CBxwoEAbwEUDBEJR904RRR/dTClWimCYcJR4TAIGHGUUp54ThAQieflQZAQJooGulOyGEQijaIKFeEUDWjSS/KYGkRCoEbUQTyoiEO6CXSgU/ZQeEEyi1TtlC0UUw4SqcFAynZC0SUAwm0UztNqRVbXcJCle0PbXCLLp6zSS7gCt8UlBeW6RrCW7Hn3DC78MoIGVyyj043bqxvvK2adx8rkxSU6uy6GmeKXOx0ldOFysflprlZmOogrS04tZdIoZe07uUocQ/wCFbIM2lbyirLwqJmBzTYyi61C41lblN6Y3s+Fog1TImUbCpfIHOIAIKy6lwaF0h+TKG6l1ONzQ0OpYma6M+0vAC5+sYx8lkFZ3adpBoEBa9Mas8jOOnNrImuoSWEn4lr48PFeFyPwrjIPdj5XRbpmRtFJcIv8Ak5lkcHk3wqCLJFYVzg0A0q8rlljGbzZVUWNGaCLARlWOFhVF1DlcrD2t+mc6uyQvd2VcjrSOl2tXPTW2lshzZWeecNYTYWWSX2misU0tjJyrMWbkmrmFkg/dcTXT3fhX6ybZG5ziAuHqtQZLo4XXHBwyyY+oy0DlcDUzbnLVr5y8nOFy3uzyu0xefLJHuJclA8oA+UzHD1omHO54Ffuqw9r9E9MMUZ10zakeKZfZvlep7pIRtiYAAABVBOfC436qd8I3lAcIlQTkKIIhAf3Son+EEE5QUUpFBAKHChQTKlYwjdofdVApTCloKifCUYCNpT8ICUFCocBBCltG0EEJwgiUEAKU8JuyWrVgIOFKQATcikEAtQBDgqWiIcDCiBOFBwgI4UJ4QNKEhUYRhOCk+UwXdhZaISC+yIKmhYAeybuqxynFIHF0mSgog2ga0RgJcgpwggOQrAkpMED90QBylB8ogooglE3SF+EUEBTBL3wmBQFG8JTlHgIojhG0AbR4QEG0w4VYKYFEEFFBRBFFOyndAbS90UPJRRUClIhBFEO6hygJU+yl4UBtFV2YZRI3916DQasOAvgjC4fPyi17tJM2QX6Lz/ZSumFeujkojOF0tNICF5vSakPAo4XX00tEZXLKO8rvRuDgKWhrqFLn6d914W0dlzdZVhdikG4VZdlWNtRo7ADyo4G8BM0K1rbVNMZioG1i1MIcCF2JGClldD2Axd2VfZZi86NGXzXmh5VkehLrDsBd0Q7clN6VjhS8lb/HHEdoA4jHCR+iPB4C73pbVU9mOFPyVm8ceem01YaCsz2FvAXemAzXKwSgZsJ7bYuOnMl4FrLKQBnAWyYe4+Fh1nClqRS6ZrQbyVjOqpxB4VM8tbs4XNkl3B1lJEuTTNqTbheFjl1F3Zys0kuSAs0r6FrpI5XJTr5nOcbP7LjauYgHOFo1Ejnlxc6guNqZKJA4XXGOOVZ9RJaxkp5XEkhVXtHZa05me4MFlV6Jxfr9Pu//AHW/5VEry9yt6f8A/r9N/wD7G/5So+zN4CfwkHAKYFeetIigEVFRQhQFAlE0hOMocgIEqEooqFL3QKBkChalogG+yhyoT3QvCol5UtT7oFAULQGSoqJeUpR7pUBJygTlTvahQRAqHlDygmUEascoKwG1OSpnuocIJm1CFEDaIlqAoqYKoB4UFolLeUGMAJggiF6HMaRURxSEEDKIGUAnCNCEQlTBAyccJQiFNJTph8qsFMCpoWAqXSUORBRThRBGsIJ3RCCiIYZRtBS8Ipwp5Sg0jupFEeQUULURDtwifhIOEQf7oJwp3RIpKcooqEpeFCUBKIKXlRAygOVAoUVLUQRu0BWsRh8BBFghY2mhldLRN3RGhaxndN8fdcrSat2lnMMh9t4K9No9QHgC/svL9XgIJeBkIdK6i5nsccLfr7Tcb9tXVfSNHOMWurG8OaCvI9O1jXBuQbXodK/cARwvPljp3xreMuVo4wqYza0M4Cw6wzQVc3sg0Apw2kaB2VW9qsc0k4KmazylbivbYTgABH9OFCRSxWlbzg2ssjhRVjychZp34oBQrPML8Ln6jv4W6UkNsrDI6zSOdjmy5K5utPIC6+qaAfC5OqbgnCbYscDUgucsU8VCwcLqzNzeFinppXSVzscx8eCe6zzN2tO41ha9TLQPFLg9T1oFgG10x7csrph6hOG2AQVxtRLeLTaqXc4nysb3Wu0jz2g9+Ss737h8J3ZVdUtMlV2iO3W6d3iRv+VUU0H/AK8Rvh4P8rNH2mM21qstVRG42H4Ce8rztw6GEL8IX5UDcIFAlLaBuFEtlEFBCgUbQVEQ5RAUoBDZScIBFRUTlDCmEMIiII/dDugBQRIUJFIAflDyEasIVSCEWUMo90SgUoeVCh3VgKiAzlEoAiCplT7IJyCj2QwoiIfCAwpflC/CDICeyfwkBTBepzMj3Q7I91A1opUwRRCYIIhAwRQ7IhFNeFAcIJggjRasBtJeURygsxWFGhKDlNlZBUCBUQMCpaXhQFA/3RIwkByiCcop7tA2gETz8ICCoeflLSIOcoHa7sVHDNjhVo7hSByUhKF5UQEHKa1X3Rs8IHtQHhLaIKKfhDlKXKA5UBOF1emnAC5S6HTCA5uTa55/HTi/6aeoabc04wV5WaL0ZiK7r3z4RJHlee6voxuw3srw8knTpy4fth6Zr3QPp5JF4K9t03XNewHdgr5y5tW08rodL6i7TkNeTtvBXfPCZfHPDPXVfVNLID35W2N4IXlema/1GNO613YJwWheTLGx6scnVicrrtYY5ParhJhZ06yrSa7o7rAwqy6wERkYW5iuzOKrLheSq5pNpCp3X3ylxh7GmeLNLJNJQtWyZNLLOc0FzuKzJRqJbaLKxPma147oap1OJtYJHZu1zsW1bqZN5NLka14HdXyzDOVxdfqQO/dJHK0uokF02lzNTMBixYVOp1gbZC891DqJG6jyu2OG3DPORd1PXNF0TS8zqtQXuso6rUF5NlY3AuNlejHHTzZZbI51pSDSsDaTEYWmWdzcKsrQ8KlwpBS5KDVHvaZ3KQi+VB9p0zw/Twu8sBVtrk9A1TdV0rTyNNkNDT8ELobs8rz2NLQ5QuVLngBLvTQu3YQ3KjcjuTRtotDcqN6m5NG2jcVNyz+pnko77TQ07ggTlUh6IeEFhKlqvcENw8oHPCCG4KWgNqcFC1LQQoEJuyBQAnwhnlHuoT4QDCihSoB91ESoFRAhdo8IICShahQRDIcoEqWgPwhwoogxhMDSClr16clgKnylHCYIGGUwStTDlRTBFBQFFNyUwSDlMFAxTNKQco3RRTjsiOUo4tMMhSoYJkgNlFQMThLah+EAUU4KBUvNIE1lARd/CIObS3hHthFMcI3hIDaIOEBBKIKUmkLQPdIHIQtG0BUvKUlS0DWpaUFQoGtS0oKKKbsi37pLKIUostbdA6nRkc2Vz1u0mJIgeLXPL468f/T1mmaCxpKp6lpA+MkDsr9F+htm8LoOi3wkFeWXVeyzcfM+raYxT3VErmPJ7L2/WdDYcSLrheO1MTo3GwvpcWftHh5MdVr6R1J2lcA4navc9J6gySIEOu18zJr4W3QdQk0uWmxd0rlhMkxzsfW4NUK5taWztPBXhendabIASaJXa0/UBd7seFxvHY9GPI9MJrHKb1i0Yq1xGa4GiCrDr2uNXlTTp7t8sluycqtrlg/E2+3HHwl/FC8OTSezoPNG77LDqpqOFTJqvlYNTqh3Wbi17l1ElnKwzTDOQAs+s17QSCf7Lh67qW0EB3ys/jtS8mmrXa5kQdbuV5fqHUS4uNUFl1+ufI4guwuPPNXJNrpjxaefLl2s1etLgQx2e6488pcTZRmdbj5KzFpLl0k0427A5TtwEzW2nay3UqiqrOFC3KvLUCzymhnezCzyAra5izTcqDJJgqpWSfKqJUR6T6U6yNFqPQmP5Enfw5e9D7ojuvjpOF7X6W662eEaXVvDZWD2kn9QWMsV29Y5+aQ3LOZMYNj4SOkwsaVo3lD1crMZPlLvTQ1mXKBkysnqAcqGTPKaGr1M2j6mcrH6ld1PUNpobhIm9RYRKmbIfKaG4PHZTdaytfhWB4UGndfCIcs4fhMHX3QaNygKp3fKYOUVdal2qw5Hcgc5USg2j4QQpaRKFoIgSp3tQqiKJSoCga0LUQtEQ3eFLooWpyUBUKCJI8IMiYZSD7JhyvY5G7YRBwhagRVgOE3fCrCe6UDKKWiFAQmukL7Ig1yFFECk37IEWUbRU4wmaaCXuiCpUpz2UBsoWgVAThT5Cin7ooqf4QUIQFC7NIKBAxwiCgb4QBKKY/dAfCUphgICDlHylB5UtFN2UCCndBFLNZRJB+6HZBAUbS91ByoGBRHCVEFSh2mytkLiJYhXfKxRkGQDyt5bsdGT2IXLO/p6OLH9vWaA7mChldiEEs93K4/S3AxtcV3IacARwvNZ29cZNdpWyxnGV4nrGgIc6hS+iyNC4vV9GHtJDey78Oeq5cuG3y3URkOI8KpmKpd/qmgLXOc0UVxnRFozyF9HG7jw5Y6p43FpBBXQ0+tkYOT8LmNC0RilrSb07MXVnNHJJ8K1nViXWLB8LjAdymMQcLFgp6xfeu0esZ74Q/6u3uuJ+GP+8qt2nN/rICnpD3ruO6xtPKwazq5IIvC5csZF28lY9Qy82bUuMX3qzVdQJOMfK4+o1JdiytD4gOTayytHHCzpN2sE8hzXKwykm8rfLSySMBURkLbUDKNrRtrui1hJU0K2stWCOm4WmOEUrCyuyaVjDPhAs+FqI+FW5vdNDI9oAWTUDGMroS8ZGFz58A+Fio50uCqSVbL3tUEoyhOEt+VOQpSDZ0rq+s6dNtjkL4icsebB/wCy91oeoRa7TieEnbwQeQfC+ayCqPhdLp2ud07UNkZmJ4G9v/KXDcSXT3xkSmRc+HXQTtBjlab7XlW7wM2uetNbavUQ9Sws3qfKQvrkqaGv1DSIl+Vi9Q+VPUTQ3CVO2RYGyYTsemjbosl+VY2TyVzmyKwSUobdBr04esLZMK1kmFNNNwdacOWNj1Y19qDWHJwQszXKxrkFwPhG1UHUiCirOVK7pbwpfZAbUKgUtACgihSIhPdC1DhSkAUQRCAqFQKIMgTNShEL2uJs9kw5ShEdkDD5RCAOEQcrKmTJRymBUUwqkT5tLhTsina6in3BVBG1FP8AY2oDaDeU6lQEUBwof5UIa0SlCF2imtAlKSpusj5RBtHulBA5RHCNGvyUL8IKdqQMDlEHykbhNZQFC0AVLKKNog+UtoA5QWWhyl3XwiD4QMShdKqWZkQJkcAAuZP1uFuYWOl7WMBNbTcdgGwses6hFpwQXjfX9lyW9Qm1fHsj4oc2k6do3db6uRz0/TGnEf1v8fYKZawm8msJc7qPRfTzJJ/z5rt/6b8Lu6qPaW/dHSwNYQAKCt17KhN4oLw3k9rt9DHj9Zp2+kO9gaV6HTiwKXmOiyb4o9pzS9NoyCPlWtYtWy+VTPBvbRWtpwExb7VItjx/V+nbgS0Lx3UNG5jiaX1PUQgsIIXl+rdPG4uA7L18PJrqvLy8bwjmUa4VjW2BS363SFjjilhLdhte6XbyWaMxpySrhxglVxEnK1NG7FBbjNpLHmyq35wtQYO4FpNoGSrpNubMdnZY5bri1v1NblkkAorFiudLZ7rFKCTS6EwttrK8d1ijnyMpZZGWcLfMMLPsIKyrP6RpXRRK5kecq9jMcIioRkdkHN8rQRQVbgfCKzPbtCpeKC0v5WaXgKVWaU4WDUEZW2c1hc/UHlYo58p58rOrZjZNKpRlAEzWklQBXxt7hakGeRnNhBuYqPZbHxW0qljQHkHhbkZrPViu60abWanTOHpyur/aTYVwgDgNoyqjDRIyCpYjt6TqrZWASjY/+FtMuOV56GKwQ1pJ+FphmlB2Afp7Fc7i1K6xlzyiJFgZK4j3AqwPsYKzpW0Si07ZRlYRImEmE0Og2QWrmyWuY2RWtlPYqWI6TJKpXtkqsrmMl7K9kl4WdLK6LJBfKua7OFz2PoBXCQqaXbc1ytY7+6xMermP4ypppr3YTgrM1ysa6ioLwUVWCmBQOD4UKQFNdoD35UCCl2ghKAJRKiAdlAVKQQElT7oKIMlJmoIg5XtcTDlMOUtplKG7IgpWnyiMH5UWGHCYcJSiCFAUfulGUzUUcBH/AAhaYKKYX2ThIEQVkEgWocBT91CUEu0pRQ5RQJwhfhQqAISCeURlL3yjdIphyocpSVLQG/Ca0hKhcgYlAEhKT3SvkawFz3BoARVhcheLXI1fV2NeGQAuceCQudNq5pwWyP212ar61m5O5qOpaaA06QF3gZWTU9QlmZWmadvc91xD6cYY5zHEuOM1/daZ5ZiGGN21h7t5WpjE9qmsiaI9zpCXE0Gl2SVdDoxFpgX2KPZZ4YxqNfG98VNhBBPly6GoDmEB/bsukjLNrJjptDK6Ee84Dq7r3X0x0lmg6XpomCnbA5x8uOSV4XXRmVmnjZmJ0rS4H7r7BDCGsioYoL5/m35Hv8LHq1ljhIcMJddHcJxldQReFRrGflmxwvFj9e6sPQH+0NqqK9fpDgLxHSXFmqe0cg2vX6CS2rvHKfXYi5C01YWOAkjC1MN4K1Glc0dg0uZroLZldomxhZtQy2/dajGU28X1HRg2KXnNXpC11AYXv9XAHXYyuFrdJa9nFya6ePkweWbFXPKsaKW2WDYctVRaPFL2S7eazRWssAg8oSxOa33AAJne3hZ55jwcqssOpGSQVieCbAWyQ+0mwsxaVLCMcjLBWZzCBXC6W1Z5mjcQsWK5kjCSqwy3LXIzKVrAVnSqGMzSvDMcJwwNTVSaFRaFQ/ghannCzScFSxWV4WWflan8LHPfdZqsk1fuudqX8rfLYXN1TuVijA85KRuSo85UajNXNaVphYLF8BUs4WuFv6QtyIu9MbeFS2Ju432W11NDR3PAVWoa0ZOFplW0NldzgdwhTS+nDnul37f/AE2kjzS39P0gcHPmDt4raOwCUXdK0Pqz7C4i+/FLW/o8nrmgC44NHCunDYo27GjIyQg4TyMDvUcGAjLeQsVYxTaT0jJA6mTg37uCFW6FzS0PbtsWL7roWNUD+ItxAoSAWa+VSQxjGtDpXuvlzcALGlc50TqLqVJcWnIIXXNtwacOeFhe4OeWv2ijx4QUtf5VjJEr4mVbHKsxvH2Qa2yK5klCrWBu4chWtcQoOnHLZGVoY+zkrlRvWmOT5WbFdNjxSvY/hc6ORaI34CxWm9j7CuY7ssLHq9j8ZRWwO8pg5ZmuBVgcsi8GzSYYVId3VgddZQWKBLaYIATlRS7KBQFQIE4U8ICogVCaQY7wi1Vk4wmHK9ritBtOFUCmBUU9pgVXaIOFKH5KPZKLTWoGCZJ2RvNBFOUQl7IqKYFEJUzT2WaHBtBC8oZRTIXlKpaCeULSk0VL8opiUt5QLglLkD7kLoqiaTYwnGBeTS4mt6o5z2tiI21yf+ySbTb0D9TGxpLnDHYZWGfqRZGXs08jgPIIXDB/GNIl1EtXYA9o/hTcY4trNRqQ8g4JNNC36p7NY6nrNQXU0QtHc4H9ysv4mXUT7mF89Yu6YqdPpnSvDpnPeQb97rFfZap3sbIWhtNPZvCsibJJEZHEySkGv0x4Cm9sZ/LaGYqm904bGxhrJQiHqPsj2gcqokr4i0sLA1/YhZacNxaDQF3fdPrh6u1zIy1zTV3hNIz1tNGyqcXtBPFoOhpotsbNxO6rPySjPbmNcHkusgKzVMcSXXTKsJP1PYYgABXtPcrrIgPlIGl9RtASt48r7TCy4IyOKC+M9VhDog2Nw32HGvK+x9BmGp6VppOd0bf8L5nm/wDUfR8K9VrYzCo1cZLStzAAFXM0ELySPZa8mxoh6ka5IXptBJQFhee6mzZrWu7/AOV2enyWA1y6xzr0OmkoLdG6wuTA7aBm1uidgLUWNdBKctwgwg8q3FVa0ObqYlytVBdkBegkZeFz9THkgLeOWnLPHbzGqhABBblcaaMtdQBXrNVCXHhcjWQGjS9vFyfp4+TBwXuJFd1llaasLo6hgBN8/CySDC9LhrTA+I890RHQpaniwqyCBlEZXxhZJW2cDK3yZF0skizRgkaMqtoorTI0lKGH/wCVlVW3dyi5tBXbcIOA2lBkf4WeUYIK1vxlZZbKzVZZAKWGbyVtl4KwTnysVqMU7sGlytW75yV05+T4XG1R9xWKVmccpmqs5KdqRlrgFroadtm+wWDT5IHjldSGMuZ7ceVuM04IDi8ixwFknfvdYHC1SDY2rtVx6cuAIaTfhaRNJEZHNoOo5I8rv6eHe9u1tWRhVdIitrmEEGrC1MlLHG69p5UtJD6lv5jnujLYh7SeaVIc4Nfs4IC3SenJA0CQOa+i7FKkwgPcwUPnssVpg0jmyT+m4PbJdU3utRc/TzU5wNtw1ywzPfBqCY3BwqyR5XS03oztEkxbubiuVBkI9WEgs9+7JXP1Mba91Nd/SR3+66bW7XPLHAtzY7rHqIhNGHDgWCoMAYWOIIymDkNzrFiyKF+QnkiEJJs07i0FYJc7GAFeY9zRtyVUWvHIqxyrdPK9pAw5toA6NzSLTNNFaHvbLYwLPAVWp07Iy10b37jyDwoLY3laY32sLWOaG7+TwrGOIKliulG+qWhjvlc+J4Iyr2upYsXbexytByFijctDHKNLwrmlZmn5VrXBZGkKd1SD4KcFBZeVP8IA+EbwgB+yFpr+EEE7KDhRRBz7TNOEt/3RaMr12uSxpymCQcJgoHRtJdJgga0w/lIAnCgcI2Ak/fKYBFMOEbtLlS0IsaEVWCUwOFldGtHckJQKLo9pSUloWimKBykL0HPAFnAQFxyke4tbZFfdYp+owsdtYd7/AAFk1GpkmZUpx4Csm2dl1eqbI5zAQ7PZY3QRua55dt2hGSaD06Y0xiv3JWepXMwQQ0d10k0i7TxkCrzza2RyOa1zOQa+6zw+5rT+6thbC7VMM73MjBs7cohgzbmS9vjhCVjXRhzSAG4IKv18sLnksBaBgX3VLHufcbADeapAuxpgD8jPdWseI9K7B3E+3wqnscz2k57hM+3xtidRANgBBU5z3MbwM2RSWeN8kLHgDa14yOQr3AxuLSMHj4Q17gzQBgBaC9pLgcqjohw2bBuLf/dyqJo2+vthJNNuyO6udt9PcCTjCrawujD6O5dJ8ZJrQDonGF1Tckr6d/ppq26z6Y0xP62Ww/svm2iDZRKHPDXHAFL1v+k0vow63SmwGSlzQfleDzsepk9vhX/ax9Jc324VLm20rUKczGCq5W+0kcrwvoPL9baGzxnwVt0bbotKx9cOWv5o0tfTzRb4W4xXXhcQBa6MD8C+FzYyO62wim3yFpG5hyrQa5WSN/C0NshalUXuCokaHcqxwSubi1UYZYmkEO/hcvVwXxkLsytINhZpGLrhlpxyx28vrtLVmsrjys2uNr12shJBIXC12mNGha9nHybeXPBxX33SEW1XytcHVSzv8d16NuLNKcG1kkF88LXI3BpZnClKig+EQ0K0N8HKYMoi1NClzRSqeMYWh/OVU9l5CzTbHL3WSa+y1TDBWORuDZWa1GaS6KwzZW6TiljkZn4XO1qRzNV+lcTUk7iu7qxVrgak24rJVFqyMWq2jc5a9PGXOACRhq0UbpPa0Z7rrF3oMbG0e45JTdPjGka4lgc4jBKVsW+e+byusjNqh7Xveauv8rpdP0zjEPUBaQa+SkghIk255tdX0XMljNe5p7qUhnPMLNzRgcYyqIwza2+XGyrpC71jZFfCzsDmye5u5hwD2CzVbIaZuNij2IRNMcXFhcCPOAUr9OHQ3byQf2Wlkex0bW5G0E3workPax8pbINhq8FSGLZMWh7SQDTvKv6k0vG5kYBH+3usTC3f7g4dhfZZGmRjiD/wUGhroQGs4FV5KsmZbmgO2PqvgrNG9xkxy1wB+yCpkUTiWytrtzVFMY3xARxFkkTjYa/Nfun9PfqCB7QcrWyD1DXgYQcl7AQ+nFsnZp7pWRSNZuMbi0ZdtW6fTvjAEgt5NghZ9LFIHyyxzOa4e0tvCBoNjw1zA8duFeXBvsLQ93zwowhgLZHGxnCrD7DyzBb/ACgrfJEJvzAaA/pSteHt3sHsurVgY4M2OGHZz3WR49EuYy2sOaKDVG8LSx947LiNkftLm8A0tGn1DzzVLNiu1G8haY5DS5kErX9xYWtj+yxYu21jvKta7CxsdlXtdfCi7a2uJ7KxpWZhVrTlZVe0o2kBTDKA90bQCIQQmglGQi74RGEHN7lM3gJAb5RBxhelyWhN2VQKe0D9kwSBMDikDg5TBV/umBUFg5R+UgKYFFNaISWjajRrRVdqbsIbWX4QLku75WbU6pkIJcR+yhtpJxhUvlaxtucAFy5+rYLYgCTwVypGT6g7pZCQTwFuYpt1tX1aNji2Ibz8cLnv1Wq1YIeSxvwljYyF1BpJ+UXNeGvIFfZa0yZkLYwNmXNUjY9she0vc7+AlhfLQuwO5Vwmi2kNJu1dDPIXTzbJmt3eeEsLnNlDCAaO20Jg5k++Qe12FpjjDox6WT8dkDO09jawlaX6eAOhfudu28fKq9PUxnDDtBslamweowuDSXXdXwqM0jW7rIv4TaWNoeHTlzQDft8K50XtbVte4d+yJicQ7dM2weKUDOdFMCIGSPlztvhc9zfb7nlsvDq7LbEWlpddFubCztYS4ueRZN7UBZJI1h3bCa5IWTVvqF4Jc5xokdjS2COQDeNpY402s0rtCGue+J8QEjwbc7sFQmmf+IYxzMl+dqsBdFqObvFeFVoXGEMjDA1zPbfmlokAex0o3WT/ACukRGTxRy08ht5uuV0/pjXjR/VOkFkRahrmE9ieQuG0GF7fUognv4T9Ymji12m1OmwyNwcR/tXHyMPfjsdeDL1zj75C8FoIRl/Thc3pOsbqNNDI0217AbW+RwohfFxv6fYrz3Wm/lu8Wr+mn8pthDq7L00gPKnSswM/ldo5366sWVrgdtFWskWCtDOVYjY02RYWtgG0UVijJwtMb75WoLD3BVT3AK53FhVSURkZWhS4gtVDxYV0gbXJBVN5ytRis80Zd2wubqoCbsUuy4rLqAHD5XXG6crHl9bpRkjBXImhyV66eIZsLj6vSckWvThyOGeDzkw9xCocwusALp6nTFpPlZXRm6XeXbhZpmbHQyFK+KpaGtFhB20DhU0xyMJ+QqZcClqfZwOFmkFAlZppimNjKxSZsLfI1U+jZwueVbkc90Zv4WaVmCus6B154WaWCroLja3p5rX3tJXndSfcV6nq7doruvLOjfNqBHE0veewUnbGRtHE6WQNaLcTwvT6Tp7NNDumcA/wQp0zQHpQjdMwOnJsn/an6nOHFu+9x5yu2McrVOrmMk4aMN+Fs08LhTwN1/0rHo2maUbWWwd12YoQdlWCM8q0X+mGM3EBuOFNK7Y663E3V9k2pLpPc82f6RSdlzAQ22ME5JWbVV/rO4jJShrmteP6XG8eU5c31tjcwtK1wxtqtxaSMFZVkEhsMMha08lXSah7vawEgD9XGEhmcHBrombMknurhqC4SBrMkVnuoqnTyAOcK5GD82ufrb9ato93hdBkcjsvaG4wknjAeHE+xvF5yiF379MwPbUjTRPwsT27bIyHeFrdGHR+sNwaTRB8rM2/UsDbmvushI42vIaH0QDlyME5ikG80wYKavVG542OBo0hqI3slbG1lnk34pBtkmjoNw7PICxODBJI0Vtsn9kwicxhkLSQewVTQAw+0g2qGLmPYC3v3rlXaRpm9QMYKHNhZoYWyOxYIPN4W12p9B0mx1mtpcFRz9dK/wBcBzxjAA7Lk659u3Nd34XWkjYSXvrPdclnp+vJ/VmhYUCRNeAazZulc2dthsjSB/7Vpa1rWZO0NHPZWwaMTQ+o5gI3VuaUFEXk0K4WqPVhpAdaJg2B0bw6+xpIzTAPB5pQdCCZrxbTa1NfkLkGKSyY248p2zyhvtrcMUVmxdu4xyta7IXCj6g5riHsz8LZB1HTvH6iD4IWLGtuu11Jmmzyskc7HfpcCVcx4Iwsq0g2iCqWuVgdaBnC0tkFEG02KUHKCKUIgr1OZwUwKTHKiKuBrlMMgKofZPagcJgVWCmBygsCYKsJrpQNal+VTPqI4gd7hhc7U9TeQ4Qwu+CUktTbqSSsYPc4D7rDP1NjTUfvK4k8ssjbk3WTSRjXgXkEHutzFNt+p6jO2+AOyyCR0kfvySbtHaXMPqOsHOE7Jo/Rr03A3ytaAaNrm4aCQmeyZ49vHwrW/h5JAHNLccA5Qe1zGhrSTudz/wAKoqLh/wD1f6e6JlYCC0k7uwVkmnLGW8e0/KywR0XNeKJNAgoNj5mPLRGKGLJVTREJHOlbTh+n/urZNM1sYG+qOQDaWS6DSL8fKKrkiL25kbIwCzS0aKo4xHE8N3ckZWSKMNnp25rXZIGF1GwMgrb7QOLKB4pXucQ43WRYVxgcJAPUAvLiq5AAB6YI/lSGGZ8u8usOxZ7BAsrwHigQ0dyqJy2LYLOTwRlbNW0n02tcXOByQEzngAAsac/qdyoM8JAbTGhgBx8qvUPYyNxLXGR39XNK2dvrMpjhuB4+FR+HMQ/MBt3u55CCyKWSCBkbxh43Z5FpjqY3yMOpJxj28/ZZwK9ziceTwE8jQ+Zr2gYCoeCL86Y4BaLonytsUTpXAbtvwsM5dHq45J3R7JBdt7HwV0GPAYS9201yt4pVE0UTix2xxcwUSSpLAzVxuFUKOPJVrYXPLQTTKulcGPZCwbQHcNN8rVm5pN9vU/6ba86norYZD+dp3Fjh4XtGv88r5P8AR856X9SPa5x9KfDgf9y+ol+F+f58bx8lfb4c/fCKupkOgcO9FUdEO7TsPhNq5LjcPhV9CFwtI8reF3DKaruBmOVGuLSrdvsCqe0iltGmN9kLXHdWuW1+1wtb4ZDWCqjY1woqqRM3IUezdytQZXlUPdWVpewLPILFLUYqmSQgKgz2COFa9llUGLPC6RiqXuJJtZZGWugIrVb4SOVqVixw9Rptx4tZn6L4wu+7Tqp0PgLpOSxzuG3m5dIW8LG+B1mxwvVPgJJwFml0oJOAFuczP4nlXxOrAWeSF3BC9LNpcVtWd2jNYblS8x+N512msos0m4ZXbdoyCCRhWM0ZJBK55cm25x6efl0nxhYp4NrCR2XqdbGyGO3uDfhea1Mo1LpGxkMjAy5wUxly+JlrF5HqWml1Di2NpzyfCt6fC3o8FCFhllyXOFkrZqdTHCNhJDMD7rl62f1ZGAD2hejHHTzZZbNqtU6yXOJlI5XN08b9Sbmt1G7V7WtneS0EGqvwulBpnl2nDgNhFnb2W2F+iYXbbjETNtCl0fw8WGl+xzcXRKDWxNjY0guIJGDWAqi/cSGu3G+xWK1GmAsfrAZXPezj24KzzuY9rtMKEhO4Hx+6ag1jSXAyHkDFKiW2vNMp3ysqqi2Qv3EEk/OLWy5GtbK2nEjjtSzN9MyhjqFrZHp4mglkhp5trb4AsFAHSsle0uAushaNNue38oXm6vhZzBu1YawYrK0aeJ0TGyAEbh/Cim1Mry8eoCG0BQCyzNE8dRENAybNLWdVEwVLHusHJGbWN745GACgTyP7oMzrfD7HGwR/2UA9F0TjT7Nq1zTG1ojaHeaSyxtkPs9pAwflZoqieHFzHkZzasjcWRtyHGiLWdzPRI3e7uXDuiwCYkx2O1Ii8yODeaaFS1jXyOl3EC8/K0RwGnmTcXAWB8KhtPouadp5ASKv/DmS9pDWc4WaXSwsMjc2RlxPJVreC2Cxn+o4VJtrqPuPF9lpGDVhzIiWuaQzlZ9HE1zSXD3k2Mq3VhzY3gUQTlU6WPcQwPrdi/CyNGw7ixgBY7kFBsQja4+lK13AzgqOBA9IPyD+op455Gt2PO5oOCFQZKZVF7azkp26nawOkkdvHbYDYSSBkjRvBJ5Vrizbu21QUFsusZJsB2AkWABSzloI3C8ckFZpXnlw+1KqYP2bm2K5CDcXP924As7FUAbRbhQKrdO98hkgYBtbTh2+6aOcljWuo+EFzBX6S7I8oQS6ps2xkjq7WrIWgNvfZTmR90HNocY7KaVtg6hqdtPjaQMErRD1Zgv1GkfK5j3ucRuOPhUiF26xwTwp6w29PDr9PILbIAfBWhsgcAbC8dPpHNfh1g5xyEYZtXEbEpFcKXBdu63hMPlVg4HZPa6smCYFLx2R5KinCYJAiD2SiwHCJxm0ljjusPUNayNwjBs8muySbStL9Wxj9mS5Zp9dZcLApcxm+Z4IeSDkNrKsYx5kJLe63MYm1jNTHI6nH7mirfWlZuMb3YwBXKWNx2bX7TR8LTG6FoDnWfIC1IjM/UvbG0FshzkcWVS1zp2/mNxu4JV+pl3uJ2gNcsZEu4uwGjhBo1Uz4xYawPPAHZZo3ygHcA7zSMLmudbSQaza1RtLW7SPd5QZY2CUbmgtr/KvEga9oLrPnwrYNOc4oA5KtlgMQ3ENDroYu0Gd0jnbtziWjjwo124AsYHvCc0+IteNpHLh3VMbdQwn0me04JpBrZNHbWZDj/TWFXrmxM2vbKQ4HI+FS4Xe5h3ebohARsDjkmvPJRTlzJ3HJbYoKzTxuaWtw4g/qcUWN2ODmgANHHkqmCRxDnEOcB8clB1NPBI+x6jRSfTmZpcXAFoJG7ysTNSdrf6ATXyugIRgCZ8zx24CIzNila/fYDbxflW+l7S4vaSMK4zOnbsfYaMAAZtUi3O9OiQFFRzAHbmbGUK5TarStljZumaXijd8BLIGPd6TyWg9x2WSXTNikMZt4P6XgobQ2JHM9obXKnoNaWOotDsXeVbDGxz/AEmBu4+SgQ/TagtcwPo8g2FRVqtM0ROZCXOdGQ6yeV0YXxavStB9sgIIvwFVp9W52o9I6dghdlx7/wB1WBsD9PFW0Hc1/evC3ildRwcWhrf0DGPKzNkkD9rnAtacBBk0jTgANcfd8o62PZPcJLht9y2yr1dHURTbHCVjrB8r6X0jWN12hilYQXVTh4Xz1xE0W2QUWjBaj0jX6josr5dO/wBaO/fGV4vL8b8s3j9evxvI/HdX4+g6l/seT2TfTPuhu7G40uUzrGk6jpC+CQNkr3Ruw4J/pLUgNMd17jyvmccuO5X08rMu497G0llKuZgOQrNHJvaO4C0SRtIXWVhyH2HK/TOzyhqIqJpVxPzRVHd09OCE2Byl0X6cKarBWoM37qtwtMDWEavwFqMVQRlIWqyQVwUgtbYTZXZBzLHCsZ8olVGZ0VjKrdFjFLaFAwk4CmzTmuhNcZWeWHvS7ToKFlYtQ1rb7hNmnIljIHCoEfhVdR67o9MSz1BJJ/tYNxXmdX9STytcdOwRt7d3FamNvxjLPHH69NqHQ6Vhlme1rflef1/1LEdzNCw4H/qyChfwF5vUetNJ+bO98j8288f9lhkkbBJtkloEX5srtjw/158uf+LNTqny6t8s0rpSOcqjVaxohc5pdud7aHZcjU64uc95G43j7KiWV8sbnyOpxP6BheiYyOFtqqTUbptr3lwCrhjdNI7cC0N4B8Lps0Ve4MDnEAk+E0EDS7aQ4efspUJptOcFoaGd78rqaFhjjeQ7fJyR8fCA0zXVJutrThq0xzOZuZHA1u7vazashPVjjbu2b5HcN7hI4U4CNzXlx/p7LXp2si3RSBols+/sFQ/TzU1rHM23YoZWa0oqJ05MT3BjeXOFZRnlkkmILDsAouTvbsB9wLvJSABj2GaQvLxR/wAKClwBlaWDjurywye4GgMiubV0sDiWiBjC1g3E/CXDpXNF00X90DB5jZZux3K1aWSZ7ttcCxQVc0ZdExzHhwIGE+klmIkY57GbiBfwFFUakSSEewt/91Kt0ALxtbeLJW06guhED5Wlg/qA+bWeUMY9wjlB3CwCUGXgFsRcHV7jfOFSx0rtzA3I8eFawmFkkjm4JoE90sk/6aNgjFf4WaFG/wBPY5lAm93lV6e2BzxYIJwf4Wn8S4RRvIEjWODXNHNcKyR8WoMjmB0Ud1RFlUKbfFvfyMGis8FvO1w2AHBVscLopd8duZeLV7Ig/VETuN7bAHFqQZ5opA67NfwkMpbGG4ZfxytTmuLwHOBsXzwsU4shxGFoc7qT2RFpj4ecgquMhrA+6N8JHOGp1pLsMaCGrdFp3UC5oMYF1eVlGcuD91WLVjJGNOP1DvSYtYwFz7+KVJbuFtIDrtBfKZNQ/c3YMZKrAe11yPpg71yrBG1pu7+U7oybcQNoz5QUSuEsDQx3B4pZZD+XtG6rza2nDyQKsVSy7HOGCDXNoMsTnMkLrI7K0D3gN4PhAtN3SshlqwB8ZVCtkewkNNEYoouc81uz8hXhokc7hzQeW8rSNPHFKwOeTC4WD3UFMTt0dNsu+VqgLw33CnDwg90McYcDfZD1Te4ZFUCMKi4RF43uft7Wsz46e4br72ERI50Zac1+yoe1p9xed/gKDuMKccqthsDKcLRDog5SIgoLAm7JAVTrXvZEBFW53JPZJBn1mqkpzYqFdyuc1zN1uGe5IRmbMAbIIPfyswY8ipMfC6SMt8bmNAdGbd2NI7nPaRu2uJwVkieWYkaaHFd1q0ZLXuc8HPDSqA6KQEe/1PlaPVAxy4BO4NouJPnCDzGY8YNd1BSHjbulq+1KtzvUFODhSAILN2084VulLrAYaYTZvhUJIAW2KBPAV8Rfusi6weyd0TpHAta2wFdp9PI9zmhwaGZflAIXukcWnn4R1TiGtc8i6wFY/Tx6dxNu9QjgHC5sj276Fn5tBo0lSOcJC5rasUmBlbYJoHgLPC04c0kHx5WkzNdt9SySKFKAGNzPdL7gRYopo4CYy99AXQAOVVI9zmAOsV5QdpjQe17jIc14CB/TeJG7XNrwUrnkPcB/ZOHl+XUA0Vjui1zXtBA/jhFGON7APy83hbtPtDBvJyc0crPHUj9jbB+RSYxRwvsscb5o90Fhjke57ocM7eU8Ac1xdhwGMJmbmgN9J1O4b5/dXSyiHRlrnNY93jshpy5WObqXAmnOzfNBV6lpjb7Xk2ayleJgduC08uHJVz4XTwtABaOb8oB0r3SOeQNzbaSrJmtdqA2O9oHuJ8qaSAxFz3EuJ4BWv1S2NxLBfGR3QVevGPYTtbycpD6b9r4/bt73dhW2WaMMfAHPJ/urfWAIfHHHYFFoGCrKiqJzdQQ6MjYPHdXv2tlqAuLuXF3H7LnP9TSahnrsayKUbm7Vvfe0bazwF0iHb6jXNc0Ah147rJHM2Jsj/wBHusFwyStTyWtDXucHjiuCsGoax7yA/fR/lUWsdJqZi9odg2HA8LpQa3WdPldJE+OVgGQcZXJhkk0uodJFtIIosJwnm1m/d6zdm07gG97XPPixy6sbx5MsbuV9C6F9baY03VRTQuqyQLH/AHXpofqjpmpaBHrYQTwHGj/K+M6XWCR5EUbmuHNnsjLLuP5u0szWP4Xly8Kf/NevHy7r/aPtE+ra73Rva5vlpsKhmrYX0/BXyjREQwtZE5zHm6olO/qnUIgHQ6x7heA7K53xc58rc8vH9x9y6bMwgEOta9YQQDVL4zpPqfq2hdH6U8L7buIfHwukPrvqz5Gx6tmidYu2Aj/lZvBnGp5GFfQXytvnCnqjbyvmcv1jq3yuDdPAW8khxTSfVWt9DfDp4iasDcUnFyfwvNx39vo7pmcFyrMzBeV8qH1x1F7iz8LAx2cmzZV8v1P1IDaS3ddkNZwPuVqcfJ/Gbzcf9fSxrGEXeQq5dexgO8gDyV8r1fWeov2D8XI2+7QAsVT6psrZppHPAvLibW5w536xefD9Pqk31HodO236mMdqBs/2CxTfWelbEJIfUkFE4bXH3XzTp0Umnf6kB9NwdYcRdH900upcY5ZnEXVO8/stf4//AKxfJ/ker1X111OaN5h0keng/wB0ht2eMcLzmu6vrdYZDq9VJKDhoa8tbX2CwSasv0x9ST2mjVrmQl7X2fZzi7XbHhmLjly5ZOoNQ6KEPY0Mj+2SudPqTb3NtodeB2Vk7HztY/cQAct3LLMx+WNvc7FrrJI572YTucGk0XgZ7KoOmnc1scfvF25yhZJGKePfV0FpaHsYx2Q0i68J0jmiDYNjwMnJCsi024CiKvk+F0NNE0seQLI5PKhgdYc0Y/wpaukja4tdFGCHNNA9iFv0sbRDJ+IYwSNxYOSFUyRmnY6SUHc7B+FXJqIJ7dRY8gimrFq6TUxCw5hBAAvP9la0u1Onc1wEZaRWMkUs8e3UASOO2QYDQP5Wgy7m0XOEjDl3e1mqMcbRp+cg0Gd68pHSDeaJaiJS3dubva3mQ9k80UJlAazc9wBv5QZng0xzQHbil1cHuaCRuByPBV0YqQO2AbLwUmpYSPzLbvdYP7qBNOJtNI/c72PFUD2VkLg55Iw4YWmeBvqxNkkaTts7fsszYi0kgAEFA4MkZ3FoeM4C2aVscUbS+Nl8+7Kys9zC4k3dD7JptQ1z72NPAAUVfMxsjztY3YRxVLm6nQxDaRIQ4ZGcfZa9SMgttgPAHZI9h3CR7sDAb5KIzbHuhjYX5PIOVXJp9kjGEh27grROYmue4kiQcVxwlAZNtZup5H9lmqpiYAQC3aRyb5WxkEE8dSPLXjt2KqdJC5pHtN42/IS2dxHLCBX8LSrTKYaaNpFYJVO57iXMcCe9pNUIpZI9od7BRF4JUZGx2GtIc3gBBbHC1zHOGCVS5nv/ADvcB2vstTA+KOqBcVk1Lbike48DsiOVp2NeZGNBa1zyB8ZW2GMiL0wSL/qOSqOnztZAWPaHF+Qb4K1bGxPJkkqvA5U0hdPp2sJ3HjymdGx4cI9gPwtT3RzNb6Tew55VILYy5ve8/dNDJI302C/03lNJiN20Vv5yrNXqXSyNeK8EAIlgc8OeLHbwmkZQ4NYS5o2FUSRsxTjR/urJY6kObaP6VTqW7mBwBARVLwC4eB4TH2u2kfcpPduBcStDD6l7vfY47oK3+26Nbj2PZQl72t3SOO3Ayg6MCSs4V0cYaRRDgfKAaOEvcRw4rUGiKP03EFw7oaV4DXAto2iPSc4lz6KCtr3jJFi6ynEQcHEbrPF8ImI1YePgFPAHgESHHwg3xfpVgVMJxSu7KhgiErSmvCsBugfhclz5nyOBdzxa6UjnAYByuRM6QEvewj/b9luRLVL9W4AsfdNPCkOoMsx9txgYF90Wtj2l0jnW7OE0OmBYauzxXdaZaItr7c47Q3iwtAYHEU6yqI4jETusgcAp26l2nc4bW0e9WUVc0uDXNsZ7KgOvdixdKCT8Q+xj4C0eiGsLQ0iuE0K2hr2FgFAG0scO+TYTWeydsbGEmyVa1xLxtABWRqGnoltm28mlXOHMHta5ornyqodRI4SNc1xJOCBilrY98rWiV78cBaAayQwh8n6SKty57dhdIQWrpPkYKjLi4d7K5zowZ3hjLG7twoCQ4fpaNtZATicY2sBrylYHMeWk2AcqSOIJG2mntSgMxE7gDYrP3UY13pF36W3XPKLInOeHCiwc5yrHDFvPt4x4QYXznTkGiRZAIHC2RPbsjDXdrWMMLiQLLTnK36WAuDWBwIAJtFWwy00Pu5AVra50rHn2tN91jMI2jbI0k+Ag2N4utx7lBv1ElHa5+5zgMNxtWPqGk1XoxyN2FowQXZWmHSh2mGpBpxdWSqnMD33I72ZOOUGDTtLG/m8XZPhXv1JY2TYSQAPbXCB3NNYMX+5RoYJLu2OCC6J73FklBvcX4VbPUnG5xprHE57kqRMh9VwaXGQDb7jgK5rS6PY8jJwQgullYx+na59uDtzjWKVGr1Bhmc8NJjdxQ5WR0bvWbvlGwfq8BdPSmN+mDZS1znWWnwEGQSOkO2RheXZsjgfCPqFk7WMILGn9ZP8AdR0gY0APGRSpia7P5f5V5taiOoQ5gcTI2V2Fhma1ztxbseTgNVrIRA1rhIHMccVyEY/fLv07g7bnK1BnaMlu2+BXlSTTPbqzHPEYm1fuz9lqY525ridrXH3isqOuXWg6qZxaM0eSBwtbRz5w7TuMjO5qiErZRuBjBDjiits5EkgjeRV2MKifTSMp4ZYPB8pAonc+RrGtdvF+7wn08G11v1BdZuvCrm0b3acOBDXuPIdwscWnfppGtLjbjk3yg7ckjYhbnhwoUf2QOo0ztOGBo9UtwR25XL1R/D3HI0OFX7cp2SR+g1skbmuJrjumhshcAHOjALz58WthnBi9n6cX/ZcaH1A9zmgBv6dyjZ5mTiMZ3WHD+6DsxzwiFu4e5xxjCpl1cTQ/1A/cONovlYpHRg4ccCqCqHq52uDWkUayporoP1zXxYjJfVUsrp9RKRTmtHArsqWMaH+8ybj+mhhRkWobM4sIbE3I3DJQO7VyMZVm7Ies8T55C5rTua2rtap9RFLpyIwPUrk4VETJSPVZYc4d8BBXJ6gDvTDGjk3/AMJoi4x3Qriyr4dP6jQ12LO5pP8AhXHTtYQwOBa48qbHJbpZoZfUdIX0awtkQLzbrs910TGYmFrmlz7qmi1W6AtaSDWzPys2rpmh08ksoPtDP6ifCskDPXcIpdzA2rrHwriGNL2SWBd+3ujHTy2K2tiaC5zRzam1ZYva5zYP1nJJVw2Nf+a6g4ZI5SsrZM/9AadgNcrKXtkmMbXb2t4cRSg3alj2AMjLJGEDcTyUjImxv3Nj2mrI5wqW7hqGudIKIoE8BGKadjpSdsnY12HwoqvWP2Na4B2CCCwfPdaNVFG6GN7XbXnn5x/8qqBrzIbG6I2aPbwrJYzMf9u3HPf/AOhSgCNxayMPaWgcHgpdWJBcbJAHdy3NINbTHsa51A9uVoZULjtaeOTX91Biic9oG12/zYrKgkkm3MdH+k/ytznQfhxI4EvvNJWsmkdugaaLu/hBSXvic2RwG5tCiVomewuZuq38lvZHV6eKWMtmb+YDYWJlQDaaPur7KUan7HNqNxa6rNquJj4n2HZHCDnAyENdeMH4UbubI7dXHcoL5ZXSP/McC4NxSH5LtOGOv1P4U9WOMNe6NmG8Xapnc17HSsHtIsAYQJqAyVwfDtEfBB70srPTcwOHtJJr4TQnYblNx1wOUpjYdQ/03WGmxYpZVbM1m1oHIduPk2tMsUZFte6x2pVuHpy+5uTwR4TztLtSwwGw4HB/daVUy4nVIMHyE7NMS5/pvLj4Cr1G8SOY+7GCPCu0UMj3bGP9xygzxtdvJDyI9188KqVjDK8Nlk72CMFa3RGJ976APCo1Ja17mtc4l+b2qVK5unaJQDELLSbx4W7cyZm2VhDhkEHkLL0txaZIXfPbsuq3SRNZuJdzVFAuz0iLi2kjm+yxanZgMNOvIK2y6cNLqfh+RTuFk9JjXEuc4jmyqNEYaWRtEIoCiT5Vb5AdRRHAq1bqJRI0sG4Ad6zys8roWsc4OBkwSAiKJnU7dtACySuJdVfstsrSZAdpAcL+FmMbWCs0/IPhQJK38tlZI7qsbo34bSsdbBtAG0dwleQXNIyLqwUDvfubkDdwqYn07NpnHJrsmvazc4EFBZGdvvcK+6xt3PnoWVtkaySBocSCrNNGwSDeLFKA6Vhkv1HtaKsWrQathIJBOEZINjWysftburaeUSD6wfIG7q7Ki2A4sm1o7BZNOfaAVpvGVdIcY+yujMbQC7J8KkCx8KxsbDYa5191uQZtfI4tJYK+VxNSXBxdZXU10pa57XkggYA7rJG57x6b2NAu7WkrPp3eynNvd/C2xacRsL5HHdw1oVf4ayS51M7Ur3sc2IhlfBVQ0srIjtkuiOyjLcDi2kU1UbC4MdIQXjnva2xxtZEHtaQTzaijHp3Bw21uApB0bnG/UsDsFa1jnNLw4Nb5PdMwRem/BHyVoPpmwP57j+VczStcC4O74IWXTyMa4h7Rs7VyV0HSCKBvpMBcXf1dlNBotO9mmLq8gElVOjlbES5tDjB5Vs+pErGgiqFGuEKZI2rcXHkoOJrAYQHPOfACr083voPLScgLTq4Klp9EDO1WQaPT7PVDgXEWQO3xagv08cb9OXl+6UDLQOEXDdYcGEjIKDdOHQENsE5AHdI1j4m07I8lQPM3Tvjw7ZKO3GVmjDyafWBaaSN0r97mgNum4pP6ZbLQOHGiSUCbg1lOpoLr+6ubtDXfh5N+MqrVFkcIb6ZvnePHhWdM9AvaSw8EAfKLF+n2NawlwaG/qTueXOfK8ua13GMKqRtOAOG3RPhM/Tes5m6RwiaOAcIL9PuMYuUBh4+Fk1ETw905eSwij2r4Wl7wWMYwhoJvcBwEurEm3aXAswbPhBkYWPY1oIcXfp/5Wkwj1Gv2AMArCwCt7XwxFzW4BC2xahzbJYQc2B5QYZmESF9e4/qW5kIkjBa7aLpPJE0wEh1kmzf+EwmcCIg2MNAskDugpZGTuiJBZd5CVz2M9sRsDAFd1fGYDZkuyMH5VMIhD7Be55HuNYCBtDK2WcMdEwAZtagzeHtZe59kDwqNOAGFxbRB/urYtU6I7gyjdbj3CopZBG+VlyOD2Zrtare8R24tduaaGwcrZMWOYWGIuc3JLflZ45Ru2vkcCAaFWrtEDnNsEB5B/pN0tDJ9IGETuHq3jGQqm6dpithducMkLPLpHx6iLawysAo5zZV2NxcwxOdHI2wa2kZKrljke8Oa4taMEAX5/wCyxQFwdM6Rnp06g4/wnM8sUltkFPxfZXaJK6Vri5jQ43gFFvpenvldTgCTuGAVpmGohpjhC4DJp3uysx9Jwc5zXbCSL5o0rsJE0Sv9zmhrDk9yn1YYHBxDiMVSXWzAMMhaWbnDaA3siyYH0mvvcR3CbUgYxjXDs49+6mmZI9/uAABNOA4Ct3epMSADHtNHy7wqdri8NMhDT+oVSbAYxjZC0A2O57qyNr9TI5wc1jW+0iqKskdAI4ywH1Bg33wtDhpzsc0BpHPtTZpn07fTmom3DO4ZpWTxPcR7/cTf2wrYnOax59NzgP8AbVLJ+LLpyRpwzbwHOWbRSxsThtLTZxwukdLbWse/Y2rBblY4pY9S+Z8wc1jRYAwLTafUxO9gG47SGtKCPa2IyBzmkNBqj3QMhbpRI2EyBpou4GeP+UhL5GuhfE1r2iyW8FSUPOligfIK/VQ/5UtUwmmhhEryG7iMV2V0bo2OEkzXSvecdqU0r9IymP33tu3Zal9jrMJc4Zu8UVA8zoxP6sAAaBxSzzFjN7msa17+TwVrGnZF08yOLmyPNDxSwt2yHaSQPJ7qCgl8zTTxR5Nq2SF4db2g4AG3wtTNPG1zXuBoA+0AZKzPc95LmuAvFJtWd1sZcdnxav0jZGx3LGQ/+EIjIXlrjfihwoHyBhDX21wrJ7qCOkLPaWndgWOEZZCGFwdueMUBgrK9skTiP1eCSmhfI1pDmCyO6g0l8ccTXRjB5Lu6L3mWWmxbYy3/AHWkkhjiZV76HursqPw9ObHDJjbag1QNBjDicg3tK0N1UrpGbajjzYCxGN4cbcWmwcjstNejICHh7XZwOEBnjfK2QggndnysztMRTq3nnC19QfFHMPSdVtH7oysljDDp3DcBYPhSimNvqSjAHejhKY3epbzR7gZVz372tM9+tR4VlBunfKWl1irKDBJNE2NxJJfXFdk8MLZo3gEgBltF5BXWfFHHoNO1zQyNwtriLJXOMDTI703frNcIOeWMdK1kcnuGHD/79lHlxcRI33DHFJ59G0Nc82x7TuDh3U1DhPlxIJrhZVY+Zz3MY8gNDav/AO/ZLKA52+OQWOADlL6DPUG403CWWDa8ObR7ZK0q+Z0oPqbQSfKv0+r1jYnAGJrOMNysRMww1tgHIBVpnO3DDYOUB91t9f3EnCaVrnQFjCSQbz2TQuc+nTjaOwtVyQagat0sI/JGTnN0pUY44fVmMTTTrAx8ldAxmGNzHPsc0clcoPe7qcoeSHY9wwurpXMc7a4g20e49ioKvRikeHSPe2RtUBxSvlwxxbtJabHtR2Oe47WsduaAFa6MxMHqO3HuCePhaGFzsEyclKRE5zdpGBnCs1TMNe73AcZ4WafYyEOj/U4EG/uiA71Wk72+zsFUXRP2iMV53dirdJqpRAPxDMNuiBdqjVj1Gl8YGwoKJIn78BpaRVjslEM20B7m/elGP2Ow4bh8pxJLJhtChdqCkadzZAeRzaseS8hzmlzAadXZaog4utz6b5ATyN9I7XWGuo4CgSN8ETmhzHOaTkE8pw1oNssN5o5pTURB8jSHZ8qprzvdG5pbQH7oNcB9OcCSNr43GnE+EOpaVkdvhfYPA8YtVSva4CnFzU7q/DtBIdfe89kFemNgFbW/pwLKOl0wjFOAL1qbpnADZmyu0jOyQsGy+X/Cz6ltgt3loPNFdAh+wsLK24ulxeoalrHiNoJcFRj1GlfGA9shc7t3VumhMsO+Q0O6q00v54Ml3RAsrowsDY7DSQeQ1VFULmQu3uG5vA7rG/VvnnLXACOzgYtDVW+c+jYA5HyrtHE2xvbkmrVF0bA0e3+VcWuk2uGe1Jm6YtBJqiaCva6P0iynB4wAcKB9NoJJGueSAW8AnACq/DtdJskfszlGJzow97ckYo8KNDj7nYc7gqqMsbSygAcYNK3RhzYfzXtFGvcmkFwlrXAvr9SWEem4xvAlsZ7Ug2v0zGaJ8ge1xJ9rQVzXybZCMixTQF1dPBEWyFpINceAudqYm6ednqkkDO0HKDHrGPcN28/IPdLB6dRt3VnIWh+pjmBG32t5JVkM0W8F0ZAaNt7VBc12xrgyTk9/HwpMRJCGvbnyg+WEG4yMeUjR6ptrrJ4FqDM+WZjajJdt7HKDjuj95uR39wrIzIwne0tG7I8pdPpy6Z5dnn3FBJYZAAHNwBeStEMRY2NzSS02XJGzMklbDLZHcgrVHptrA8uGzsAbQUPIa0EAuDj3K1RxuNF5DY9tilTPJGx5DoifbgK4ufJo7jDQ0CgR2RVk2kEUXqep7S3ssLpN7mN3B19ikm1+oebO32jaGkJ9NI1wc54HqD+yguhfpxIGjdHRs+ChPHGGsd6hyC4Ad7VTBPIXAFrY+xRbp3sAe7LWuqvKBtMHPYWDaGi3E3ys8GskhlLSxrs4BCvf+XLuezbYrBQkbPPG8+mxsbRgnlBJHEvsN/UeB2V24S6QxtIaf6j3JVBikcxrwM3RFpoGfmOe9wAGB8lBbII4Iywu3XRBR04E7iGmw0XQ7JWajaHRSxtdGSBY5W2BkUBDo2Fh72gpY4RmQvJonuEIfTleCwtqsrXqdS50TrAczdu4XOhfteXvLQw/01lVG4SRNIEhDQ0U091WZzG8yWHWOAOyMUkcm5wYNvnm0rHNaCyQ7Q5wcXEcDwikh2yENLdm+3EH/KxarTOM/wCUN8bRVgceV0HtijYZGZPYp3O9OLc0API3WDmlpHG/DETbjK4gdybQbFqomFzWbmvPnC0SOYxrwSC9wtgPcqyFrngB7g0irzgeVRW/UExQQPiIbtsuAyFezVOn1UUrXhwhw224d91r0UMXqNe2VsheC0jsFXG3aC1jm7f1DH/34QZ9C18Msup3j3WPT7N/ZY559RFG92xryXYvn4W4ahpkkbqACKptDkqtvowAl7XON2KOAgXRTzfggwhpfd/IVzo5tVA1npuMofdAVjspp3gSj2lpDb45WubqE8LXDSOBY2rsc+VkZmjUNkrUkMY1uKFc91SIGiUkSNd7Lo5WibWvkkO+mswB5K5+ql3SfltojDiCg3/hI2QvZI8gvYK+LTamLTMkiew05o2UO4XLGqlI26jAHdWvksGN3uz7ewCKu1utEVRnIeb4/j+VQxzxE5kcQc+QijXAWgadz3vNB7W0B8K7RaiXTyBr9hisEgjilBSdPG+ENma+N7D27pozFBTiC4dif35WqSWV4e5sLHbsijXjhYpGTSOk3sDQ0+2jZKgzyP1D3ubJIHtvGcAeE2me97w1waWA4/Zao3NkY9pjG+rsjKTUw1tI/RtGR2QK7WekHOYwbryHDBCyx0ZfaWixgHhX6jTv9G3GwTQVM0LY4mlrXF7Lv7gqVY2Qs1EEO5zmEk0XDgLFMS6WyG32oUnp3pNfM8usXtpQvjmYXC2uYP00oKnv2lzJgCW5wr4SyQs9mWizXCErWtjhkYRteKdaD5pIot0RDbNUBikEmnJdIIm7WE1Zb3TRx+tG6QlrHPwD+yaOYviEj2u2EVwppJGlzH7A5oIO12MhQVPMlxiQZ4vyFXqHNgaHuBo3S0mUSS7C3jIPwnbDvjLXtD6OB8IMh1H4qP2xNdQAsd1Q3Uv0+YyR/SRytL43Q6pjoMMLf0hZAx7tQHNbTQacg6LA8sHrNJbYs3WD/wDytWq1GniAbpt/uFbTkLnxEnVFspOwNo/GAn0zmRGyA8beCpBoh1frxOhDDvb+k9kZtI/1oi2UOeOzDgJLgBBke9t4wEnqxMcWxu1Aa3AsXaoo1k87HbZGgt72O1rE+QGQOaMXX/K62pn088EjI3vLmsAIIog0FydO1nEhuibHhZqrPSduJBNcAeVa4j0wHtLXHGU+m1IDS1zbiDidw58I6iWGR7TpzuZXJ8qqMUBEm98jQ3/b4RlY2MAiRjgeaSl7S33gudQKRr9rqY1uTw4INLNrogSNrQ4AXyrZJPyXMf8ApccCvjyqyCGB5ADDmrVE5a1zHgmrquwFFEcx5rqr2NJJAAGPC3aeRjqfsdbTRXK1hDdYx0TyS8ZPgrsaJ1MAx9yVlXXgayUMbG0i+98LNqWvcPRe3n9JSxuLnbXybBWSDwnlhra5sm4hWCiXTQ1te8sDRRAzlYJ9K6PY0O3g4B/+/ddaIMFieiHAnceVTLTHvdERKxhwHD5VRx2eoLZgirrwtEMIOidQJdfCvhaZXv8AbGwldHRwOhjDnNa5lcjyoMBjEW1r4WF9DJaqpIHu3OjYCwc1+y6Uo3uOzdsdy12VGQGCUbg6jRLTzVhUcx0EgaGsJa4jAKD4ZS0GctLm4sHldjW+hqCWtD2WCM+Vx5NPIJBJIc8hZBdIz03O2gCgPtSzFw1cgEjg3FblYGNlZKxx2yvHt8LPp2PEpZI0e0dxyiNGrj27RE8HGRXws0cgD2A9v+6vmIZqN7bDDgBZhK5zy3aN32Qeja0REt/qJr7KwB8Tw1ni0A0mQuOS7ytDY3CVm2gPPlevTDPrtUfSdntj5K8+1oBcQw7ifc5xtdnqA9fUWRYGMLnzxgP9MNy7womwj08R2PIaXcHKtkeyMn+gDjuodNHpmN3upxz8Lna/TzPlDQdzCQ6wmlXaKOSXUe0No/1LrRaIFo2fck4VWh0jfRO15DWn7FaHXQAJLG8/dQLvMHsAFn+qrpZdQB6pIcX4skrUGb3Opj3MPcdkHvbGdjRbj2cOyaFIjMEDH2CXcNGSllkfK/3tpxqqR1DduG+2QjB8JtOHTPjZuBfXIwitMGlLIy9zSWcZ8qaYMbqi+XIIqldqW3pTE2ZxY3JN17u6pDGOAMW4u21zaC3WauGGxBGQSOSe651OlmbI4lxr3WrInND3RO5GbKr1rXFj3wXtoWflTQyxxb9QSwU0dvK3NPoOd6g3NC52nmmafe0fsuk73xskJ5FBpVBhii1Dtrwdp58lNqQN52gNo0AEWMETmOAJc4qsyEaiQEAuvgqC90gihG8ggHJ7k+FQxjJWOlMmzbgNtZmua94jLLc73UTwhLHtkO11nweEGg6cNnsyMBIsAlaPw8wp7ZIw0ZyVnikYH75g0uqgQMLU+Ey6dpjHtvce2EGcTvOpABa/+nhaI3yQlzCAWjJB8pHwN9NpZV2Arvw7i54Ltwbzt7qDPK0Szb8CxgeEjDE2UOkcfbXtASTNLZXiNrtg43d1U7AcQPf/AIUVueWNk9pNPdYzhb498emlYSx7nmwa4C5EEZldF+IANHGa/wALqTTRiWItO4Hs0IKHyFkby6IOeBgEWnZA58TQTzXdPJ7praA1hN5TTzwtY+wbHZBhlPouaJd21xokcJ36clp9J+1rvPKkmpdtEb4gCfcAeyaKRxIEhGe3wgyuZqdM4vZGXgO5PFrfoZPWjkMzTTv0t8lJK45ik97AQ4UVHvc0RyaYVtddHwg2S2YHh7dp7C8BZGRerD6rv0nAvsr5yZ9II3uqTdbqxj7qv14aH4b3sDaFqhtJGYmAw3mzQSyF20+q0uccXyrXOaxrac7cRbsYCTTS7ml7Ti6GFAsE0Ri9SaM0MANCDoWkvl92yVu0tJ7cq/1CYa2tADjZ8pX7A9jgCRWFRgm0TA4hg2hvl1qnVOjLoWMdRujt4sLdK3RulaWCRsfejyshgjLpXMsFpsNWoiqMugltoBaRnPZSaR+wOhBIdV0tsWmYGAk7ntbn7pGt9MODGlzLs12VHLj1kr5aewUPHYLpQap8G4mNrmyYBcOFUXtbHI0MIvtSpkc2SK94oHDQg3O1ThtlAZJRosGCqJNW2aY7o3RDsKqwqmxHTGN7DZad2VpdA7UP/Euc4A0A08BQZgSZCXNLYw7g91dp2wuJe5r88tHlWn1BNtcA4VighIJwRJEzHFgYRdNU+kBijcduwtafBys8zISS1258hOC0cYKtex8210rqcGhtDurWRwB5c95oCg3uVkJETFp3BoO0DJI7LFqQ+aLcx21l1TgtTtTG0inP2ffCzTPjeC5sh9S8NPCgP5Ylj3y7RYy3ha5HQOG9hJIO3HclcoNwThwHIWzRaiBkTg+MNkGRRpqDSYjBq9k4bZ4rhUzuZK7aGluz2naclZnaoSv3uAdWK7J4ANwlcQ0N93KCwwMJ2yyODr9jT3Cz7Z26psRB7Y8rT68UtyyNbJRpp4pWSOlncHQxgPaPKiqpJt0zTtDthFhZHa1nqP3xhuKsBanAbDJI2nE27aflNr9OwmOWMhrR7Xg8qDG+NjR6jyHNNUQPK0SMYYyIg9zask+VbOYxI2CFr3jx/wAqt231nRgEbAC7KAaWTYxjHXTSrHmLZJsBL6Jx5V2jjiLmutprsUdONO2V3oM3FxwLx+6g5EMjRJ+dFIH9iPGV0WtfHohqITdE3fhWTYY10sDmAm2uaqmSEMcHOtjiCbH2QYyxzn+yRuRef6VZTmU4NyQXUT98qakslm/JALDk9lZqA13/AKLXeoG1V9qQWAxy+m6U+8tN0Pkql8EkUzjHRjccOPYKjT6jY/0p72NHjK1Orc1rXZc3dSkBghMxc4tDo28u8JBqHA0I6BxZSxgsNeqQ0nwrZ/TkY0Brg3/KoOt0cUM8/vaZBh2f7LjTmnhj6D3DBOFql3zy3e2u/kKrUxul0wYWtL7sE+FlTaORzItjyABmz4wtr4tPDC1ntLXODg8cZpcpkM8m2SIAtbTS0nAW3UNLI2RCPcM2qpnN07b3G75rskijY5odvbxdOFIGNxe0ljquy7tWESwyTt2Nth7+ERole17GNx7ePhU6jeIyS2s2BXalul0sY0wLcPGa+FTufJMbkA9tABBxdUWP1UAkaQ1x5GFpNEx5BoUR+6xdVE5kjMtCzTKWvRaemNkl3B55pZVt3xucIdlOdRsZV+mZ6ETi5rtxGLKEbtstMIo8cWFRrBK9jGw1vLw2iVYEdG953uBIH9PhM5+oaKMR/M57LdPHJA8xPcHEDJaFZNF7W247m8/CozgCRpxZFJtOHQxmNzXAE2LyEoDy+hhrnANK1awkQURbgR2QNJDLC1hALWuzu5ysZmmmnkdJJ79uSVd7pfTax+2+14Cn/S5Gt3maIOI4RGZ84Yd7xk8KnUamKWJu0ncTdeSrJIg3eZXXXxysuqhMgL4trQ02K5z/APwpRlD3MlPO5otquk1ImLHuaRIGU6u6oaJSwysG8s/UrJHO3MLQNrhn4URlc4xyO3OLgDZ+FA3dUkRyDkLoM0vqHeSyiMj5T67Rti2TMAjG3Of/AL4Qf//Z','2025-10-24 23:36:27','Plus',1,'Ativo','Ativa',17,77.00,1,'Intenso'),(3,'Murilo Bezerra','46858217851','572588835','murisud15@gmail.com','$2y$10$ZmDY6WrcNb.2zrf9xApJC..FNldNTT0mxqP3mXk9TqHh6ejcfiYfq','11930850009',NULL,NULL,NULL,NULL,'2025-10-25 17:44:39','Básico(Gratuito)',NULL,'Inativo','Ativa',NULL,NULL,1,NULL),(4,'José Bardella Junior','12470121825','19114582 8','jose.bardella@gmail.com','$2y$10$gXVIEULtbjVXg2ksDjAI.eq7iHhsMXNI.Yd416CVDzRKEgtQw8XHG','11976648631',NULL,NULL,NULL,NULL,'2025-10-25 17:59:03','Básico(Gratuito)',NULL,'Inativo','Ativa',NULL,NULL,1,NULL),(5,'sarah','45956611855','570368510','sarahcunha201@gmail.com','$2y$10$Kvnm9Dc84TAKueHtRqpZLeOnRRH3neBb1KvGsQ7exkwyGM7mjzqUi','11977368010',NULL,NULL,NULL,NULL,'2025-10-26 14:02:39','Básico(Gratuito)',NULL,'Inativo','Ativa',NULL,NULL,1,NULL);
-/*!40000 ALTER TABLE `alunos` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `alunos`;
+--
+-- Extraindo dados da tabela `alunos`
+--
+
+INSERT INTO `alunos` (`idAluno`, `nome`, `cpf`, `rg`, `email`, `senha`, `numTel`, `altura`, `meta`, `treinoTipo`, `foto_perfil`, `foto_url`, `data_cadastro`, `tipoPlano`, `idPersonal`, `idAcademia`, `status_vinculo`, `status_conta`, `idade`, `data_nascimento`, `genero`, `peso`, `idPlano`, `treinos_adaptados`, `cadastro_completo`) VALUES
+(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$ORiQ2/SdAGuLQTTHv/yFfeZ557FiHqQ2bRyIV4uRyJ/7gGFGQ3I1S', '11933572695', '177.00', 'Manter peso', NULL, NULL, '/assets/images/uploads/perfil_1763447028_691c10f417d1e.jpg', '2025-11-18 03:33:37', 'Básico(Gratuito)', NULL, NULL, 'Inativo', 'Ativa', NULL, '2001-11-24', 'Masculino', NULL, 1, 1, 1);
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `assinaturas`
+-- Estrutura da tabela `assinaturas`
 --
 
 DROP TABLE IF EXISTS `assinaturas`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `assinaturas` (
+CREATE TABLE IF NOT EXISTS `assinaturas` (
   `idAssinatura` int NOT NULL AUTO_INCREMENT,
   `idUsuario` int NOT NULL,
   `tipo_usuario` enum('aluno','personal','academia') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -174,29 +254,29 @@ CREATE TABLE `assinaturas` (
   `id_gateway_assinatura` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idAssinatura`),
   KEY `idx_usuario` (`idUsuario`,`tipo_usuario`),
-  KEY `FK_Assinatura_Plano` (`idPlano`),
-  CONSTRAINT `FK_Assinatura_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`)
+  KEY `FK_Assinatura_Plano` (`idPlano`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `assinaturas`
+-- Truncar tabela antes do insert `assinaturas`
 --
 
-LOCK TABLES `assinaturas` WRITE;
-/*!40000 ALTER TABLE `assinaturas` DISABLE KEYS */;
-INSERT INTO `assinaturas` VALUES (1,1,'personal',3,'2025-10-14 06:43:33',NULL,'ativa',NULL);
-/*!40000 ALTER TABLE `assinaturas` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `assinaturas`;
+--
+-- Extraindo dados da tabela `assinaturas`
+--
+
+INSERT INTO `assinaturas` (`idAssinatura`, `idUsuario`, `tipo_usuario`, `idPlano`, `data_inicio`, `data_fim`, `status`, `id_gateway_assinatura`) VALUES
+(1, 1, 'academia', 5, '2025-11-18 03:28:08', NULL, 'ativa', NULL);
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `convites`
+-- Estrutura da tabela `convites`
 --
 
 DROP TABLE IF EXISTS `convites`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `convites` (
+CREATE TABLE IF NOT EXISTS `convites` (
   `idConvite` int NOT NULL AUTO_INCREMENT,
   `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `idPersonal` int NOT NULL,
@@ -204,33 +284,33 @@ CREATE TABLE `convites` (
   `email_aluno` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `status` enum('pendente','aceito','negado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
   `data_criacao` datetime NOT NULL,
+  `data_resposta` datetime DEFAULT NULL,
+  `visualizado` tinyint(1) NOT NULL DEFAULT '0',
+  `tipo_remetente` enum('aluno','personal') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'personal',
+  `tipo_destinatario` enum('aluno','personal') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'aluno',
+  `mensagem` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idConvite`),
   UNIQUE KEY `token` (`token`),
   KEY `idPersonal` (`idPersonal`),
   KEY `idAluno` (`idAluno`),
-  CONSTRAINT `convites_ibfk_1` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE,
-  CONSTRAINT `convites_ibfk_2` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  KEY `idx_convites_tipos` (`tipo_remetente`,`tipo_destinatario`,`status`),
+  KEY `idx_convites_status_tipos` (`status`,`tipo_remetente`,`tipo_destinatario`),
+  KEY `idx_convites_usuarios_status` (`idPersonal`,`idAluno`,`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `convites`
+-- Truncar tabela antes do insert `convites`
 --
 
-LOCK TABLES `convites` WRITE;
-/*!40000 ALTER TABLE `convites` DISABLE KEYS */;
-INSERT INTO `convites` VALUES (1,'962f66378cab727ce01d40ec8c66c97b205ec505ac6c5fb44151514367888f8c',1,2,'enzokrebs8@gmail.com','aceito','2025-10-24 23:38:04');
-/*!40000 ALTER TABLE `convites` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `convites`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `devs`
+-- Estrutura da tabela `devs`
 --
 
 DROP TABLE IF EXISTS `devs`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `devs` (
+CREATE TABLE IF NOT EXISTS `devs` (
   `idDev` int NOT NULL AUTO_INCREMENT,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -239,87 +319,217 @@ CREATE TABLE `devs` (
   PRIMARY KEY (`idDev`),
   KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `devs`
+-- Truncar tabela antes do insert `devs`
 --
 
-LOCK TABLES `devs` WRITE;
-/*!40000 ALTER TABLE `devs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `devs` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `devs`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `exercadaptados`
+-- Estrutura da tabela `enderecos_usuarios`
 --
 
-DROP TABLE IF EXISTS `exercadaptados`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `exercadaptados` (
-  `idExercAdaptado` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `grupoMuscular` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `descricao` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cadastradoPor` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `tipo` enum('normal','adaptado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'adaptado',
-  `idPersonal` int DEFAULT NULL,
-  PRIMARY KEY (`idExercAdaptado`),
-  KEY `idPersonal` (`idPersonal`),
-  CONSTRAINT `exercadaptados_ibfk_1` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `enderecos_usuarios`;
+CREATE TABLE IF NOT EXISTS `enderecos_usuarios` (
+  `idEndereco` int NOT NULL AUTO_INCREMENT,
+  `idUsuario` int NOT NULL,
+  `tipoUsuario` enum('aluno','personal') COLLATE utf8mb4_general_ci NOT NULL,
+  `cep` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `logradouro` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `numero` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `complemento` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `bairro` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cidade` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `estado` varchar(2) COLLATE utf8mb4_general_ci NOT NULL,
+  `pais` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Brasil',
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_atualizacao` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idEndereco`),
+  KEY `idx_usuario_tipo` (`idUsuario`,`tipoUsuario`),
+  KEY `idx_cidade_estado` (`cidade`,`estado`),
+  KEY `idx_cep` (`cep`),
+  KEY `idx_localizacao` (`latitude`,`longitude`),
+  KEY `idx_endereco_usuario` (`idUsuario`,`tipoUsuario`),
+  KEY `idx_endereco_localizacao` (`cidade`,`estado`),
+  KEY `idx_endereco_coordenadas` (`latitude`,`longitude`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `exercadaptados`
+-- Truncar tabela antes do insert `enderecos_usuarios`
 --
 
-LOCK TABLES `exercadaptados` WRITE;
-/*!40000 ALTER TABLE `exercadaptados` DISABLE KEYS */;
-/*!40000 ALTER TABLE `exercadaptados` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `enderecos_usuarios`;
+--
+-- Extraindo dados da tabela `enderecos_usuarios`
+--
+
+INSERT INTO `enderecos_usuarios` (`idEndereco`, `idUsuario`, `tipoUsuario`, `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `estado`, `pais`, `latitude`, `longitude`, `data_criacao`, `data_atualizacao`) VALUES
+(1, 1, '', '09400310', 'Avenida Francisco Monteiro', '171', '', 'Centro', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-18 03:28:08', NULL),
+(2, 1, 'aluno', '09400500', 'Rua Doutor Virgílio Gola', '171', '', 'Pastoril', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-18 03:33:37', NULL);
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `exercicios`
+-- Estrutura da tabela `exercicios`
 --
 
 DROP TABLE IF EXISTS `exercicios`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `exercicios` (
+CREATE TABLE IF NOT EXISTS `exercicios` (
   `idExercicio` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `grupoMuscular` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `descricao` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cadastradoPor` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `idPersonal` int DEFAULT NULL,
-  `visibilidade` enum('global','personal') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'global',
-  `tipo_exercicio` enum('normal','adaptado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'normal',
+  `visibilidade` enum('global','personal') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'global',
+  `tipo_exercicio` enum('normal','adaptado') COLLATE utf8mb4_general_ci DEFAULT 'normal',
   PRIMARY KEY (`idExercicio`),
-  KEY `idPersonal` (`idPersonal`),
-  CONSTRAINT `exercicios_ibfk_1` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`)
+  KEY `idPersonal` (`idPersonal`)
 ) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `exercicios`
+-- Truncar tabela antes do insert `exercicios`
 --
 
-LOCK TABLES `exercicios` WRITE;
-/*!40000 ALTER TABLE `exercicios` DISABLE KEYS */;
-INSERT INTO `exercicios` VALUES (1,'Supino Reto','Peito','Exercício revisado',NULL,NULL,'global','normal'),(2,'Máquina Declinada Supino e Crucifixo','Peito','Deite-se em banco declinado; no supino empurre a barra/pegada para cima até estender os braços; no crucifixo abra os braços com leve flexão nos cotovelos e retorne controlado.',NULL,NULL,'global','normal'),(3,'Supino com Halteres','Peito','Deite-se no banco, segure halteres alinhados ao peito, empurre para cima até braços estendidos e desça controladamente.',NULL,NULL,'global','normal'),(4,'Crucifixo com Halteres','Peito','Deite-se, braços semiflexionados; abra lateralmente até sentir alongamento no peitoral e traga os halteres de volta com controle.',NULL,NULL,'global','normal'),(5,'Flexão de Braço','Peito','Posição de prancha com mãos alinhadas ao peito; flexione os cotovelos até o peito quase tocar o chão e empurre de volta até estender os braços.',NULL,NULL,'global','normal'),(6,'Fly','Peito','Em banco reto ou inclinado, com leve flexão nos cotovelos abra os braços lateralmente e junte-os à frente contraindo o peitoral.',NULL,NULL,'global','normal'),(7,'Paralela','Peito','Suspenda-se nas barras paralelas, incline o tronco levemente à frente, desça flexionando os cotovelos e empurre até estender os braços.',NULL,NULL,'global','normal'),(8,'Máquina de Crucifixo Inclinada','Peito','Sente-se na máquina inclinada, segure as alças e junte-as à frente do peito com movimento controlado e ênfase na contração.',NULL,NULL,'global','normal'),(9,'Supino com Barra','Peito','Deite-se no banco, segure a barra à largura dos ombros, desça ao peito mantendo controle e empurre até estender os braços.',NULL,NULL,'global','normal'),(10,'Cross Over','Peito','Em pé entre os cabos, segure as alças e leve-as à frente do corpo com leve arco no tronco, cruzando as mãos se desejar foco na parte inferior do peitoral.',NULL,NULL,'global','normal'),(11,'Voador para Peitoral','Peito','Sente-se no peck-deck, apoie os braços/antebraços e junte as alças concentrando a contração no centro do peitoral.',NULL,NULL,'global','normal'),(12,'Tríceps Pulley','triceps','Em pé, segure a barra no pulley alto e estenda os cotovelos até travá-los; controle na volta para manter tensão no tríceps.',NULL,NULL,'global','normal'),(13,'Tríceps Corda','triceps','No pulley alto com corda, estenda os antebraços separando as pontas da corda no final da extensão para maior amplitude.',NULL,NULL,'global','normal'),(14,'Tríceps Unilateral','triceps','Segure o acessório com uma mão no pulley e estenda o braço mantendo o cotovelo imóvel; faça o movimento controlado e simétrico no outro lado.',NULL,NULL,'global','normal'),(15,'Rosca Francesa no Cross','triceps','De pé no cross, segure a barra/pegada e flexione os cotovelos levando a carga em direção à testa ou têmpora; estenda até travar os braços.',NULL,NULL,'global','normal'),(16,'Tríceps Coice Unilateral no Cross','triceps','Incline-se com tronco estável, segure o cabo e estenda o antebraço para trás mantendo o cotovelo fixo.',NULL,NULL,'global','normal'),(17,'Rosca Francesa Unilateral com Halter','triceps','Sentado ou deitado, segure um halter com uma mão e faça a extensão do antebraço até estender totalmente o braço.',NULL,NULL,'global','normal'),(18,'Rosca Francesa Unilateral no Cross','triceps','No cross, use pegada unilateral para flexionar o cotovelo e estender o antebraço, mantendo o tronco firme.',NULL,NULL,'global','normal'),(19,'Tríceps Coice Unilateral com Halter','triceps','Apoie o tronco (banco ou inclinação), mantenha o cotovelo fixo e estenda o antebraço para trás até contrair o tríceps.',NULL,NULL,'global','normal'),(20,'Tríceps Banco','triceps','Mãos apoiadas no banco atrás do quadril, flexione os cotovelos descendo o corpo e empurre até estender os braços.',NULL,NULL,'global','normal'),(21,'Tríceps Garganta','triceps','Variação de extensão de tríceps com barra/pegada levando a carga em direção à garganta/peito alto e estendendo os cotovelos com controle.',NULL,NULL,'global','normal'),(22,'Tríceps Testa no Cross','triceps','De pé no cross, segure a barra e flexione os cotovelos levando a barra em direção à testa; estenda controladamente.',NULL,NULL,'global','normal'),(23,'Tríceps Testa com Barra','triceps','Deitado no banco, segure a barra com pegada pronada, flexione os cotovelos até a barra quase tocar a testa e estenda os braços.',NULL,NULL,'global','normal'),(24,'Tríceps Máquina Articulada','triceps','Sente-se e ajuste o aparelho; empurre as alças até estender totalmente os braços e retorne com controle.',NULL,NULL,'global','normal'),(25,'Tríceps Coice Bilateral no Cross','triceps','Incline o tronco, segure as alças e estenda ambos os braços simultaneamente para trás, mantendo os cotovelos quase fixos.',NULL,NULL,'global','normal'),(26,'Desenvolvimento com Halteres e Barra','ombros','Sentado ou em pé, empurre halteres ou barra acima da cabeça até extensão total dos braços e desça controladamente.',NULL,NULL,'global','normal'),(27,'Desenvolvimento na Máquina Pegada Tradicional e Convergente','ombros','Sente-se na máquina, alinhe a pegada e empurre as alças acima da cabeça até estender os braços; controle na descida.',NULL,NULL,'global','normal'),(28,'Desenvolvimento Arnold','ombros','Sente-se com halteres à frente (palmas voltadas para você) e, ao subir, faça a rotação do pulso finalizando com palmas para frente.',NULL,NULL,'global','normal'),(29,'Elevação Lateral com Halteres','ombros','Em pé, levante os halteres lateralmente até a altura dos ombros com leve flexão no cotovelo; mantenha movimento controlado.',NULL,NULL,'global','normal'),(30,'Elevação Lateral no Cross','ombros','Segure o cabo em posição baixa e eleve o braço lateralmente até a altura do ombro, controlando a descida.',NULL,NULL,'global','normal'),(31,'Elevação Frontal com Halteres','ombros','Em pé, levante os halteres à frente do corpo até a altura dos ombros com os braços estendidos e movimento controlado.',NULL,NULL,'global','normal'),(32,'Elevação Frontal no Cross','ombros','Segure o cabo em posição baixa e eleve o braço à frente até a altura do ombro, mantendo o controle na descida.',NULL,NULL,'global','normal'),(33,'Remada Alta com Barra','ombros','Segure a barra com pegada pronada, puxe-a até a altura do peito mantendo os cotovelos altos e desça controladamente.',NULL,NULL,'global','normal'),(34,'Remada Alta no Cross','ombros','Segure as alças no cross, puxe-as para cima até o nível do peito com os cotovelos elevados, controlando o movimento de volta.',NULL,NULL,'global','normal'),(35,'Crucifixo Invertido no Cross','ombros','Segure os cabos em posição baixa, abra os braços para trás com leve flexão nos cotovelos, contraindo a parte posterior dos ombros.',NULL,NULL,'global','normal'),(36,'Crucifixo Invertido com Halteres','ombros','Incline o tronco para frente segurando halteres, abra os braços lateralmente com leve flexão no cotovelo e retorne controlado.',NULL,NULL,'global','normal'),(37,'Face Pull','ombros','Segure a corda no pulley alto, puxe em direção ao rosto com cotovelos abertos para ativar o deltoide posterior e trapézio.',NULL,NULL,'global','normal'),(38,'Rosca Francesa com Halter e Anilha','triceps','Segure o halter/anilha com as duas mãos acima da cabeça e flexione os cotovelos para trás, estendendo-os novamente com controle.',NULL,NULL,'global','normal'),(39,'Voador Costas ou Crucifixo Invertido na Máquina','ombros','Sente-se na máquina, abra os braços para trás contraindo a musculatura posterior dos ombros e retorne devagar.',NULL,NULL,'global','normal'),(40,'Rotação Interna e Externa de Ombro (Manguito Rotador)','ombros','Use o cabo para girar o braço internamente e externamente mantendo o cotovelo fixo, fortalecendo o manguito rotador.',NULL,NULL,'global','normal'),(41,'Rosca Direta com Barra','biceps','Segure a barra com pegada supinada e flexione os cotovelos levando a barra até a altura dos ombros; desça controladamente.',NULL,NULL,'global','normal'),(42,'Rosca Direta no Cross','biceps','Segure o cabo com pegada supinada e flexione o cotovelo puxando o cabo até o bíceps contrair; controle a descida.',NULL,NULL,'global','normal'),(43,'Rosca Direta com Halteres','biceps','Com halteres em mãos, flexione os cotovelos levantando os pesos até a altura dos ombros e desça lentamente.',NULL,NULL,'global','normal'),(44,'Rosca Martelo no Cross','biceps','Segure o cabo com pegada neutra e flexione o cotovelo puxando o cabo em direção ao ombro; controle o movimento de volta.',NULL,NULL,'global','normal'),(45,'Rosca no Banco Scott','biceps','Sentado no banco scott, flexione os cotovelos levando a barra/halteres até contrair os bíceps e desça controladamente.',NULL,NULL,'global','normal'),(46,'Rosca Alternada','biceps','Com halteres em cada mão, flexione um cotovelo de cada vez, girando o pulso ao subir; desça controladamente.',NULL,NULL,'global','normal'),(47,'Rosca Inversa na Barra e no Cross Over','antebraco','Com pegada pronada, flexione os cotovelos levantando a barra ou puxando o cabo, focando no fortalecimento do antebraço.',NULL,NULL,'global','normal'),(48,'Rosca Punho com Barra e no Cross Over','antebraco','Segure barra ou cabo e realize flexão e extensão dos punhos para fortalecer os músculos do antebraço.',NULL,NULL,'global','normal'),(49,'Rosca Punho Invertido','antebraco','Segure a barra com pegada pronada e flexione os punhos para fortalecer os músculos extensores do antebraço.',NULL,NULL,'global','normal'),(50,'Rolo de Pulso Wrist Roller','antebraco','Segure o rolo com pesos suspensos e enrole a corda movendo os punhos para cima e para baixo, fortalecendo o antebraço.',NULL,NULL,'global','normal'),(51,'Barra Fixa','costas','Pendure-se na barra com pegada pronada e puxe o corpo até o queixo ultrapassar a barra; desça controladamente.',NULL,NULL,'global','normal'),(52,'Puxador Frente e Costas','costas','Sentado no puxador, puxe a barra em direção ao peito ou atrás da nuca, mantendo as costas retas; controle a volta.',NULL,NULL,'global','normal'),(53,'Remada Sentado no Puxador','costas','Sentado, puxe o cabo em direção ao abdômen, mantendo tronco estável e controle na extensão dos braços.',NULL,NULL,'global','normal'),(54,'Remada Sentado no Cross','costas','Similar à remada no puxador, puxe os cabos em direção ao tronco mantendo os cotovelos próximos ao corpo.',NULL,NULL,'global','normal'),(55,'Puxador no Cross Bilateral e Unilateral','costas','Segure um ou ambos os cabos e puxe em direção ao peito, controlando a extensão dos braços.',NULL,NULL,'global','normal'),(56,'Remada na Máquina','costas','Sente-se na máquina e puxe as alças em direção ao corpo, concentrando na contração dos músculos das costas.',NULL,NULL,'global','normal'),(57,'Remada Cavalo Livre','costas','Com barra, incline o tronco, puxe a barra em direção ao abdômen mantendo os cotovelos próximos ao corpo.',NULL,NULL,'global','normal'),(58,'Remada Cavalo Máquina','costas','Sente-se e puxe a alavanca da máquina em direção ao corpo focando na contração dos músculos das costas.',NULL,NULL,'global','normal'),(59,'Remada Curvada com Barra Livre','costas','Incline o tronco com barra e puxe em direção ao abdômen com cotovelos para trás; desça controladamente.',NULL,NULL,'global','normal'),(60,'Remada Curvada no Cross Over','costas','Segure os cabos baixos e puxe-os em direção ao tronco com cotovelos próximos ao corpo; controle a volta.',NULL,NULL,'global','normal'),(61,'Remada Unilateral com Halter (Serrote)','costas','Apoie um joelho e mão no banco, puxe o halter com a outra mão em direção ao tronco, mantendo o cotovelo próximo ao corpo.',NULL,NULL,'global','normal'),(62,'Hiperextensão Lombar','costas','Posicione-se no banco para hiperextensão, flexione o tronco para frente e estenda-o para trabalhar a lombar.',NULL,NULL,'global','normal'),(63,'Pull Over com Halter','costas','Deitado no banco, segure o halter acima do peito e leve-o para trás da cabeça, alongando o peitoral e costas.',NULL,NULL,'global','normal'),(64,'Pulldown no Cross','costas','Puxe a barra do pulley alto até o peito, mantendo as costas retas e cotovelos alinhados ao tronco.',NULL,NULL,'global','normal'),(65,'Abdominal Supra','abdomen','Deitado, eleve o tronco em direção aos joelhos, contraindo o abdômen superior.',NULL,NULL,'global','normal'),(66,'Abdominal Infra','abdomen','Deitado, eleve as pernas estendidas em direção ao tronco, focando no abdômen inferior.',NULL,NULL,'global','normal'),(67,'Abdominal Infra na Máquina','abdomen','Sente-se na máquina e eleve os joelhos em direção ao peito, ativando o abdômen inferior.',NULL,NULL,'global','normal'),(68,'Abdominal Oblíquo','abdomen','Deitado, realize a flexão lateral do tronco para ativar os músculos oblíquos.',NULL,NULL,'global','normal'),(69,'Abdominal Prancha','abdomen','Mantenha o corpo alinhado apoiado nos antebraços e ponta dos pés, contraindo o core por tempo determinado.',NULL,NULL,'global','normal'),(70,'Abdominal Remador','abdomen','Deitado, eleve o tronco alternando o toque do cotovelo direito no joelho esquerdo e vice-versa.',NULL,NULL,'global','normal'),(71,'Abdominal Lateral','abdomen','Deitado, flexione o tronco lateralmente para ativar os músculos do abdômen lateral.',NULL,NULL,'global','normal'),(72,'Concha Abdominal ou Abdominal Canoa','abdomen','Sentado, incline o tronco para trás em V mantendo o equilíbrio para trabalhar o core.',NULL,NULL,'global','normal'),(73,'Roda Abdominal','abdomen','Apoie as mãos na roda e estenda o corpo para frente, contraindo o abdômen para retornar.',NULL,NULL,'global','normal'),(74,'Panturrilha Sentado na Máquina','panturrilha','Sente-se na máquina e eleve os calcanhares para trabalhar a panturrilha, controlando a descida.',NULL,NULL,'global','normal'),(75,'Panturrilha em Pé','panturrilha','Em pé, eleve os calcanhares mantendo o equilíbrio para fortalecer a panturrilha.',NULL,NULL,'global','normal'),(76,'Panturrilha no Leg Horizontal','panturrilha','Na máquina leg press horizontal, empurre a plataforma usando somente os dedos dos pés para ativar a panturrilha.',NULL,NULL,'global','normal'),(77,'Panturrilha no Leg 45°','panturrilha','No leg press 45°, faça a extensão plantar elevando os calcanhares para ativar a panturrilha.',NULL,NULL,'global','normal'),(78,'Panturrilha no Smith','panturrilha','Com barra no smith, faça a extensão plantar para fortalecer a panturrilha com carga adicional.',NULL,NULL,'global','normal'),(79,'Agachamento Livre','quadriceps','Com barra apoiada nos ombros, flexione os joelhos e quadris descendo o corpo e volte à posição inicial.',NULL,NULL,'global','normal'),(80,'Agachamento Sumô','quadriceps','Com pernas afastadas e pés virados para fora, agache mantendo a postura ereta e volte controladamente.',NULL,NULL,'global','normal'),(81,'Agachamento no Hack Machine','quadriceps','Na máquina hack, execute o agachamento controlando o movimento para fortalecer as pernas.',NULL,NULL,'global','normal'),(82,'Leg Press 45°','quadriceps','Empurre a plataforma inclinada usando os pés, estendendo os joelhos para ativar o quadríceps.',NULL,NULL,'global','normal'),(83,'Cadeira Extensora','quadriceps','Sente-se e estenda os joelhos contra a resistência da máquina para trabalhar o quadríceps.',NULL,NULL,'global','normal'),(84,'Afundo','quadriceps','Dê um passo à frente e flexione ambos os joelhos até o ângulo de 90°, suba controladamente.',NULL,NULL,'global','normal'),(85,'Agachamento Búlgaro','quadriceps','Com um pé apoiado atrás em banco, agache com o outro mantendo o equilíbrio e volte à posição inicial.',NULL,NULL,'global','normal'),(86,'Flexão de Quadril com Caneleira','quadriceps','De pé, flexione o quadril levantando a perna com caneleira para frente, trabalhando o quadríceps.',NULL,NULL,'global','normal'),(87,'Passada e Avanço','quadriceps','Dê um passo largo à frente, flexione o joelho e volte para trás, alternando as pernas.',NULL,NULL,'global','normal'),(88,'Cadeira Adutora','adutores','Sente-se e pressione as coxas para dentro contra a resistência da máquina para trabalhar os adutores.',NULL,NULL,'global','normal'),(89,'Adução no Cross Over','adutores','Com cabos baixos, puxe as pernas para dentro cruzando na frente do corpo para ativar os adutores.',NULL,NULL,'global','normal'),(90,'Mesa Flexora','posteriordecoxa','Deitado na máquina, flexione os joelhos contra a resistência para trabalhar os músculos posteriores da coxa.',NULL,NULL,'global','normal'),(91,'Cadeira Flexora','posteriordecoxa','Sentado na máquina, flexione os joelhos para trás contra a resistência para ativar os posteriores da coxa.',NULL,NULL,'global','normal'),(92,'Flexão de Joelho no Cross Over','posteriordecoxa','Com cabo no tornozelo, flexione o joelho para trás mantendo o tronco estável.',NULL,NULL,'global','normal'),(93,'Stiff','posteriordecoxa','Com barra ou halteres, incline o tronco à frente mantendo as pernas estendidas e volte à posição inicial.',NULL,NULL,'global','normal'),(94,'Glúteo Máquina','gluteos','Na máquina específica, empurre a alavanca com os quadris para trabalhar os glúteos.',NULL,NULL,'global','normal'),(95,'Elevação Pélvica','gluteos','Deitado com joelhos flexionados, eleve o quadril contraindo os glúteos e desça controladamente.',NULL,NULL,'global','normal'),(96,'Elevação Pélvica Unilateral','gluteos','Com uma perna elevada, eleve o quadril focando no trabalho unilateral dos glúteos.',NULL,NULL,'global','normal'),(97,'Abdução de Quadril com Caneleira','gluteos','Deitado de lado, abduza a perna com caneleira para trabalhar os glúteos e abdutores.',NULL,NULL,'global','normal'),(98,'Abdução no Cross Over','gluteos','Com cabo no tornozelo, abduza a perna lateralmente mantendo o tronco estável.',NULL,NULL,'global','normal'),(99,'Cadeira Abdutora','gluteos','Sente-se e abra as coxas contra a resistência da máquina para trabalhar os abdutores e glúteos.',NULL,NULL,'global','normal'),(100,'Glúteo no Cross Over','gluteos','Com cabo no tornozelo, realize extensão do quadril para trás, ativando os glúteos.',NULL,NULL,'global','normal'),(101,'Agachamento Sumô com Halter','gluteos','Com halter entre as pernas, agache em posição sumô para ativar glúteos e adutores.',NULL,NULL,'global','normal'),(102,'Agachamento Afundo com Halter','gluteos','Com halteres, execute o afundo para trabalhar glúteos e pernas.',NULL,NULL,'global','normal'),(103,'Agachamento Búlgaro com Halter','gluteos','Com halteres, execute o agachamento búlgaro focando nos glúteos e quadríceps.',NULL,NULL,'global','normal'),(104,'Agachamento Terra','gluteos','Com barra, flexione o quadril mantendo as costas retas e volte à posição inicial, ativando glúteos e posteriores.',NULL,NULL,'global','normal'),(105,'Agachamento Terra Sumô','gluteos','Com pegada mais larga, execute o terra sumô para ativar glúteos e adutores.',NULL,NULL,'global','normal'),(106,'Agachamento Terra Romeno','gluteos','Com barra, flexione o quadril mantendo pernas quase estendidas para alongar e ativar posteriores e glúteos.',NULL,NULL,'global','normal'),(107,'Agachamento Terra Unilateral','gluteos','Com uma perna, execute o movimento de terra para trabalhar unilateralmente glúteos e estabilizadores.',NULL,NULL,'global','normal'),(108,'Agachamento Terra com Halteres','gluteos','Com halteres, execute o terra para ativar glúteos e posteriores da coxa.',NULL,NULL,'global','normal'),(109,'Agachamento Terra com Kettlebell','gluteos','Com kettlebell, execute o terra focando na ativação dos glúteos e posteriores.',NULL,NULL,'global','normal'),(110,'Agachamento Terra com Barra Hexagonal','gluteos','Na barra hexagonal, execute o terra com pegada neutra para reduzir tensão lombar.',NULL,NULL,'global','normal'),(111,'Agachamento Terra com Trap Bar','gluteos','Com trap bar, execute o terra para trabalhar glúteos e posteriores com menor impacto na coluna.',NULL,NULL,'global','normal'),(112,'Agachamento Terra com Barra Olímpica','gluteos','Com barra olímpica, execute o terra tradicional para ativar glúteos e cadeia posterior.',NULL,NULL,'global','normal'),(113,'Agachamento Terra com Barra Safety','gluteos','Com barra safety, execute o terra com maior segurança para trabalhar glúteos e posteriores.',NULL,NULL,'global','normal'),(121,'Supino Diferenciado','Peito','Pô, tu vai fazer assim, assim e assado','daviramos1703@gmail.com',1,'personal','normal'),(122,'Supino Diferenciado','Peito','Faz assim','daviramos1703@gmail.com',1,'personal','adaptado'),(123,'Supino Diferenciado','Peito','Adasdas','daviramos1703@gmail.com',1,'personal','adaptado'),(124,'Supino Diferenciado','Peito','A','krebsenzo8@gmail.com',1,'personal','adaptado'),(125,'Pinto','Costas','adadad','daviramos1703@gmail.com',1,'personal','adaptado'),(126,'Papapapapa','Peito','ada','daviramos1703@gmail.com',1,'personal','normal'),(127,'Agachamento','Quadríceps','agache','daviramos1703@gmail.com',1,'personal','adaptado');
-/*!40000 ALTER TABLE `exercicios` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `exercicios`;
+--
+-- Extraindo dados da tabela `exercicios`
+--
+
+INSERT INTO `exercicios` (`idExercicio`, `nome`, `grupoMuscular`, `descricao`, `cadastradoPor`, `idPersonal`, `visibilidade`, `tipo_exercicio`) VALUES
+(1, 'Supino Reto', 'Peito', 'Exercício revisado', NULL, NULL, 'global', 'normal'),
+(2, 'Máquina Declinada Supino e Crucifixo', 'Peito', 'Deite-se em banco declinado; no supino empurre a barra/pegada para cima até estender os braços; no crucifixo abra os braços com leve flexão nos cotovelos e retorne controlado.', NULL, NULL, 'global', 'normal'),
+(3, 'Supino com Halteres', 'Peito', 'Deite-se no banco, segure halteres alinhados ao peito, empurre para cima até braços estendidos e desça controladamente.', NULL, NULL, 'global', 'normal'),
+(4, 'Crucifixo com Halteres', 'Peito', 'Deite-se, braços semiflexionados; abra lateralmente até sentir alongamento no peitoral e traga os halteres de volta com controle.', NULL, NULL, 'global', 'normal'),
+(5, 'Flexão de Braço', 'Peito', 'Posição de prancha com mãos alinhadas ao peito; flexione os cotovelos até o peito quase tocar o chão e empurre de volta até estender os braços.', NULL, NULL, 'global', 'normal'),
+(6, 'Fly', 'Peito', 'Em banco reto ou inclinado, com leve flexão nos cotovelos abra os braços lateralmente e junte-os à frente contraindo o peitoral.', NULL, NULL, 'global', 'normal'),
+(7, 'Paralela', 'Peito', 'Suspenda-se nas barras paralelas, incline o tronco levemente à frente, desça flexionando os cotovelos e empurre até estender os braços.', NULL, NULL, 'global', 'normal'),
+(8, 'Máquina de Crucifixo Inclinada', 'Peito', 'Sente-se na máquina inclinada, segure as alças e junte-as à frente do peito com movimento controlado e ênfase na contração.', NULL, NULL, 'global', 'normal'),
+(9, 'Supino com Barra', 'Peito', 'Deite-se no banco, segure a barra à largura dos ombros, desça ao peito mantendo controle e empurre até estender os braços.', NULL, NULL, 'global', 'normal'),
+(10, 'Cross Over', 'Peito', 'Em pé entre os cabos, segure as alças e leve-as à frente do corpo com leve arco no tronco, cruzando as mãos se desejar foco na parte inferior do peitoral.', NULL, NULL, 'global', 'normal'),
+(11, 'Voador para Peitoral', 'Peito', 'Sente-se no peck-deck, apoie os braços/antebraços e junte as alças concentrando a contração no centro do peitoral.', NULL, NULL, 'global', 'normal'),
+(12, 'Tríceps Pulley', 'triceps', 'Em pé, segure a barra no pulley alto e estenda os cotovelos até travá-los; controle na volta para manter tensão no tríceps.', NULL, NULL, 'global', 'normal'),
+(13, 'Tríceps Corda', 'triceps', 'No pulley alto com corda, estenda os antebraços separando as pontas da corda no final da extensão para maior amplitude.', NULL, NULL, 'global', 'normal'),
+(14, 'Tríceps Unilateral', 'triceps', 'Segure o acessório com uma mão no pulley e estenda o braço mantendo o cotovelo imóvel; faça o movimento controlado e simétrico no outro lado.', NULL, NULL, 'global', 'normal'),
+(15, 'Rosca Francesa no Cross', 'triceps', 'De pé no cross, segure a barra/pegada e flexione os cotovelos levando a carga em direção à testa ou têmpora; estenda até travar os braços.', NULL, NULL, 'global', 'normal'),
+(16, 'Tríceps Coice Unilateral no Cross', 'triceps', 'Incline-se com tronco estável, segure o cabo e estenda o antebraço para trás mantendo o cotovelo fixo.', NULL, NULL, 'global', 'normal'),
+(17, 'Rosca Francesa Unilateral com Halter', 'triceps', 'Sentado ou deitado, segure um halter com uma mão e faça a extensão do antebraço até estender totalmente o braço.', NULL, NULL, 'global', 'normal'),
+(18, 'Rosca Francesa Unilateral no Cross', 'triceps', 'No cross, use pegada unilateral para flexionar o cotovelo e estender o antebraço, mantendo o tronco firme.', NULL, NULL, 'global', 'normal'),
+(19, 'Tríceps Coice Unilateral com Halter', 'triceps', 'Apoie o tronco (banco ou inclinação), mantenha o cotovelo fixo e estenda o antebraço para trás até contrair o tríceps.', NULL, NULL, 'global', 'normal'),
+(20, 'Tríceps Banco', 'triceps', 'Mãos apoiadas no banco atrás do quadril, flexione os cotovelos descendo o corpo e empurre até estender os braços.', NULL, NULL, 'global', 'normal'),
+(21, 'Tríceps Garganta', 'triceps', 'Variação de extensão de tríceps com barra/pegada levando a carga em direção à garganta/peito alto e estendendo os cotovelos com controle.', NULL, NULL, 'global', 'normal'),
+(22, 'Tríceps Testa no Cross', 'triceps', 'De pé no cross, segure a barra e flexione os cotovelos levando a barra em direção à testa; estenda controladamente.', NULL, NULL, 'global', 'normal'),
+(23, 'Tríceps Testa com Barra', 'triceps', 'Deitado no banco, segure a barra com pegada pronada, flexione os cotovelos até a barra quase tocar a testa e estenda os braços.', NULL, NULL, 'global', 'normal'),
+(24, 'Tríceps Máquina Articulada', 'triceps', 'Sente-se e ajuste o aparelho; empurre as alças até estender totalmente os braços e retorne com controle.', NULL, NULL, 'global', 'normal'),
+(25, 'Tríceps Coice Bilateral no Cross', 'triceps', 'Incline o tronco, segure as alças e estenda ambos os braços simultaneamente para trás, mantendo os cotovelos quase fixos.', NULL, NULL, 'global', 'normal'),
+(26, 'Desenvolvimento com Halteres e Barra', 'ombros', 'Sentado ou em pé, empurre halteres ou barra acima da cabeça até extensão total dos braços e desça controladamente.', NULL, NULL, 'global', 'normal'),
+(27, 'Desenvolvimento na Máquina Pegada Tradicional e Convergente', 'ombros', 'Sente-se na máquina, alinhe a pegada e empurre as alças acima da cabeça até estender os braços; controle na descida.', NULL, NULL, 'global', 'normal'),
+(28, 'Desenvolvimento Arnold', 'ombros', 'Sente-se com halteres à frente (palmas voltadas para você) e, ao subir, faça a rotação do pulso finalizando com palmas para frente.', NULL, NULL, 'global', 'normal'),
+(29, 'Elevação Lateral com Halteres', 'ombros', 'Em pé, levante os halteres lateralmente até a altura dos ombros com leve flexão no cotovelo; mantenha movimento controlado.', NULL, NULL, 'global', 'normal'),
+(30, 'Elevação Lateral no Cross', 'ombros', 'Segure o cabo em posição baixa e eleve o braço lateralmente até a altura do ombro, controlando a descida.', NULL, NULL, 'global', 'normal'),
+(31, 'Elevação Frontal com Halteres', 'ombros', 'Em pé, levante os halteres à frente do corpo até a altura dos ombros com os braços estendidos e movimento controlado.', NULL, NULL, 'global', 'normal'),
+(32, 'Elevação Frontal no Cross', 'ombros', 'Segure o cabo em posição baixa e eleve o braço à frente até a altura do ombro, mantendo o controle na descida.', NULL, NULL, 'global', 'normal'),
+(33, 'Remada Alta com Barra', 'ombros', 'Segure a barra com pegada pronada, puxe-a até a altura do peito mantendo os cotovelos altos e desça controladamente.', NULL, NULL, 'global', 'normal'),
+(34, 'Remada Alta no Cross', 'ombros', 'Segure as alças no cross, puxe-as para cima até o nível do peito com os cotovelos elevados, controlando o movimento de volta.', NULL, NULL, 'global', 'normal'),
+(35, 'Crucifixo Invertido no Cross', 'ombros', 'Segure os cabos em posição baixa, abra os braços para trás com leve flexão nos cotovelos, contraindo a parte posterior dos ombros.', NULL, NULL, 'global', 'normal'),
+(36, 'Crucifixo Invertido com Halteres', 'ombros', 'Incline o tronco para frente segurando halteres, abra os braços lateralmente com leve flexão no cotovelo e retorne controlado.', NULL, NULL, 'global', 'normal'),
+(37, 'Face Pull', 'ombros', 'Segure a corda no pulley alto, puxe em direção ao rosto com cotovelos abertos para ativar o deltoide posterior e trapézio.', NULL, NULL, 'global', 'normal'),
+(38, 'Rosca Francesa com Halter e Anilha', 'triceps', 'Segure o halter/anilha com as duas mãos acima da cabeça e flexione os cotovelos para trás, estendendo-os novamente com controle.', NULL, NULL, 'global', 'normal'),
+(39, 'Voador Costas ou Crucifixo Invertido na Máquina', 'ombros', 'Sente-se na máquina, abra os braços para trás contraindo a musculatura posterior dos ombros e retorne devagar.', NULL, NULL, 'global', 'normal'),
+(40, 'Rotação Interna e Externa de Ombro (Manguito Rotador)', 'ombros', 'Use o cabo para girar o braço internamente e externamente mantendo o cotovelo fixo, fortalecendo o manguito rotador.', NULL, NULL, 'global', 'normal'),
+(41, 'Rosca Direta com Barra', 'biceps', 'Segure a barra com pegada supinada e flexione os cotovelos levando a barra até a altura dos ombros; desça controladamente.', NULL, NULL, 'global', 'normal'),
+(42, 'Rosca Direta no Cross', 'biceps', 'Segure o cabo com pegada supinada e flexione o cotovelo puxando o cabo até o bíceps contrair; controle a descida.', NULL, NULL, 'global', 'normal'),
+(43, 'Rosca Direta com Halteres', 'biceps', 'Com halteres em mãos, flexione os cotovelos levantando os pesos até a altura dos ombros e desça lentamente.', NULL, NULL, 'global', 'normal'),
+(44, 'Rosca Martelo no Cross', 'biceps', 'Segure o cabo com pegada neutra e flexione o cotovelo puxando o cabo em direção ao ombro; controle o movimento de volta.', NULL, NULL, 'global', 'normal'),
+(45, 'Rosca no Banco Scott', 'biceps', 'Sentado no banco scott, flexione os cotovelos levando a barra/halteres até contrair os bíceps e desça controladamente.', NULL, NULL, 'global', 'normal'),
+(46, 'Rosca Alternada', 'biceps', 'Com halteres em cada mão, flexione um cotovelo de cada vez, girando o pulso ao subir; desça controladamente.', NULL, NULL, 'global', 'normal'),
+(47, 'Rosca Inversa na Barra e no Cross Over', 'antebraco', 'Com pegada pronada, flexione os cotovelos levantando a barra ou puxando o cabo, focando no fortalecimento do antebraço.', NULL, NULL, 'global', 'normal'),
+(48, 'Rosca Punho com Barra e no Cross Over', 'antebraco', 'Segure barra ou cabo e realize flexão e extensão dos punhos para fortalecer os músculos do antebraço.', NULL, NULL, 'global', 'normal'),
+(49, 'Rosca Punho Invertido', 'antebraco', 'Segure a barra com pegada pronada e flexione os punhos para fortalecer os músculos extensores do antebraço.', NULL, NULL, 'global', 'normal'),
+(50, 'Rolo de Pulso Wrist Roller', 'antebraco', 'Segure o rolo com pesos suspensos e enrole a corda movendo os punhos para cima e para baixo, fortalecendo o antebraço.', NULL, NULL, 'global', 'normal'),
+(51, 'Barra Fixa', 'costas', 'Pendure-se na barra com pegada pronada e puxe o corpo até o queixo ultrapassar a barra; desça controladamente.', NULL, NULL, 'global', 'normal'),
+(52, 'Puxador Frente e Costas', 'costas', 'Sentado no puxador, puxe a barra em direção ao peito ou atrás da nuca, mantendo as costas retas; controle a volta.', NULL, NULL, 'global', 'normal'),
+(53, 'Remada Sentado no Puxador', 'costas', 'Sentado, puxe o cabo em direção ao abdômen, mantendo tronco estável e controle na extensão dos braços.', NULL, NULL, 'global', 'normal'),
+(54, 'Remada Sentado no Cross', 'costas', 'Similar à remada no puxador, puxe os cabos em direção ao tronco mantendo os cotovelos próximos ao corpo.', NULL, NULL, 'global', 'normal'),
+(55, 'Puxador no Cross Bilateral e Unilateral', 'costas', 'Segure um ou ambos os cabos e puxe em direção ao peito, controlando a extensão dos braços.', NULL, NULL, 'global', 'normal'),
+(56, 'Remada na Máquina', 'costas', 'Sente-se na máquina e puxe as alças em direção ao corpo, concentrando na contração dos músculos das costas.', NULL, NULL, 'global', 'normal'),
+(57, 'Remada Cavalo Livre', 'costas', 'Com barra, incline o tronco, puxe a barra em direção ao abdômen mantendo os cotovelos próximos ao corpo.', NULL, NULL, 'global', 'normal'),
+(58, 'Remada Cavalo Máquina', 'costas', 'Sente-se e puxe a alavanca da máquina em direção ao corpo focando na contração dos músculos das costas.', NULL, NULL, 'global', 'normal'),
+(59, 'Remada Curvada com Barra Livre', 'costas', 'Incline o tronco com barra e puxe em direção ao abdômen com cotovelos para trás; desça controladamente.', NULL, NULL, 'global', 'normal'),
+(60, 'Remada Curvada no Cross Over', 'costas', 'Segure os cabos baixos e puxe-os em direção ao tronco com cotovelos próximos ao corpo; controle a volta.', NULL, NULL, 'global', 'normal'),
+(61, 'Remada Unilateral com Halter (Serrote)', 'costas', 'Apoie um joelho e mão no banco, puxe o halter com a outra mão em direção ao tronco, mantendo o cotovelo próximo ao corpo.', NULL, NULL, 'global', 'normal'),
+(62, 'Hiperextensão Lombar', 'costas', 'Posicione-se no banco para hiperextensão, flexione o tronco para frente e estenda-o para trabalhar a lombar.', NULL, NULL, 'global', 'normal'),
+(63, 'Pull Over com Halter', 'costas', 'Deitado no banco, segure o halter acima do peito e leve-o para trás da cabeça, alongando o peitoral e costas.', NULL, NULL, 'global', 'normal'),
+(64, 'Pulldown no Cross', 'costas', 'Puxe a barra do pulley alto até o peito, mantendo as costas retas e cotovelos alinhados ao tronco.', NULL, NULL, 'global', 'normal'),
+(65, 'Abdominal Supra', 'abdomen', 'Deitado, eleve o tronco em direção aos joelhos, contraindo o abdômen superior.', NULL, NULL, 'global', 'normal'),
+(66, 'Abdominal Infra', 'abdomen', 'Deitado, eleve as pernas estendidas em direção ao tronco, focando no abdômen inferior.', NULL, NULL, 'global', 'normal'),
+(67, 'Abdominal Infra na Máquina', 'abdomen', 'Sente-se na máquina e eleve os joelhos em direção ao peito, ativando o abdômen inferior.', NULL, NULL, 'global', 'normal'),
+(68, 'Abdominal Oblíquo', 'abdomen', 'Deitado, realize a flexão lateral do tronco para ativar os músculos oblíquos.', NULL, NULL, 'global', 'normal'),
+(69, 'Abdominal Prancha', 'abdomen', 'Mantenha o corpo alinhado apoiado nos antebraços e ponta dos pés, contraindo o core por tempo determinado.', NULL, NULL, 'global', 'normal'),
+(70, 'Abdominal Remador', 'abdomen', 'Deitado, eleve o tronco alternando o toque do cotovelo direito no joelho esquerdo e vice-versa.', NULL, NULL, 'global', 'normal'),
+(71, 'Abdominal Lateral', 'abdomen', 'Deitado, flexione o tronco lateralmente para ativar os músculos do abdômen lateral.', NULL, NULL, 'global', 'normal'),
+(72, 'Concha Abdominal ou Abdominal Canoa', 'abdomen', 'Sentado, incline o tronco para trás em V mantendo o equilíbrio para trabalhar o core.', NULL, NULL, 'global', 'normal'),
+(73, 'Roda Abdominal', 'abdomen', 'Apoie as mãos na roda e estenda o corpo para frente, contraindo o abdômen para retornar.', NULL, NULL, 'global', 'normal'),
+(74, 'Panturrilha Sentado na Máquina', 'panturrilha', 'Sente-se na máquina e eleve os calcanhares para trabalhar a panturrilha, controlando a descida.', NULL, NULL, 'global', 'normal'),
+(75, 'Panturrilha em Pé', 'panturrilha', 'Em pé, eleve os calcanhares mantendo o equilíbrio para fortalecer a panturrilha.', NULL, NULL, 'global', 'normal'),
+(76, 'Panturrilha no Leg Horizontal', 'panturrilha', 'Na máquina leg press horizontal, empurre a plataforma usando somente os dedos dos pés para ativar a panturrilha.', NULL, NULL, 'global', 'normal'),
+(77, 'Panturrilha no Leg 45°', 'panturrilha', 'No leg press 45°, faça a extensão plantar elevando os calcanhares para ativar a panturrilha.', NULL, NULL, 'global', 'normal'),
+(78, 'Panturrilha no Smith', 'panturrilha', 'Com barra no smith, faça a extensão plantar para fortalecer a panturrilha com carga adicional.', NULL, NULL, 'global', 'normal'),
+(79, 'Agachamento Livre', 'quadriceps', 'Com barra apoiada nos ombros, flexione os joelhos e quadris descendo o corpo e volte à posição inicial.', NULL, NULL, 'global', 'normal'),
+(80, 'Agachamento Sumô', 'quadriceps', 'Com pernas afastadas e pés virados para fora, agache mantendo a postura ereta e volte controladamente.', NULL, NULL, 'global', 'normal'),
+(81, 'Agachamento no Hack Machine', 'quadriceps', 'Na máquina hack, execute o agachamento controlando o movimento para fortalecer as pernas.', NULL, NULL, 'global', 'normal'),
+(82, 'Leg Press 45°', 'quadriceps', 'Empurre a plataforma inclinada usando os pés, estendendo os joelhos para ativar o quadríceps.', NULL, NULL, 'global', 'normal'),
+(83, 'Cadeira Extensora', 'quadriceps', 'Sente-se e estenda os joelhos contra a resistência da máquina para trabalhar o quadríceps.', NULL, NULL, 'global', 'normal'),
+(84, 'Afundo', 'quadriceps', 'Dê um passo à frente e flexione ambos os joelhos até o ângulo de 90°, suba controladamente.', NULL, NULL, 'global', 'normal'),
+(85, 'Agachamento Búlgaro', 'quadriceps', 'Com um pé apoiado atrás em banco, agache com o outro mantendo o equilíbrio e volte à posição inicial.', NULL, NULL, 'global', 'normal'),
+(86, 'Flexão de Quadril com Caneleira', 'quadriceps', 'De pé, flexione o quadril levantando a perna com caneleira para frente, trabalhando o quadríceps.', NULL, NULL, 'global', 'normal'),
+(87, 'Passada e Avanço', 'quadriceps', 'Dê um passo largo à frente, flexione o joelho e volte para trás, alternando as pernas.', NULL, NULL, 'global', 'normal'),
+(88, 'Cadeira Adutora', 'adutores', 'Sente-se e pressione as coxas para dentro contra a resistência da máquina para trabalhar os adutores.', NULL, NULL, 'global', 'normal'),
+(89, 'Adução no Cross Over', 'adutores', 'Com cabos baixos, puxe as pernas para dentro cruzando na frente do corpo para ativar os adutores.', NULL, NULL, 'global', 'normal'),
+(90, 'Mesa Flexora', 'posteriordecoxa', 'Deitado na máquina, flexione os joelhos contra a resistência para trabalhar os músculos posteriores da coxa.', NULL, NULL, 'global', 'normal'),
+(91, 'Cadeira Flexora', 'posteriordecoxa', 'Sentado na máquina, flexione os joelhos para trás contra a resistência para ativar os posteriores da coxa.', NULL, NULL, 'global', 'normal'),
+(92, 'Flexão de Joelho no Cross Over', 'posteriordecoxa', 'Com cabo no tornozelo, flexione o joelho para trás mantendo o tronco estável.', NULL, NULL, 'global', 'normal'),
+(93, 'Stiff', 'posteriordecoxa', 'Com barra ou halteres, incline o tronco à frente mantendo as pernas estendidas e volte à posição inicial.', NULL, NULL, 'global', 'normal'),
+(94, 'Glúteo Máquina', 'gluteos', 'Na máquina específica, empurre a alavanca com os quadris para trabalhar os glúteos.', NULL, NULL, 'global', 'normal'),
+(95, 'Elevação Pélvica', 'gluteos', 'Deitado com joelhos flexionados, eleve o quadril contraindo os glúteos e desça controladamente.', NULL, NULL, 'global', 'normal'),
+(96, 'Elevação Pélvica Unilateral', 'gluteos', 'Com uma perna elevada, eleve o quadril focando no trabalho unilateral dos glúteos.', NULL, NULL, 'global', 'normal'),
+(97, 'Abdução de Quadril com Caneleira', 'gluteos', 'Deitado de lado, abduza a perna com caneleira para trabalhar os glúteos e abdutores.', NULL, NULL, 'global', 'normal'),
+(98, 'Abdução no Cross Over', 'gluteos', 'Com cabo no tornozelo, abduza a perna lateralmente mantendo o tronco estável.', NULL, NULL, 'global', 'normal'),
+(99, 'Cadeira Abdutora', 'gluteos', 'Sente-se e abra as coxas contra a resistência da máquina para trabalhar os abdutores e glúteos.', NULL, NULL, 'global', 'normal'),
+(100, 'Glúteo no Cross Over', 'gluteos', 'Com cabo no tornozelo, realize extensão do quadril para trás, ativando os glúteos.', NULL, NULL, 'global', 'normal'),
+(101, 'Agachamento Sumô com Halter', 'gluteos', 'Com halter entre as pernas, agache em posição sumô para ativar glúteos e adutores.', NULL, NULL, 'global', 'normal'),
+(102, 'Agachamento Afundo com Halter', 'gluteos', 'Com halteres, execute o afundo para trabalhar glúteos e pernas.', NULL, NULL, 'global', 'normal'),
+(103, 'Agachamento Búlgaro com Halter', 'gluteos', 'Com halteres, execute o agachamento búlgaro focando nos glúteos e quadríceps.', NULL, NULL, 'global', 'normal'),
+(104, 'Agachamento Terra', 'gluteos', 'Com barra, flexione o quadril mantendo as costas retas e volte à posição inicial, ativando glúteos e posteriores.', NULL, NULL, 'global', 'normal'),
+(105, 'Agachamento Terra Sumô', 'gluteos', 'Com pegada mais larga, execute o terra sumô para ativar glúteos e adutores.', NULL, NULL, 'global', 'normal'),
+(106, 'Agachamento Terra Romeno', 'gluteos', 'Com barra, flexione o quadril mantendo pernas quase estendidas para alongar e ativar posteriores e glúteos.', NULL, NULL, 'global', 'normal'),
+(107, 'Agachamento Terra Unilateral', 'gluteos', 'Com uma perna, execute o movimento de terra para trabalhar unilateralmente glúteos e estabilizadores.', NULL, NULL, 'global', 'normal'),
+(108, 'Agachamento Terra com Halteres', 'gluteos', 'Com halteres, execute o terra para ativar glúteos e posteriores da coxa.', NULL, NULL, 'global', 'normal'),
+(109, 'Agachamento Terra com Kettlebell', 'gluteos', 'Com kettlebell, execute o terra focando na ativação dos glúteos e posteriores.', NULL, NULL, 'global', 'normal'),
+(110, 'Agachamento Terra com Barra Hexagonal', 'gluteos', 'Na barra hexagonal, execute o terra com pegada neutra para reduzir tensão lombar.', NULL, NULL, 'global', 'normal'),
+(111, 'Agachamento Terra com Trap Bar', 'gluteos', 'Com trap bar, execute o terra para trabalhar glúteos e posteriores com menor impacto na coluna.', NULL, NULL, 'global', 'normal'),
+(112, 'Agachamento Terra com Barra Olímpica', 'gluteos', 'Com barra olímpica, execute o terra tradicional para ativar glúteos e cadeia posterior.', NULL, NULL, 'global', 'normal'),
+(113, 'Agachamento Terra com Barra Safety', 'gluteos', 'Com barra safety, execute o terra com maior segurança para trabalhar glúteos e posteriores.', NULL, NULL, 'global', 'normal'),
+(121, 'Supino Diferenciado', 'Peito', 'Pô, tu vai fazer assim, assim e assado', 'daviramos1703@gmail.com', 1, 'personal', 'normal'),
+(122, 'Supino Diferenciado', 'Peito', 'Faz assim', 'daviramos1703@gmail.com', 1, 'personal', 'adaptado'),
+(123, 'Supino Diferenciado', 'Peito', 'Adasdas', 'daviramos1703@gmail.com', 1, 'personal', 'adaptado'),
+(124, 'Supino Diferenciado', 'Peito', 'A', 'krebsenzo8@gmail.com', 1, 'personal', 'adaptado'),
+(125, 'Supino Diferenciado', 'Peito', 'asdasd', 'krebsenzo8@gmail.com', 1, 'personal', 'adaptado'),
+(126, 'AAAA', 'Peito', 'asdasd', 'krebsenzo8@gmail.com', 1, 'personal', 'normal'),
+(127, 'Enzo', 'Peito', 'AAA', 'krebsenzo8@gmail.com', 1, 'personal', 'normal');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `itens_refeicao`
+-- Estrutura da tabela `itens_refeicao`
 --
 
 DROP TABLE IF EXISTS `itens_refeicao`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `itens_refeicao` (
+CREATE TABLE IF NOT EXISTS `itens_refeicao` (
   `idItensRef` int NOT NULL AUTO_INCREMENT,
   `id_tipo_refeicao` int NOT NULL,
   `nome` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -328,27 +538,21 @@ CREATE TABLE `itens_refeicao` (
   PRIMARY KEY (`idItensRef`),
   KEY `id_tipo_refeicao` (`id_tipo_refeicao`),
   KEY `idx_tipo_ref` (`id_tipo_refeicao`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `itens_refeicao`
+-- Truncar tabela antes do insert `itens_refeicao`
 --
 
-LOCK TABLES `itens_refeicao` WRITE;
-/*!40000 ALTER TABLE `itens_refeicao` DISABLE KEYS */;
-INSERT INTO `itens_refeicao` VALUES (1,1,'batata',247,'g');
-/*!40000 ALTER TABLE `itens_refeicao` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `itens_refeicao`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `medidas`
+-- Estrutura da tabela `medidas`
 --
 
 DROP TABLE IF EXISTS `medidas`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `medidas` (
+CREATE TABLE IF NOT EXISTS `medidas` (
   `idMedida` int NOT NULL AUTO_INCREMENT,
   `idAluno` int NOT NULL,
   `peso` decimal(5,2) DEFAULT NULL,
@@ -368,28 +572,160 @@ CREATE TABLE `medidas` (
   `panturrilha_direita` decimal(4,2) DEFAULT NULL,
   `data_medicao` datetime NOT NULL,
   PRIMARY KEY (`idMedida`),
-  KEY `FK_Medidas_Aluno` (`idAluno`),
-  CONSTRAINT `FK_Medidas_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE
+  KEY `FK_Medidas_Aluno` (`idAluno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `medidas`
+-- Truncar tabela antes do insert `medidas`
 --
 
-LOCK TABLES `medidas` WRITE;
-/*!40000 ALTER TABLE `medidas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `medidas` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `medidas`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `nutrientes`
+-- Estrutura da tabela `modalidades`
+--
+
+DROP TABLE IF EXISTS `modalidades`;
+CREATE TABLE IF NOT EXISTS `modalidades` (
+  `idModalidade` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` text COLLATE utf8mb4_general_ci,
+  `ativo` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`idModalidade`),
+  UNIQUE KEY `nome` (`nome`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `modalidades`
+--
+
+TRUNCATE TABLE `modalidades`;
+--
+-- Extraindo dados da tabela `modalidades`
+--
+
+INSERT INTO `modalidades` (`idModalidade`, `nome`, `descricao`, `ativo`) VALUES
+(1, 'Musculação', 'Treinamento com pesos para desenvolvimento de força e hipertrofia muscular', 1),
+(2, 'CrossFit', 'Programa de treinamento de força e condicionamento que incorpora elementos de diversos esportes', 1),
+(3, 'Calistenia', 'Treino usando o peso do próprio corpo para desenvolver força e resistência', 1),
+(4, 'Boxe', 'Arte marcial e esporte de combate que utiliza apenas os punhos para ataque e defesa', 1),
+(5, 'Muay Thai', 'Arte marcial tailandesa que utiliza socos, chutes, cotoveladas e joelhadas', 1),
+(6, 'Jiu-Jitsu', 'Arte marcial japonesa e esporte de combate focado em técnicas de grappling e finalização', 1),
+(7, 'Judô', 'Arte marcial japonesa que se concentra em projeções, imobilizações e finalizações', 1),
+(8, 'Karatê', 'Arte marcial japonesa que utiliza golpes de mãos e pés para defesa pessoal', 1),
+(9, 'Natação', 'Esporte aquático que trabalha todo o corpo e melhora a capacidade cardiorrespiratória', 1),
+(10, 'Hidroginástica', 'Atividade física realizada na água, ideal para reabilitação e condicionamento de baixo impacto', 1),
+(11, 'Pilates', 'Método de exercícios que fortalece o core, melhora a postura e a flexibilidade', 1),
+(12, 'Yoga', 'Prática milenar que une posturas físicas, respiração e meditação para bem-estar integral', 1),
+(13, 'Dança', 'Atividade artística e física que combina movimentos corporais com expressão musical', 1),
+(14, 'Zumba', 'Programa de fitness que combina movimentos de dança latina com exercícios aeróbicos', 1),
+(15, 'Spinning', 'Treino indoor em bicicletas estacionárias com variações de intensidade e ritmo', 1),
+(16, 'Treinamento Funcional', 'Exercícios que simulam movimentos do dia a dia, melhorando a funcionalidade do corpo', 1),
+(17, 'Corrida', 'Atividade aeróbica que melhora o condicionamento cardiovascular e queima calorias', 1),
+(18, 'Ciclismo', 'Esporte que utiliza bicicleta para melhorar resistência cardiovascular e fortalecer membros inferiores', 1),
+(19, 'Treinamento em Suspensão', 'Método que utiliza cordas e o peso do corpo para desenvolver força e equilíbrio', 1),
+(20, 'Levantamento de Peso Olímpico', 'Esporte que envolve os movimentos de arranco e arremesso com halteres', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `modalidades_academia`
+--
+
+DROP TABLE IF EXISTS `modalidades_academia`;
+CREATE TABLE IF NOT EXISTS `modalidades_academia` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `idAcademia` int NOT NULL,
+  `idModalidade` int NOT NULL,
+  `data_associacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_academia_modalidade` (`idAcademia`,`idModalidade`),
+  KEY `idModalidade` (`idModalidade`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Truncar tabela antes do insert `modalidades_academia`
+--
+
+TRUNCATE TABLE `modalidades_academia`;
+--
+-- Extraindo dados da tabela `modalidades_academia`
+--
+
+INSERT INTO `modalidades_academia` (`id`, `idAcademia`, `idModalidade`, `data_associacao`) VALUES
+(10, 1, 13, '2025-11-18 03:32:53'),
+(11, 1, 2, '2025-11-18 03:32:53'),
+(12, 1, 5, '2025-11-18 03:32:53'),
+(13, 1, 11, '2025-11-18 03:32:53'),
+(14, 1, 1, '2025-11-18 03:32:53'),
+(15, 1, 15, '2025-11-18 03:32:53'),
+(16, 1, 16, '2025-11-18 03:32:53'),
+(17, 1, 12, '2025-11-18 03:32:53'),
+(18, 1, 14, '2025-11-18 03:32:53');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `modalidades_aluno`
+--
+
+DROP TABLE IF EXISTS `modalidades_aluno`;
+CREATE TABLE IF NOT EXISTS `modalidades_aluno` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `idAluno` int NOT NULL,
+  `idModalidade` int NOT NULL,
+  `data_associacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_aluno_modalidade` (`idAluno`,`idModalidade`),
+  KEY `idModalidade` (`idModalidade`),
+  KEY `idx_modalidades_aluno` (`idAluno`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Truncar tabela antes do insert `modalidades_aluno`
+--
+
+TRUNCATE TABLE `modalidades_aluno`;
+--
+-- Extraindo dados da tabela `modalidades_aluno`
+--
+
+INSERT INTO `modalidades_aluno` (`id`, `idAluno`, `idModalidade`, `data_associacao`) VALUES
+(1, 1, 5, '2025-11-18 03:33:38'),
+(2, 1, 1, '2025-11-18 03:33:38');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `modalidades_personal`
+--
+
+DROP TABLE IF EXISTS `modalidades_personal`;
+CREATE TABLE IF NOT EXISTS `modalidades_personal` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `idPersonal` int NOT NULL,
+  `idModalidade` int NOT NULL,
+  `data_associacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_personal_modalidade` (`idPersonal`,`idModalidade`),
+  KEY `idModalidade` (`idModalidade`),
+  KEY `idx_modalidades_personal` (`idPersonal`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Truncar tabela antes do insert `modalidades_personal`
+--
+
+TRUNCATE TABLE `modalidades_personal`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `nutrientes`
 --
 
 DROP TABLE IF EXISTS `nutrientes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `nutrientes` (
+CREATE TABLE IF NOT EXISTS `nutrientes` (
   `idNutrientes` int NOT NULL AUTO_INCREMENT,
   `alimento_id` int NOT NULL,
   `calorias` decimal(10,2) DEFAULT '0.00',
@@ -400,27 +736,21 @@ CREATE TABLE `nutrientes` (
   PRIMARY KEY (`idNutrientes`),
   UNIQUE KEY `alimento_id` (`alimento_id`),
   KEY `idx_alimento` (`alimento_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `nutrientes`
+-- Truncar tabela antes do insert `nutrientes`
 --
 
-LOCK TABLES `nutrientes` WRITE;
-/*!40000 ALTER TABLE `nutrientes` DISABLE KEYS */;
-INSERT INTO `nutrientes` VALUES (1,1,190.19,4.99,43.15,0.22,'g');
-/*!40000 ALTER TABLE `nutrientes` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `nutrientes`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `pagamentos`
+-- Estrutura da tabela `pagamentos`
 --
 
 DROP TABLE IF EXISTS `pagamentos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `pagamentos` (
+CREATE TABLE IF NOT EXISTS `pagamentos` (
   `idPagamento` int NOT NULL AUTO_INCREMENT,
   `idUsuario` int NOT NULL,
   `tipo_usuario` enum('aluno','personal','academia') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -433,28 +763,22 @@ CREATE TABLE `pagamentos` (
   `data_confirmacao` datetime DEFAULT NULL,
   PRIMARY KEY (`idPagamento`),
   KEY `FK_Pagamento_Plano` (`idPlano`),
-  KEY `idx_usuario_pagamento` (`idUsuario`,`tipo_usuario`),
-  CONSTRAINT `FK_Pagamento_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`)
+  KEY `idx_usuario_pagamento` (`idUsuario`,`tipo_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pagamentos`
+-- Truncar tabela antes do insert `pagamentos`
 --
 
-LOCK TABLES `pagamentos` WRITE;
-/*!40000 ALTER TABLE `pagamentos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pagamentos` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `pagamentos`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `personal`
+-- Estrutura da tabela `personal`
 --
 
 DROP TABLE IF EXISTS `personal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `personal` (
+CREATE TABLE IF NOT EXISTS `personal` (
   `idPersonal` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cpf` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -466,12 +790,18 @@ CREATE TABLE `personal` (
   `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `numTel` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `idade` int DEFAULT NULL,
-  `genero` enum('Masculino','Feminino','Outro') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `foto_perfil` longblob,
+  `data_nascimento` date DEFAULT NULL,
+  `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `foto_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL,
   `tipoPlano` enum('Básico(Gratuito)','Plus') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
   `status_conta` enum('Ativa','Pendente','Excluida') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
   `idPlano` int NOT NULL DEFAULT '3',
+  `idAcademia` int DEFAULT NULL,
+  `treinos_adaptados` tinyint(1) NOT NULL DEFAULT '0',
+  `sobre` text COLLATE utf8mb4_general_ci,
+  `cadastro_completo` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idPersonal`),
   UNIQUE KEY `cpf` (`cpf`),
   UNIQUE KEY `cref_numero` (`cref_numero`),
@@ -479,28 +809,27 @@ CREATE TABLE `personal` (
   UNIQUE KEY `rg` (`rg`),
   UNIQUE KEY `email` (`email`),
   KEY `FK_Personal_Plano` (`idPlano`),
-  CONSTRAINT `FK_Personal_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  KEY `idx_personal_academia` (`idAcademia`),
+  KEY `idx_personal_status` (`status_conta`),
+  KEY `idx_personal_treinos_adaptados` (`treinos_adaptados`),
+  KEY `idx_personal_data_nascimento` (`data_nascimento`),
+  KEY `idx_personal_genero` (`genero`),
+  KEY `idx_personal_foto_url` (`foto_url`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `personal`
+-- Truncar tabela antes do insert `personal`
 --
 
-LOCK TABLES `personal` WRITE;
-/*!40000 ALTER TABLE `personal` DISABLE KEYS */;
-INSERT INTO `personal` VALUES (1,'Davizin Personal','57788671827','12345678905','665153','A','SP','daviramos1703@gmail.com','$2y$10$FuaWsLfaiPpifbWgUum0QepT6LCRDyvTH8JXzl7aU97QTu.Izg8PK','11941364461',NULL,NULL,NULL,'2025-10-14 06:43:33','Plus','Ativa',3);
-/*!40000 ALTER TABLE `personal` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `personal`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `planos`
+-- Estrutura da tabela `planos`
 --
 
 DROP TABLE IF EXISTS `planos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `planos` (
+CREATE TABLE IF NOT EXISTS `planos` (
   `idPlano` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
@@ -512,26 +841,31 @@ CREATE TABLE `planos` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idPlano`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `planos`
+-- Truncar tabela antes do insert `planos`
 --
 
-LOCK TABLES `planos` WRITE;
-/*!40000 ALTER TABLE `planos` DISABLE KEYS */;
-INSERT INTO `planos` VALUES (1,'Aluno Básico','Plano gratuito para alunos com funcionalidades essenciais',0.00,'aluno','[\"Acesso a treinos básicos\", \"Visualização de exercícios\", \"Acompanhamento de medidas\"]',1,'2025-10-02 22:55:48','2025-10-02 22:55:48'),(2,'Aluno Plus','Plano premium para alunos com funcionalidades avançadas',29.90,'aluno','[\"Acesso a todos os treinos\", \"Planos alimentares personalizados\", \"Suporte prioritário\", \"Relatórios detalhados\"]',1,'2025-10-02 22:55:48','2025-10-02 22:55:48'),(3,'Personal Básico','Plano gratuito para personal trainers',0.00,'personal','[\"Gerenciar até 5 alunos\", \"Criar treinos básicos\", \"Acompanhamento de alunos\"]',1,'2025-10-02 22:55:48','2025-10-02 22:55:48'),(4,'Personal Plus','Plano premium para personal trainers',99.90,'personal','[\"Gerenciar alunos ilimitados\", \"Criar treinos avançados\", \"Relatórios detalhados\", \"Suporte prioritário\", \"Acesso a recursos exclusivos\"]',1,'2025-10-02 22:55:48','2025-10-02 22:55:48'),(5,'Academia Premium','Plano completo para academias',299.90,'academia','[\"Gerenciar múltiplos personais\", \"Relatórios corporativos\", \"Suporte dedicado\", \"API de integração\", \"Dashboard administrativo\"]',1,'2025-10-02 22:55:48','2025-10-02 22:55:48');
-/*!40000 ALTER TABLE `planos` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `planos`;
+--
+-- Extraindo dados da tabela `planos`
+--
+
+INSERT INTO `planos` (`idPlano`, `nome`, `descricao`, `valor_mensal`, `tipo_usuario`, `caracteristicas`, `ativo`, `created_at`, `updated_at`) VALUES
+(1, 'Aluno Básico', 'Plano gratuito para alunos com funcionalidades essenciais', '0.00', 'aluno', '[\"Acesso a treinos básicos\", \"Visualização de exercícios\", \"Acompanhamento de medidas\"]', 1, '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(2, 'Aluno Plus', 'Plano premium para alunos com funcionalidades avançadas', '29.90', 'aluno', '[\"Acesso a todos os treinos\", \"Planos alimentares personalizados\", \"Suporte prioritário\", \"Relatórios detalhados\"]', 1, '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(3, 'Personal Básico', 'Plano gratuito para personal trainers', '0.00', 'personal', '[\"Gerenciar até 5 alunos\", \"Criar treinos básicos\", \"Acompanhamento de alunos\"]', 1, '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(4, 'Personal Plus', 'Plano premium para personal trainers', '99.90', 'personal', '[\"Gerenciar alunos ilimitados\", \"Criar treinos avançados\", \"Relatórios detalhados\", \"Suporte prioritário\", \"Acesso a recursos exclusivos\"]', 1, '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(5, 'Academia Premium', 'Plano completo para academias', '299.90', 'academia', '[\"Gerenciar múltiplos personais\", \"Relatórios corporativos\", \"Suporte dedicado\", \"API de integração\", \"Dashboard administrativo\"]', 1, '2025-10-02 22:55:48', '2025-10-02 22:55:48');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `progresso`
+-- Estrutura da tabela `progresso`
 --
 
 DROP TABLE IF EXISTS `progresso`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `progresso` (
+CREATE TABLE IF NOT EXISTS `progresso` (
   `idProgresso` int NOT NULL AUTO_INCREMENT,
   `idAluno` int NOT NULL,
   `data` datetime NOT NULL,
@@ -539,28 +873,22 @@ CREATE TABLE `progresso` (
   `altura` decimal(3,2) DEFAULT NULL,
   `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`idProgresso`),
-  KEY `FK_Progresso_Aluno` (`idAluno`),
-  CONSTRAINT `FK_Progresso_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE
+  KEY `FK_Progresso_Aluno` (`idAluno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `progresso`
+-- Truncar tabela antes do insert `progresso`
 --
 
-LOCK TABLES `progresso` WRITE;
-/*!40000 ALTER TABLE `progresso` DISABLE KEYS */;
-/*!40000 ALTER TABLE `progresso` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `progresso`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `recuperacao_senha`
+-- Estrutura da tabela `recuperacao_senha`
 --
 
 DROP TABLE IF EXISTS `recuperacao_senha`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `recuperacao_senha` (
+CREATE TABLE IF NOT EXISTS `recuperacao_senha` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `token_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -571,55 +899,73 @@ CREATE TABLE `recuperacao_senha` (
   PRIMARY KEY (`id`),
   KEY `email` (`email`),
   KEY `expiraEm` (`expiraEm`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `recuperacao_senha`
+-- Truncar tabela antes do insert `recuperacao_senha`
 --
 
-LOCK TABLES `recuperacao_senha` WRITE;
-/*!40000 ALTER TABLE `recuperacao_senha` DISABLE KEYS */;
-INSERT INTO `recuperacao_senha` VALUES (1,'enzokrebs8@gmail.com','46ab3836dbf0cba14abd8e5fe1739df9e4e6ef72944cd9c2597a8794b90d7383','2025-10-25 11:21:20',0,0,'2025-10-25 14:06:20'),(2,'enzokrebs8@gmail.com','d61536ad95d6d5db473376897aa94393c3825eb584585aebf61566f09171277d','2025-10-25 11:21:29',0,0,'2025-10-25 14:06:29');
-/*!40000 ALTER TABLE `recuperacao_senha` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `recuperacao_senha`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `refeicoes_tipos`
+-- Estrutura da tabela `refeicoes_tipos`
 --
 
 DROP TABLE IF EXISTS `refeicoes_tipos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `refeicoes_tipos` (
+CREATE TABLE IF NOT EXISTS `refeicoes_tipos` (
   `id` int NOT NULL AUTO_INCREMENT,
   `idAluno` int NOT NULL,
   `nome_tipo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `data_ref` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_aluno_data` (`idAluno`,`data_ref`),
-  CONSTRAINT `FK_Refeicoes_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  KEY `idx_aluno_data` (`idAluno`,`data_ref`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `refeicoes_tipos`
+-- Truncar tabela antes do insert `refeicoes_tipos`
 --
 
-LOCK TABLES `refeicoes_tipos` WRITE;
-/*!40000 ALTER TABLE `refeicoes_tipos` DISABLE KEYS */;
-INSERT INTO `refeicoes_tipos` VALUES (1,2,'Café da manhã','2025-10-25 11:22:29'),(2,3,'Café da manhã','2025-10-25 14:44:59');
-/*!40000 ALTER TABLE `refeicoes_tipos` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `refeicoes_tipos`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `traducoes_alimentos`
+-- Estrutura da tabela `solicitacoes_academia`
+--
+
+DROP TABLE IF EXISTS `solicitacoes_academia`;
+CREATE TABLE IF NOT EXISTS `solicitacoes_academia` (
+  `idSolicitacao` int NOT NULL AUTO_INCREMENT,
+  `token` varchar(64) NOT NULL,
+  `idAcademia` int NOT NULL,
+  `idUsuario` int NOT NULL,
+  `tipo_usuario` enum('aluno','personal') NOT NULL,
+  `status` enum('pendente','aceita','recusada') NOT NULL DEFAULT 'pendente',
+  `mensagem_solicitante` text,
+  `mensagem_resposta` text,
+  `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_resposta` datetime DEFAULT NULL,
+  `visualizado` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`idSolicitacao`),
+  UNIQUE KEY `token` (`token`),
+  KEY `idAcademia` (`idAcademia`),
+  KEY `idx_usuario_tipo` (`idUsuario`,`tipo_usuario`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Truncar tabela antes do insert `solicitacoes_academia`
+--
+
+TRUNCATE TABLE `solicitacoes_academia`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `traducoes_alimentos`
 --
 
 DROP TABLE IF EXISTS `traducoes_alimentos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `traducoes_alimentos` (
+CREATE TABLE IF NOT EXISTS `traducoes_alimentos` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nome_original` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `nome_traduzido` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -630,27 +976,152 @@ CREATE TABLE `traducoes_alimentos` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `nome_original_idioma_original` (`nome_original`,`idioma_original`),
   KEY `idx_nome_traduzido` (`nome_traduzido`)
-) ENGINE=InnoDB AUTO_INCREMENT=596 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=497 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `traducoes_alimentos`
+-- Truncar tabela antes do insert `traducoes_alimentos`
 --
 
-LOCK TABLES `traducoes_alimentos` WRITE;
-/*!40000 ALTER TABLE `traducoes_alimentos` DISABLE KEYS */;
-INSERT INTO `traducoes_alimentos` VALUES (1,'apple','maçã','en','pt','2025-10-02 22:55:48','2025-10-21 12:01:43'),(2,'banana','banana','en','pt','2025-10-02 22:55:48','2025-10-12 19:16:08'),(3,'orange','laranja','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(4,'rice','arroz','en','pt','2025-10-02 22:55:48','2025-10-21 12:03:25'),(5,'beans','feijão','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(6,'chicken','frango','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(7,'beef','carne bovina','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(8,'fish','peixe','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(9,'egg','ovo','en','pt','2025-10-02 22:55:48','2025-10-07 05:39:19'),(10,'milk','leite','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(11,'bread','pão','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(12,'cheese','queijo','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(13,'yogurt','iogurte','en','pt','2025-10-02 22:55:48','2025-10-13 02:19:42'),(14,'pasta','massa','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(15,'potato','batata','en','pt','2025-10-02 22:55:48','2025-10-25 14:23:17'),(16,'tomato','tomate','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(17,'lettuce','alface','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(18,'carrot','cenoura','en','pt','2025-10-02 22:55:48','2025-10-14 12:40:26'),(19,'broccoli','brócolis','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(20,'spinach','espinafre','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(21,'avocado','abacate','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(22,'strawberry','morango','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(23,'grape','uva','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(24,'watermelon','melancia','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(25,'pineapple','abacaxi','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(26,'cucumber','pepino','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(27,'onion','cebola','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(28,'garlic','alho','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(29,'pepper','pimentão','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(30,'mushroom','cogumelo','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(31,'corn','milho','en','pt','2025-10-02 22:55:48','2025-10-06 09:20:45'),(32,'pea','ervilha','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(33,'lentil','lentilha','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(34,'oat','aveia','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(35,'almond','amêndoa','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(36,'walnut','noz','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(37,'peanut','amendoim','en','pt','2025-10-02 22:55:48','2025-10-02 22:55:48'),(40,'applesauce','molho de maçã','en','pt','2025-10-06 01:37:51','2025-10-21 12:01:43'),(42,'apple juice','suco de maçã','en','pt','2025-10-06 01:37:54','2025-10-21 12:01:43'),(44,'apple cider','cidra de maçã','en','pt','2025-10-06 01:37:57','2025-10-21 12:01:43'),(46,'apple jelly','geleia de maçã','en','pt','2025-10-06 01:37:59','2025-10-21 12:01:43'),(48,'apple sauce','purê de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 01:49:57'),(49,'apple pie','torta de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 01:49:57'),(50,'apple crisp','crocante de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 02:06:48'),(51,'apple strudel','strudel de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 01:49:57'),(52,'apple turnover','folhado de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 01:49:57'),(53,'apple butter','doce de maçã','en','pt','2025-10-06 01:49:57','2025-10-21 12:01:43'),(54,'apple muffin','muffin de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 01:49:57'),(55,'apple cake','bolo de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 01:49:57'),(56,'apple compote','compota de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 01:49:57'),(57,'apple tart','tarte de maçã','en','pt','2025-10-06 01:49:57','2025-10-06 01:49:57'),(58,'red apple','maçã vermelha','en','pt','2025-10-06 01:50:13','2025-10-06 01:50:13'),(59,'green apple','maçã verde','en','pt','2025-10-06 01:50:13','2025-10-06 01:50:13'),(60,'fresh apple','maçã fresca','en','pt','2025-10-06 01:50:13','2025-10-06 01:50:13'),(61,'dried apple','maçã seca','en','pt','2025-10-06 01:50:13','2025-10-06 01:50:13'),(62,'apple slice','fatia de maçã','en','pt','2025-10-06 01:50:13','2025-10-06 01:50:13'),(63,'apple wedge','gomo de maçã','en','pt','2025-10-06 01:50:13','2025-10-06 01:50:13'),(73,'apple pie spice','especiarias para torta de maçã','en','pt','2025-10-06 02:03:46','2025-10-21 12:01:43'),(75,'apple pie filling','recheio de torta de maçã','en','pt','2025-10-06 02:03:48','2025-10-21 12:01:43'),(77,'apple cider vinegar','vinagre de maçã','en','pt','2025-10-06 02:03:49','2025-10-21 12:01:43'),(79,'applewood smoked bacon','bacon defumado applewood','en','pt','2025-10-06 02:03:50','2025-10-21 12:01:43'),(342,'banana leaves','folhas de bananeira','en','pt','2025-10-07 04:49:29','2025-10-12 19:16:08'),(344,'banana chips','Chips de banana','en','pt','2025-10-07 04:49:31','2025-10-12 19:16:08'),(346,'banana bread','Pão de banana 45','en','pt','2025-10-07 04:49:33','2025-10-12 19:16:08'),(348,'banana pepper','pimenta-banana','en','pt','2025-10-07 04:49:34','2025-10-12 19:16:08'),(350,'pink banana squash','abóbora-banana-rosa','en','pt','2025-10-07 04:49:36','2025-10-12 19:16:08'),(352,'banana blossoms','flores de bananeira','en','pt','2025-10-07 04:49:38','2025-10-12 19:16:08'),(354,'banana pepper rings','anéis de pimenta-banana','en','pt','2025-10-07 04:49:39','2025-10-12 19:16:08'),(356,'banana liqueur','licor de banana','en','pt','2025-10-07 04:49:40','2025-10-12 19:16:08'),(358,'banana extract','extrato de banana','en','pt','2025-10-07 04:49:42','2025-10-12 19:16:08'),(374,'eggnog','Gemada','en','pt','2025-10-07 05:13:03','2025-10-07 05:14:04'),(376,'eggplant','beringelas','en','pt','2025-10-07 05:13:05','2025-10-07 05:14:04'),(378,'egg whites','Clara de Ovo','en','pt','2025-10-07 05:13:07','2025-10-07 05:14:04'),(380,'egg yolk','gema de ovo','en','pt','2025-10-07 05:13:09','2025-10-07 05:14:04'),(382,'challah','Chalá','en','pt','2025-10-07 05:13:10','2025-10-07 05:14:04'),(384,'egg noodles','Massa de ovos','en','pt','2025-10-07 05:13:12','2025-10-07 05:14:04'),(386,'liquid egg whites','claras líquidas de ovo','en','pt','2025-10-07 05:13:14','2025-10-07 05:14:04'),(388,'egg replacer','substituto de ovo','en','pt','2025-10-07 05:13:15','2025-10-07 05:14:04'),(390,'egg roll wrappers','invólucros de rolo de ovo','en','pt','2025-10-07 05:13:17','2025-10-07 05:14:04'),(441,'soy yogurt','iogurte de soja','en','pt','2025-10-07 05:22:25','2025-10-13 02:19:42'),(443,'fat free yogurt','iogurte sem gordura','en','pt','2025-10-07 05:22:27','2025-10-13 02:19:42'),(445,'greek yogurt','iogurte grego','en','pt','2025-10-07 05:22:27','2025-10-13 02:20:04'),(447,'plain yogurt','iogurte natural','en','pt','2025-10-07 05:22:29','2025-10-13 02:19:42'),(449,'low fat plain yogurt','iogurte natural com baixo teor de gordura','en','pt','2025-10-07 05:22:30','2025-10-13 02:19:42'),(451,'frozen yogurt','SORVETE DE IOGURTE','en','pt','2025-10-07 05:22:32','2025-10-13 02:19:42'),(453,'vanilla yogurt','iogurte de baunilha','en','pt','2025-10-07 05:22:34','2025-10-13 02:19:42'),(455,'strawberry yogurt','iogurte de morango,','en','pt','2025-10-07 05:22:36','2025-10-13 02:19:42'),(457,'fat free greek yogurt','iogurte grego sem gordura','en','pt','2025-10-07 05:22:37','2025-10-13 02:19:42'),(459,'strawberry yogurt,','iogurte de morango,','en','pt','2025-10-07 05:26:02','2025-10-07 05:34:42'),(484,'Couscous','cuzcuz','en','pt','2025-10-14 03:07:00','2025-10-14 03:07:17'),(486,'dry couscous','cuscuz seco','en','pt','2025-10-14 03:07:03','2025-10-14 03:07:03'),(488,'dry israeli couscous','cuscuz israelita seco','en','pt','2025-10-14 03:07:05','2025-10-14 03:07:05'),(490,'cooked couscous','cuscuz cozido','en','pt','2025-10-14 03:07:07','2025-10-14 03:07:07'),(492,'whole wheat couscous','cuscuz de trigo integral','en','pt','2025-10-14 03:07:08','2025-10-14 03:07:08'),(494,'cooked israeli couscous','cuscuz israelita cozido','en','pt','2025-10-14 03:07:10','2025-10-14 03:07:10'),(509,'potato roll','rolo de batata','en','pt','2025-10-14 12:39:39','2025-10-25 14:22:51'),(511,'tater tots','tater tots','en','pt','2025-10-14 12:39:40','2025-10-25 14:22:51'),(512,'potato chips','tsumono','en','pt','2025-10-14 12:39:41','2025-10-25 14:22:51'),(514,'potato bread','Pão de batata','en','pt','2025-10-14 12:39:42','2025-10-25 14:22:51'),(516,'potato salad','Kartoffelsalat','en','pt','2025-10-14 12:39:43','2025-10-25 14:22:51'),(518,'hash browns','-Hash Browns','en','pt','2025-10-14 12:39:44','2025-10-25 14:22:51'),(520,'potato starch','amido de batata','en','pt','2025-10-14 12:39:45','2025-10-25 14:22:51'),(522,'instant potatoes flakes','flocos de batatas instantâneas','en','pt','2025-10-14 12:39:46','2025-10-25 14:22:51'),(524,'gnocchi','nhoque','en','pt','2025-10-14 12:39:47','2025-10-25 14:22:51'),(529,'carrot leaves','folhas de cenoura','en','pt','2025-10-14 12:40:16','2025-10-14 12:40:16'),(531,'carrot juice','sumo de cenoura','en','pt','2025-10-14 12:40:17','2025-10-14 12:40:17'),(533,'banana bread mix','mistura de pão de banana','en','pt','2025-10-14 12:40:19','2025-10-14 12:40:19'),(535,'mixed vegetables','vegetais mistos','en','pt','2025-10-14 12:40:20','2025-10-14 12:40:20'),(537,'baby carrots','cenouras bebé','en','pt','2025-10-14 12:40:21','2025-10-14 12:40:21'),(539,'peas and carrots','ervilhas e cenouras','en','pt','2025-10-14 12:40:23','2025-10-14 12:40:23'),(541,'canned peas and carrots','ervilhas e cenouras enlatadas','en','pt','2025-10-14 12:40:24','2025-10-14 12:40:24'),(556,'acai','açaí','en','pt','2025-10-21 12:02:14','2025-10-21 12:02:14'),(557,'acai juice','sumo de açaí','en','pt','2025-10-21 12:02:17','2025-10-21 12:02:42'),(559,'acai powder','açaí em pó','en','pt','2025-10-21 12:02:19','2025-10-21 12:02:19'),(565,'rice cakes','Bolo de Arroz','en','pt','2025-10-21 12:03:03','2025-10-21 12:03:03'),(567,'shaoxing wine','vinho shaoxing','en','pt','2025-10-21 12:03:04','2025-10-21 12:03:04'),(569,'rice milk','leite de arroz','en','pt','2025-10-21 12:03:05','2025-10-21 12:03:05'),(571,'rice chex','chex de arroz','en','pt','2025-10-21 12:03:06','2025-10-21 12:03:06'),(573,'rice bran','sêmea grosseira de arroz','en','pt','2025-10-21 12:03:08','2025-10-21 12:03:08'),(575,'rice flour','farinha de arroz','en','pt','2025-10-21 12:03:09','2025-10-21 12:03:09'),(577,'spring roll wrappers','Massa de crepes chineses','en','pt','2025-10-21 12:03:10','2025-10-21 12:03:10'),(579,'brown rice syrup','xarope de arroz integral','en','pt','2025-10-21 12:03:11','2025-10-21 12:03:11'),(581,'rice vinegar','Vinagre de arroz','en','pt','2025-10-21 12:03:12','2025-10-21 12:03:13'),(582,'Colour:','bat','en','pt','2025-10-25 14:22:44','2025-10-25 14:22:44');
-/*!40000 ALTER TABLE `traducoes_alimentos` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `traducoes_alimentos`;
+--
+-- Extraindo dados da tabela `traducoes_alimentos`
+--
+
+INSERT INTO `traducoes_alimentos` (`id`, `nome_original`, `nome_traduzido`, `idioma_original`, `idioma_traduzido`, `data_criacao`, `data_atualizacao`) VALUES
+(1, 'apple', 'maçã', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-14 03:06:42'),
+(2, 'banana', 'banana', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-12 19:16:08'),
+(3, 'orange', 'laranja', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(4, 'rice', 'arroz', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-06 09:48:01'),
+(5, 'beans', 'feijão', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(6, 'chicken', 'frango', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(7, 'beef', 'carne bovina', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(8, 'fish', 'peixe', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(9, 'egg', 'ovo', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-07 05:39:19'),
+(10, 'milk', 'leite', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(11, 'bread', 'pão', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(12, 'cheese', 'queijo', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(13, 'yogurt', 'iogurte', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-13 02:19:42'),
+(14, 'pasta', 'massa', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(15, 'potato', 'batata', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(16, 'tomato', 'tomate', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(17, 'lettuce', 'alface', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(18, 'carrot', 'cenoura', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(19, 'broccoli', 'brócolis', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(20, 'spinach', 'espinafre', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(21, 'avocado', 'abacate', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(22, 'strawberry', 'morango', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(23, 'grape', 'uva', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(24, 'watermelon', 'melancia', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(25, 'pineapple', 'abacaxi', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(26, 'cucumber', 'pepino', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(27, 'onion', 'cebola', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(28, 'garlic', 'alho', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(29, 'pepper', 'pimentão', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(30, 'mushroom', 'cogumelo', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(31, 'corn', 'milho', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-06 09:20:45'),
+(32, 'pea', 'ervilha', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(33, 'lentil', 'lentilha', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(34, 'oat', 'aveia', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(35, 'almond', 'amêndoa', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(36, 'walnut', 'noz', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(37, 'peanut', 'amendoim', 'en', 'pt', '2025-10-02 22:55:48', '2025-10-02 22:55:48'),
+(40, 'applesauce', 'molho de maçã', 'en', 'pt', '2025-10-06 01:37:51', '2025-10-14 03:06:39'),
+(42, 'apple juice', 'suco de maçã', 'en', 'pt', '2025-10-06 01:37:54', '2025-10-14 03:06:39'),
+(44, 'apple cider', 'cidra de maçã', 'en', 'pt', '2025-10-06 01:37:57', '2025-10-14 03:06:39'),
+(46, 'apple jelly', 'geleia de maçã', 'en', 'pt', '2025-10-06 01:37:59', '2025-10-14 03:06:39'),
+(48, 'apple sauce', 'purê de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 01:49:57'),
+(49, 'apple pie', 'torta de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 01:49:57'),
+(50, 'apple crisp', 'crocante de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 02:06:48'),
+(51, 'apple strudel', 'strudel de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 01:49:57'),
+(52, 'apple turnover', 'folhado de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 01:49:57'),
+(53, 'apple butter', 'doce de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-14 03:06:39'),
+(54, 'apple muffin', 'muffin de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 01:49:57'),
+(55, 'apple cake', 'bolo de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 01:49:57'),
+(56, 'apple compote', 'compota de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 01:49:57'),
+(57, 'apple tart', 'tarte de maçã', 'en', 'pt', '2025-10-06 01:49:57', '2025-10-06 01:49:57'),
+(58, 'red apple', 'maçã vermelha', 'en', 'pt', '2025-10-06 01:50:13', '2025-10-06 01:50:13'),
+(59, 'green apple', 'maçã verde', 'en', 'pt', '2025-10-06 01:50:13', '2025-10-06 01:50:13'),
+(60, 'fresh apple', 'maçã fresca', 'en', 'pt', '2025-10-06 01:50:13', '2025-10-06 01:50:13'),
+(61, 'dried apple', 'maçã seca', 'en', 'pt', '2025-10-06 01:50:13', '2025-10-06 01:50:13'),
+(62, 'apple slice', 'fatia de maçã', 'en', 'pt', '2025-10-06 01:50:13', '2025-10-06 01:50:13'),
+(63, 'apple wedge', 'gomo de maçã', 'en', 'pt', '2025-10-06 01:50:13', '2025-10-06 01:50:13'),
+(73, 'apple pie spice', 'especiarias para torta de maçã', 'en', 'pt', '2025-10-06 02:03:46', '2025-10-14 03:06:39'),
+(75, 'apple pie filling', 'recheio de torta de maçã', 'en', 'pt', '2025-10-06 02:03:48', '2025-10-14 03:06:39'),
+(77, 'apple cider vinegar', 'vinagre de maçã', 'en', 'pt', '2025-10-06 02:03:49', '2025-10-14 03:06:39'),
+(79, 'applewood smoked bacon', 'bacon defumado applewood', 'en', 'pt', '2025-10-06 02:03:50', '2025-10-14 03:06:39'),
+(342, 'banana leaves', 'folhas de bananeira', 'en', 'pt', '2025-10-07 04:49:29', '2025-10-12 19:16:08'),
+(344, 'banana chips', 'Chips de banana', 'en', 'pt', '2025-10-07 04:49:31', '2025-10-12 19:16:08'),
+(346, 'banana bread', 'Pão de banana 45', 'en', 'pt', '2025-10-07 04:49:33', '2025-10-12 19:16:08'),
+(348, 'banana pepper', 'pimenta-banana', 'en', 'pt', '2025-10-07 04:49:34', '2025-10-12 19:16:08'),
+(350, 'pink banana squash', 'abóbora-banana-rosa', 'en', 'pt', '2025-10-07 04:49:36', '2025-10-12 19:16:08'),
+(352, 'banana blossoms', 'flores de bananeira', 'en', 'pt', '2025-10-07 04:49:38', '2025-10-12 19:16:08'),
+(354, 'banana pepper rings', 'anéis de pimenta-banana', 'en', 'pt', '2025-10-07 04:49:39', '2025-10-12 19:16:08'),
+(356, 'banana liqueur', 'licor de banana', 'en', 'pt', '2025-10-07 04:49:40', '2025-10-12 19:16:08'),
+(358, 'banana extract', 'extrato de banana', 'en', 'pt', '2025-10-07 04:49:42', '2025-10-12 19:16:08'),
+(374, 'eggnog', 'Gemada', 'en', 'pt', '2025-10-07 05:13:03', '2025-10-07 05:14:04'),
+(376, 'eggplant', 'beringelas', 'en', 'pt', '2025-10-07 05:13:05', '2025-10-07 05:14:04'),
+(378, 'egg whites', 'Clara de Ovo', 'en', 'pt', '2025-10-07 05:13:07', '2025-10-07 05:14:04'),
+(380, 'egg yolk', 'gema de ovo', 'en', 'pt', '2025-10-07 05:13:09', '2025-10-07 05:14:04'),
+(382, 'challah', 'Chalá', 'en', 'pt', '2025-10-07 05:13:10', '2025-10-07 05:14:04'),
+(384, 'egg noodles', 'Massa de ovos', 'en', 'pt', '2025-10-07 05:13:12', '2025-10-07 05:14:04'),
+(386, 'liquid egg whites', 'claras líquidas de ovo', 'en', 'pt', '2025-10-07 05:13:14', '2025-10-07 05:14:04'),
+(388, 'egg replacer', 'substituto de ovo', 'en', 'pt', '2025-10-07 05:13:15', '2025-10-07 05:14:04'),
+(390, 'egg roll wrappers', 'invólucros de rolo de ovo', 'en', 'pt', '2025-10-07 05:13:17', '2025-10-07 05:14:04'),
+(441, 'soy yogurt', 'iogurte de soja', 'en', 'pt', '2025-10-07 05:22:25', '2025-10-13 02:19:42'),
+(443, 'fat free yogurt', 'iogurte sem gordura', 'en', 'pt', '2025-10-07 05:22:27', '2025-10-13 02:19:42'),
+(445, 'greek yogurt', 'iogurte grego', 'en', 'pt', '2025-10-07 05:22:27', '2025-10-13 02:20:04'),
+(447, 'plain yogurt', 'iogurte natural', 'en', 'pt', '2025-10-07 05:22:29', '2025-10-13 02:19:42'),
+(449, 'low fat plain yogurt', 'iogurte natural com baixo teor de gordura', 'en', 'pt', '2025-10-07 05:22:30', '2025-10-13 02:19:42'),
+(451, 'frozen yogurt', 'SORVETE DE IOGURTE', 'en', 'pt', '2025-10-07 05:22:32', '2025-10-13 02:19:42'),
+(453, 'vanilla yogurt', 'iogurte de baunilha', 'en', 'pt', '2025-10-07 05:22:34', '2025-10-13 02:19:42'),
+(455, 'strawberry yogurt', 'iogurte de morango,', 'en', 'pt', '2025-10-07 05:22:36', '2025-10-13 02:19:42'),
+(457, 'fat free greek yogurt', 'iogurte grego sem gordura', 'en', 'pt', '2025-10-07 05:22:37', '2025-10-13 02:19:42'),
+(459, 'strawberry yogurt,', 'iogurte de morango,', 'en', 'pt', '2025-10-07 05:26:02', '2025-10-07 05:34:42'),
+(484, 'Couscous', 'cuzcuz', 'en', 'pt', '2025-10-14 03:07:00', '2025-10-14 03:07:17'),
+(486, 'dry couscous', 'cuscuz seco', 'en', 'pt', '2025-10-14 03:07:03', '2025-10-14 03:07:03'),
+(488, 'dry israeli couscous', 'cuscuz israelita seco', 'en', 'pt', '2025-10-14 03:07:05', '2025-10-14 03:07:05'),
+(490, 'cooked couscous', 'cuscuz cozido', 'en', 'pt', '2025-10-14 03:07:07', '2025-10-14 03:07:07'),
+(492, 'whole wheat couscous', 'cuscuz de trigo integral', 'en', 'pt', '2025-10-14 03:07:08', '2025-10-14 03:07:08'),
+(494, 'cooked israeli couscous', 'cuscuz israelita cozido', 'en', 'pt', '2025-10-14 03:07:10', '2025-10-14 03:07:10');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `treino_exercicio`
+-- Estrutura da tabela `treinos`
+--
+
+DROP TABLE IF EXISTS `treinos`;
+CREATE TABLE IF NOT EXISTS `treinos` (
+  `idTreino` int NOT NULL AUTO_INCREMENT,
+  `idAluno` int DEFAULT NULL,
+  `idPersonal` int DEFAULT NULL,
+  `criadoPor` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `data_criacao` datetime NOT NULL,
+  `data_ultima_modificacao` datetime NOT NULL,
+  `tipo_treino` enum('normal','adaptado') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'normal',
+  `ultima_sessao_id` int DEFAULT NULL,
+  PRIMARY KEY (`idTreino`),
+  KEY `FK_Treinos_Aluno` (`idAluno`),
+  KEY `FK_Treinos_Personal` (`idPersonal`),
+  KEY `FK_Treino_UltimaSessao` (`ultima_sessao_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `treinos`
+--
+
+TRUNCATE TABLE `treinos`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `treino_exercicio`
 --
 
 DROP TABLE IF EXISTS `treino_exercicio`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `treino_exercicio` (
+CREATE TABLE IF NOT EXISTS `treino_exercicio` (
   `idTreino_Exercicio` int NOT NULL AUTO_INCREMENT,
   `idTreino` int NOT NULL,
   `idExercicio` int DEFAULT NULL,
@@ -666,32 +1137,22 @@ CREATE TABLE `treino_exercicio` (
   PRIMARY KEY (`idTreino_Exercicio`),
   KEY `FK_TreinoExercicio_Treino` (`idTreino`),
   KEY `FK_TreinoExercicio_Exercicio` (`idExercicio`),
-  KEY `FK_TreinoExercicio_ExercAdaptado` (`idExercAdaptado`),
-  KEY `idx_treino_ordem` (`idTreino`,`ordem`),
-  CONSTRAINT `FK_TreinoExercicio_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`) ON DELETE CASCADE,
-  CONSTRAINT `FK_TreinoExercicio_Exercicio` FOREIGN KEY (`idExercicio`) REFERENCES `exercicios` (`idExercicio`) ON DELETE CASCADE,
-  CONSTRAINT `FK_TreinoExercicio_Treino` FOREIGN KEY (`idTreino`) REFERENCES `treinos` (`idTreino`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  KEY `FK_TreinoExercicio_ExercAdaptado` (`idExercAdaptado`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `treino_exercicio`
+-- Truncar tabela antes do insert `treino_exercicio`
 --
 
-LOCK TABLES `treino_exercicio` WRITE;
-/*!40000 ALTER TABLE `treino_exercicio` DISABLE KEYS */;
-INSERT INTO `treino_exercicio` VALUES (1,1,9,NULL,'2025-10-25 03:18:48','2025-10-25 03:18:48',3,8,30.00,0,'',119),(2,1,4,NULL,'2025-10-25 03:19:18','2025-10-25 03:19:18',3,8,25.00,0,'',120),(3,1,10,NULL,'2025-10-25 03:19:35','2025-10-25 03:19:38',3,8,40.00,0,'',120),(4,2,9,NULL,'2025-10-25 03:19:42','2025-10-25 03:19:42',3,8,30.00,0,'',119),(5,2,4,NULL,'2025-10-25 03:19:42','2025-10-25 03:19:42',3,8,25.00,0,'',120),(6,2,10,NULL,'2025-10-25 03:19:42','2025-10-25 03:19:42',3,8,40.00,0,'',120),(7,3,55,NULL,'2025-10-25 11:25:36','2025-10-25 11:25:36',3,12,0.00,0,'',60),(8,4,9,NULL,'2025-10-25 11:25:55','2025-10-25 11:25:55',3,8,30.00,0,'',119),(9,4,4,NULL,'2025-10-25 11:25:55','2025-10-25 11:25:55',3,8,25.00,0,'',120),(10,4,10,NULL,'2025-10-25 11:25:55','2025-10-25 11:25:55',3,8,40.00,0,'',120);
-/*!40000 ALTER TABLE `treino_exercicio` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `treino_exercicio`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `treino_exercicio_historico`
+-- Estrutura da tabela `treino_exercicio_historico`
 --
 
 DROP TABLE IF EXISTS `treino_exercicio_historico`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `treino_exercicio_historico` (
+CREATE TABLE IF NOT EXISTS `treino_exercicio_historico` (
   `idHistorico` int NOT NULL AUTO_INCREMENT,
   `idTreino_Exercicio` int NOT NULL,
   `idTreino` int NOT NULL,
@@ -708,137 +1169,360 @@ CREATE TABLE `treino_exercicio_historico` (
   KEY `FK_Historico_TreinoExercicio` (`idTreino_Exercicio`),
   KEY `FK_Historico_Treino` (`idTreino`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `treino_exercicio_historico`
+-- Truncar tabela antes do insert `treino_exercicio_historico`
 --
 
-LOCK TABLES `treino_exercicio_historico` WRITE;
-/*!40000 ALTER TABLE `treino_exercicio_historico` DISABLE KEYS */;
-/*!40000 ALTER TABLE `treino_exercicio_historico` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `treino_exercicio_historico`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `treino_sessao`
+-- Estrutura da tabela `treino_sessao`
 --
 
 DROP TABLE IF EXISTS `treino_sessao`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `treino_sessao` (
+CREATE TABLE IF NOT EXISTS `treino_sessao` (
   `idSessao` int NOT NULL AUTO_INCREMENT,
   `idTreino` int NOT NULL,
   `idUsuario` int NOT NULL,
-  `tipo_usuario` enum('aluno','personal') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo_usuario` enum('aluno','personal') COLLATE utf8mb4_general_ci NOT NULL,
   `data_inicio` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_fim` datetime DEFAULT NULL,
-  `status` enum('em_progresso','concluido','cancelado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'em_progresso',
+  `status` enum('em_progresso','concluido','cancelado') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'em_progresso',
   `progresso_json` json DEFAULT NULL,
   `porcentagem_concluida` int DEFAULT '0',
   `duracao_total` int DEFAULT NULL,
-  `notas` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `notas` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`idSessao`),
   KEY `idx_usuario_data` (`idUsuario`,`tipo_usuario`,`data_inicio`),
-  KEY `idx_treino` (`idTreino`),
-  KEY `idx_usuario_treino` (`idUsuario`,`tipo_usuario`,`idTreino`),
-  KEY `idx_data_status` (`data_inicio`,`status`),
-  CONSTRAINT `treino_sessao_ibfk_1` FOREIGN KEY (`idTreino`) REFERENCES `treinos` (`idTreino`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  KEY `idx_treino` (`idTreino`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `treino_sessao`
+-- Truncar tabela antes do insert `treino_sessao`
 --
 
-LOCK TABLES `treino_sessao` WRITE;
-/*!40000 ALTER TABLE `treino_sessao` DISABLE KEYS */;
-INSERT INTO `treino_sessao` VALUES (1,2,2,'aluno','2025-10-25 06:19:51','2025-10-25 06:20:07','em_progresso','{\"exIndex\": 1, \"serieAtual\": 2, \"exercicios_concluidos\": [4]}',43,1,'Treino pausado'),(2,2,2,'aluno','2025-10-25 14:22:15',NULL,'em_progresso','{\"exIndex\": 0, \"serieAtual\": 1, \"exercicios_concluidos\": []}',0,NULL,NULL),(3,3,1,'personal','2025-10-25 14:25:42',NULL,'em_progresso','{\"exIndex\": 0, \"serieAtual\": 1, \"exercicios_concluidos\": []}',0,NULL,NULL);
-/*!40000 ALTER TABLE `treino_sessao` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `treino_sessao`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `treinos`
+-- Estrutura da tabela `usuarios_academia`
 --
 
-DROP TABLE IF EXISTS `treinos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `treinos` (
-  `idTreino` int NOT NULL AUTO_INCREMENT,
-  `idAluno` int DEFAULT NULL,
-  `idPersonal` int DEFAULT NULL,
-  `criadoPor` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `tipo` enum('Musculação','CrossFit','Calistenia','Pilates','Aquecimento','Treino Específico','Outros') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `data_criacao` datetime NOT NULL,
-  `data_ultima_modificacao` datetime NOT NULL,
-  `tipo_treino` enum('normal','adaptado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'normal',
-  `ultima_sessao_id` int DEFAULT NULL,
-  PRIMARY KEY (`idTreino`),
-  KEY `FK_Treinos_Aluno` (`idAluno`),
-  KEY `FK_Treinos_Personal` (`idPersonal`),
-  KEY `FK_Treino_UltimaSessao` (`ultima_sessao_id`),
-  CONSTRAINT `FK_Treino_UltimaSessao` FOREIGN KEY (`ultima_sessao_id`) REFERENCES `treino_sessao` (`idSessao`),
-  CONSTRAINT `FK_Treinos_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE,
-  CONSTRAINT `FK_Treinos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE,
-  CONSTRAINT `treinos_ibfk_1` FOREIGN KEY (`ultima_sessao_id`) REFERENCES `treino_sessao` (`idSessao`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `usuarios_academia`;
+CREATE TABLE IF NOT EXISTS `usuarios_academia` (
+  `idVinculo` int NOT NULL AUTO_INCREMENT,
+  `idAcademia` int NOT NULL,
+  `idUsuario` int NOT NULL,
+  `tipo_usuario` enum('aluno','personal') NOT NULL,
+  `data_vinculo` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('ativo','inativo') NOT NULL DEFAULT 'ativo',
+  `data_desvinculo` datetime DEFAULT NULL,
+  `motivo_desvinculo` text,
+  PRIMARY KEY (`idVinculo`),
+  UNIQUE KEY `unique_usuario_academia` (`idAcademia`,`idUsuario`,`tipo_usuario`),
+  KEY `idx_academia` (`idAcademia`),
+  KEY `idx_usuario` (`idUsuario`,`tipo_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `treinos`
+-- Truncar tabela antes do insert `usuarios_academia`
 --
 
-LOCK TABLES `treinos` WRITE;
-/*!40000 ALTER TABLE `treinos` DISABLE KEYS */;
-INSERT INTO `treinos` VALUES (1,NULL,1,'daviramos1703@gmail.com','Treino de Peito','Musculação','Treino completo de peito','2025-10-25 03:18:27','2025-10-25 03:19:38','normal',NULL),(2,2,1,'daviramos1703@gmail.com','Treino de Peito','Musculação','Treino completo de peito','2025-10-25 03:18:27','2025-10-25 03:19:42','normal',1),(3,NULL,1,'daviramos1703@gmail.com','Treino de Costas','Musculação','Treino de Costas','2025-10-25 11:25:09','2025-10-25 11:25:36','normal',NULL),(4,2,1,'daviramos1703@gmail.com','Treino de Peito','Musculação','Treino completo de peito','2025-10-25 03:18:27','2025-10-25 11:25:55','normal',NULL),(5,3,NULL,'murisud15@gmail.com','Muri','Musculação',NULL,'2025-10-25 14:45:27','2025-10-25 14:45:27','normal',NULL);
-/*!40000 ALTER TABLE `treinos` ENABLE KEYS */;
-UNLOCK TABLES;
+TRUNCATE TABLE `usuarios_academia`;
+-- --------------------------------------------------------
 
 --
--- Table structure for table `videos`
+-- Estrutura da tabela `videos`
 --
 
 DROP TABLE IF EXISTS `videos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `videos` (
+CREATE TABLE IF NOT EXISTS `videos` (
   `idvideos` int NOT NULL AUTO_INCREMENT,
   `url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `idExercicio` int DEFAULT NULL,
   `idExercAdaptado` int DEFAULT NULL,
   `cover` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `tipo_video` enum('normal','adaptado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'normal',
-  `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `tipo_video` enum('normal','adaptado') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'normal',
+  `titulo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `descricao` text COLLATE utf8mb4_general_ci,
   `duracao` int DEFAULT NULL,
   PRIMARY KEY (`idvideos`),
   KEY `FK_Video_Exercicio` (`idExercicio`),
-  KEY `FK_Video_ExercAdaptado` (`idExercAdaptado`),
-  CONSTRAINT `FK_Videos_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`) ON DELETE CASCADE,
-  CONSTRAINT `FK_Videos_Exercicio` FOREIGN KEY (`idExercicio`) REFERENCES `exercicios` (`idExercicio`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  KEY `FK_Video_ExercAdaptado` (`idExercAdaptado`)
+) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `videos`
+-- Truncar tabela antes do insert `videos`
 --
 
-LOCK TABLES `videos` WRITE;
-/*!40000 ALTER TABLE `videos` DISABLE KEYS */;
-INSERT INTO `videos` VALUES (1,'https://www.youtube.com/watch?v=DrIZblSimW8',1,NULL,'','normal',NULL,NULL,NULL),(2,'https://www.youtube.com/watch?v=kIFCWmiBOpo',2,NULL,'','normal',NULL,NULL,NULL),(3,'https://www.youtube.com/watch?v=MzKobWFCmtk',3,NULL,'','normal',NULL,NULL,NULL),(4,'https://www.youtube.com/watch?v=HwpcEMHePJ8',4,NULL,'','normal',NULL,NULL,NULL),(5,'https://www.youtube.com/watch?v=D2ta8xvURwo',5,NULL,'','normal',NULL,NULL,NULL),(6,'https://www.youtube.com/watch?v=P36j7gLzEZY',6,NULL,'','normal',NULL,NULL,NULL),(7,'https://www.youtube.com/watch?v=nQ6DyydhAIo',7,NULL,'','normal',NULL,NULL,NULL),(8,'https://www.youtube.com/watch?v=F9nNOp8Rfoo',8,NULL,'','normal',NULL,NULL,NULL),(9,'https://www.youtube.com/watch?v=TVrxH3UJjfs',9,NULL,'','normal',NULL,NULL,NULL),(10,'https://www.youtube.com/watch?v=bJdvab9uVUc',10,NULL,'','normal',NULL,NULL,NULL),(11,'https://www.youtube.com/watch?v=bxM8uWGrP0E',11,NULL,'','normal',NULL,NULL,NULL),(12,'https://www.youtube.com/watch?v=Qo2qqimmdFw',12,NULL,'','normal',NULL,NULL,NULL),(13,'https://www.youtube.com/watch?v=ahOm8a3oncs',13,NULL,'','normal',NULL,NULL,NULL),(14,'https://www.youtube.com/watch?v=hFb0YL6pPhY',14,NULL,'','normal',NULL,NULL,NULL),(15,'https://www.youtube.com/watch?v=TnK4DsvAts4',15,NULL,'','normal',NULL,NULL,NULL),(16,'https://www.youtube.com/watch?v=4DapiJicioo',16,NULL,'','normal',NULL,NULL,NULL),(17,'https://www.youtube.com/watch?v=srgDQ6ie7qk',17,NULL,'','normal',NULL,NULL,NULL),(18,'https://www.youtube.com/watch?v=hZB7xezXbMM',18,NULL,'','normal',NULL,NULL,NULL),(19,'https://www.youtube.com/watch?v=CCLW6lekNTw',19,NULL,'','normal',NULL,NULL,NULL),(20,'https://www.youtube.com/watch?v=YgcwPqxibnE',20,NULL,'','normal',NULL,NULL,NULL),(21,'https://www.youtube.com/watch?v=DMPDjQdwhkA',21,NULL,'','normal',NULL,NULL,NULL),(22,'https://www.youtube.com/watch?v=BTEkru3wrfg',22,NULL,'','normal',NULL,NULL,NULL),(23,'https://www.youtube.com/watch?v=uFOs6zI883o',23,NULL,'','normal',NULL,NULL,NULL),(24,'https://www.youtube.com/watch?v=z3fMvMyql8A',24,NULL,'','normal',NULL,NULL,NULL),(25,'https://www.youtube.com/watch?v=mnOcntB2QE0',25,NULL,'','normal',NULL,NULL,NULL),(26,'https://www.youtube.com/watch?v=t3Uu11HfaNQ',26,NULL,'','normal',NULL,NULL,NULL),(27,'https://www.youtube.com/watch?v=Lsn4LVvtm44',27,NULL,'','normal',NULL,NULL,NULL),(28,'https://www.youtube.com/watch?v=9w4pFCQvKg4',28,NULL,'','normal',NULL,NULL,NULL),(29,'https://www.youtube.com/watch?v=m8J4xGmVXRA',29,NULL,'','normal',NULL,NULL,NULL),(30,'https://www.youtube.com/watch?v=637o04QCWs0',30,NULL,'','normal',NULL,NULL,NULL),(31,'https://www.youtube.com/watch?v=fNYeFdgR6Gs',31,NULL,'','normal',NULL,NULL,NULL),(32,'https://www.youtube.com/watch?v=5gmwbzepi7E',32,NULL,'','normal',NULL,NULL,NULL),(33,'https://www.youtube.com/watch?v=xkmxQaz6M3c',33,NULL,'','normal',NULL,NULL,NULL),(34,'https://www.youtube.com/watch?v=V4m_uE1M0TM',34,NULL,'','normal',NULL,NULL,NULL),(35,'https://www.youtube.com/watch?v=LHyYmMSTbj8',35,NULL,'','normal',NULL,NULL,NULL),(36,'https://www.youtube.com/watch?v=QL1uD2E_xpg',36,NULL,'','normal',NULL,NULL,NULL),(37,'https://www.youtube.com/watch?v=zpHgB1srbJA',37,NULL,'','normal',NULL,NULL,NULL),(38,'https://www.youtube.com/watch?v=2Sb2_atoD2c',38,NULL,'','normal',NULL,NULL,NULL),(39,'https://www.youtube.com/watch?v=rhlwE-J37x8',39,NULL,'','normal',NULL,NULL,NULL),(40,'https://www.youtube.com/watch?v=EjiH-RcOR2U',40,NULL,'','normal',NULL,NULL,NULL),(41,'https://www.youtube.com/watch?v=Q3motWl8P4w',41,NULL,'','normal',NULL,NULL,NULL),(42,'https://www.youtube.com/watch?v=LoWCU2Yb4AY',42,NULL,'','normal',NULL,NULL,NULL),(43,'https://www.youtube.com/watch?v=_3Mihov5a24',43,NULL,'','normal',NULL,NULL,NULL),(44,'https://www.youtube.com/watch?v=OuEJB34uSKI',44,NULL,'','normal',NULL,NULL,NULL),(45,'https://www.youtube.com/watch?v=jl2m6ch53NU',45,NULL,'','normal',NULL,NULL,NULL),(46,'https://www.youtube.com/watch?v=gVC2jMVZVfE',46,NULL,'','normal',NULL,NULL,NULL),(47,'https://www.youtube.com/watch?v=bCUMKcOefUU',47,NULL,'','normal',NULL,NULL,NULL),(48,'https://www.youtube.com/watch?v=bKPmruztS8g',48,NULL,'','normal',NULL,NULL,NULL),(49,'https://www.youtube.com/watch?v=1l7icabk0mo',49,NULL,'','normal',NULL,NULL,NULL),(50,'https://www.youtube.com/watch?v=j7a4_SjM8ZM',50,NULL,'','normal',NULL,NULL,NULL),(51,'https://www.youtube.com/watch?v=PXiJKmAyLR8',51,NULL,'','normal',NULL,NULL,NULL),(52,'https://www.youtube.com/watch?v=OXH8gKrYzig',52,NULL,'','normal',NULL,NULL,NULL),(53,'https://www.youtube.com/watch?v=toQuzSgZm8E',53,NULL,'','normal',NULL,NULL,NULL),(54,'https://www.youtube.com/watch?v=P2HPQuUHMsQ',54,NULL,'','normal',NULL,NULL,NULL),(55,'https://www.youtube.com/watch?v=-7OxAps9mvk',55,NULL,'','normal',NULL,NULL,NULL),(56,'https://www.youtube.com/watch?v=3H5Kw5-_Lw8',56,NULL,'','normal',NULL,NULL,NULL),(57,'https://www.youtube.com/watch?v=vMXNqjcc21c',57,NULL,'','normal',NULL,NULL,NULL),(58,'https://www.youtube.com/watch?v=4O_9NktinIw',58,NULL,'','normal',NULL,NULL,NULL),(59,'https://www.youtube.com/watch?v=wtcZa02D5-c',59,NULL,'','normal',NULL,NULL,NULL),(60,'https://www.youtube.com/watch?v=zqvKtQippnA',60,NULL,'','normal',NULL,NULL,NULL),(61,'https://www.youtube.com/watch?v=69JIUT2q6lU',61,NULL,'','normal',NULL,NULL,NULL),(62,'https://www.youtube.com/watch?v=mahiVOFUv14',62,NULL,'','normal',NULL,NULL,NULL),(63,'https://www.youtube.com/watch?v=gvbWkKYP0VY',63,NULL,'','normal',NULL,NULL,NULL),(64,'https://www.youtube.com/watch?v=1EQU0jBpcds',64,NULL,'','normal',NULL,NULL,NULL),(65,'https://www.youtube.com/watch?v=zEgL8MSaSs8',65,NULL,'','normal',NULL,NULL,NULL),(66,'https://www.youtube.com/watch?v=gh7fXWsPKaM',66,NULL,'','normal',NULL,NULL,NULL),(67,'https://www.youtube.com/watch?v=fCqyKmIVH00',67,NULL,'','normal',NULL,NULL,NULL),(68,'https://www.youtube.com/watch?v=QYF8YgU8few',68,NULL,'','normal',NULL,NULL,NULL),(69,'https://www.youtube.com/watch?v=PJMPwGvDxaQ',69,NULL,'','normal',NULL,NULL,NULL),(70,'https://www.youtube.com/watch?v=NjE50Vz5Lkc',70,NULL,'','normal',NULL,NULL,NULL),(71,'https://www.youtube.com/watch?v=I30xMS5gyPw',71,NULL,'','normal',NULL,NULL,NULL),(72,'https://www.youtube.com/watch?v=QmIpJ498RNA',72,NULL,'','normal',NULL,NULL,NULL),(73,'https://www.youtube.com/watch?v=u1DPdaxLMcw',73,NULL,'','normal',NULL,NULL,NULL),(74,'https://www.youtube.com/watch?v=kWGRm-IDMQ4',74,NULL,'','normal',NULL,NULL,NULL),(75,'https://www.youtube.com/watch?v=GKbh4fNX2gM',75,NULL,'','normal',NULL,NULL,NULL),(76,'https://www.youtube.com/watch?v=uCgSv-4-S0A',76,NULL,'','normal',NULL,NULL,NULL),(77,'https://www.youtube.com/watch?v=-OmMnWC4iT4',77,NULL,'','normal',NULL,NULL,NULL),(78,'https://www.youtube.com/watch?v=w5xVs3hCvfg',78,NULL,'','normal',NULL,NULL,NULL),(79,'https://www.youtube.com/watch?v=PxsKGxKsDL0',79,NULL,'','normal',NULL,NULL,NULL),(80,'https://www.youtube.com/watch?v=_UfEXzV5Yf4',80,NULL,'','normal',NULL,NULL,NULL),(81,'https://www.youtube.com/watch?v=u41-6ZMC528',81,NULL,'','normal',NULL,NULL,NULL),(82,'https://www.youtube.com/watch?v=HY8i_j-wvys',82,NULL,'','normal',NULL,NULL,NULL),(83,'https://www.youtube.com/watch?v=idOLAV3JGDc',83,NULL,'','normal',NULL,NULL,NULL),(84,'https://www.youtube.com/watch?v=YILZe3FfIw8',84,NULL,'','normal',NULL,NULL,NULL),(85,'https://www.youtube.com/watch?v=aKRVoiOQK3Y',85,NULL,'','normal',NULL,NULL,NULL),(86,'https://www.youtube.com/watch?v=0M0i4jD5CGw',86,NULL,'','normal',NULL,NULL,NULL),(87,'https://www.youtube.com/watch?v=FaGtwve4s-E',87,NULL,'','normal',NULL,NULL,NULL),(88,'https://www.youtube.com/watch?v=OpkKv88HzR8',88,NULL,'','normal',NULL,NULL,NULL),(89,'https://www.youtube.com/watch?v=HbLx5f5vnhY',89,NULL,'','normal',NULL,NULL,NULL),(90,'https://www.youtube.com/watch?v=jMnDwCn72ws',90,NULL,'','normal',NULL,NULL,NULL),(91,'https://www.youtube.com/watch?v=DKD0id35rgU',91,NULL,'','normal',NULL,NULL,NULL),(92,'https://www.youtube.com/watch?v=Tux6Q2AW0eA',92,NULL,'','normal',NULL,NULL,NULL),(93,'https://www.youtube.com/watch?v=ZEdksboBtg4',93,NULL,'','normal',NULL,NULL,NULL),(94,'https://www.youtube.com/watch?v=5MOa-_qdw9s',94,NULL,'','normal',NULL,NULL,NULL),(95,'https://www.youtube.com/watch?v=RqOJkeiET5Q',95,NULL,'','normal',NULL,NULL,NULL),(96,'https://www.youtube.com/watch?v=iAKisU13ypU',96,NULL,'','normal',NULL,NULL,NULL),(97,'https://www.youtube.com/watch?v=WFAvShrNgiw',97,NULL,'','normal',NULL,NULL,NULL),(98,'https://www.youtube.com/watch?v=6E5soH4kpL8',98,NULL,'','normal',NULL,NULL,NULL),(99,'https://www.youtube.com/watch?v=DmqaUQaskwo',99,NULL,'','normal',NULL,NULL,NULL),(100,'https://www.youtube.com/watch?v=0NES5nQ7tnw',100,NULL,'','normal',NULL,NULL,NULL),(101,'https://www.youtube.com/watch?v=bc6X06OWyPk',101,NULL,'','normal',NULL,NULL,NULL),(102,'https://www.youtube.com/watch?v=rreRO8-pPYg',102,NULL,'','normal',NULL,NULL,NULL),(103,'https://www.youtube.com/watch?v=cJ4J7XoPo6E',103,NULL,'','normal',NULL,NULL,NULL),(104,'https://www.youtube.com/watch?v=CC7fg3SEof8',104,NULL,'','normal',NULL,NULL,NULL),(105,'https://www.youtube.com/watch?v=7CaF6Rsw_SA',105,NULL,'','normal',NULL,NULL,NULL),(106,'https://www.youtube.com/watch?v=tATrzTP56_M',106,NULL,'','normal',NULL,NULL,NULL),(107,'https://www.youtube.com/watch?v=HqWvQkwr_Zk',107,NULL,'','normal',NULL,NULL,NULL),(108,'https://www.youtube.com/watch?v=lBRDG-psDdE',108,NULL,'','normal',NULL,NULL,NULL),(109,'https://www.youtube.com/watch?v=7hebjw6AGGM',109,NULL,'','normal',NULL,NULL,NULL),(110,'https://www.youtube.com/watch?v=cRWpZBMJZrw',110,NULL,'','normal',NULL,NULL,NULL),(111,'https://www.youtube.com/watch?v=EgbM4kXE-2s',111,NULL,'','normal',NULL,NULL,NULL),(112,'https://www.youtube.com/watch?v=A7BzMkvbGSY',112,NULL,'','normal',NULL,NULL,NULL),(113,'https://www.youtube.com/watch?v=KSjVpHvJhLo',113,NULL,'','normal',NULL,NULL,NULL),(122,'https://www.youtube.com/watch?v=oBXSvS2QKxU',121,NULL,'https://img.youtube.com/vi/oBXSvS2QKxU/hqdefault.jpg','normal',NULL,NULL,NULL),(123,'https://www.youtube.com/watch?v=oBXSvS2QKxU',122,NULL,'https://img.youtube.com/vi/oBXSvS2QKxU/hqdefault.jpg','normal',NULL,NULL,NULL),(124,'https://www.youtube.com/watch?v=URbJlVt5lgM',123,NULL,'https://img.youtube.com/vi/URbJlVt5lgM/hqdefault.jpg','normal',NULL,NULL,NULL),(125,'https://www.youtube.com/watch?v=URbJlVt5lgM',124,NULL,'https://img.youtube.com/vi/URbJlVt5lgM/hqdefault.jpg','normal',NULL,NULL,NULL),(126,'https://youtu.be/vkhH48G1268?si=y9QsmyYrf0_M3j-Q',125,NULL,'https://img.youtube.com/vi/vkhH48G1268?si=y9QsmyYrf0_M3j-Q/hqdefault.jpg','normal',NULL,NULL,NULL),(127,'https://youtu.be/vkhH48G1268?si=y9QsmyYrf0_M3j-Q',126,NULL,'https://img.youtube.com/vi/vkhH48G1268?si=y9QsmyYrf0_M3j-Q/hqdefault.jpg','normal',NULL,NULL,NULL);
-/*!40000 ALTER TABLE `videos` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+TRUNCATE TABLE `videos`;
+--
+-- Extraindo dados da tabela `videos`
+--
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+INSERT INTO `videos` (`idvideos`, `url`, `idExercicio`, `idExercAdaptado`, `cover`, `tipo_video`, `titulo`, `descricao`, `duracao`) VALUES
+(1, 'https://www.youtube.com/watch?v=DrIZblSimW8', 1, NULL, '', 'normal', NULL, NULL, NULL),
+(2, 'https://www.youtube.com/watch?v=kIFCWmiBOpo', 2, NULL, '', 'normal', NULL, NULL, NULL),
+(3, 'https://www.youtube.com/watch?v=MzKobWFCmtk', 3, NULL, '', 'normal', NULL, NULL, NULL),
+(4, 'https://www.youtube.com/watch?v=HwpcEMHePJ8', 4, NULL, '', 'normal', NULL, NULL, NULL),
+(5, 'https://www.youtube.com/watch?v=D2ta8xvURwo', 5, NULL, '', 'normal', NULL, NULL, NULL),
+(6, 'https://www.youtube.com/watch?v=P36j7gLzEZY', 6, NULL, '', 'normal', NULL, NULL, NULL),
+(7, 'https://www.youtube.com/watch?v=nQ6DyydhAIo', 7, NULL, '', 'normal', NULL, NULL, NULL),
+(8, 'https://www.youtube.com/watch?v=F9nNOp8Rfoo', 8, NULL, '', 'normal', NULL, NULL, NULL),
+(9, 'https://www.youtube.com/watch?v=TVrxH3UJjfs', 9, NULL, '', 'normal', NULL, NULL, NULL),
+(10, 'https://www.youtube.com/watch?v=bJdvab9uVUc', 10, NULL, '', 'normal', NULL, NULL, NULL),
+(11, 'https://www.youtube.com/watch?v=bxM8uWGrP0E', 11, NULL, '', 'normal', NULL, NULL, NULL),
+(12, 'https://www.youtube.com/watch?v=Qo2qqimmdFw', 12, NULL, '', 'normal', NULL, NULL, NULL),
+(13, 'https://www.youtube.com/watch?v=ahOm8a3oncs', 13, NULL, '', 'normal', NULL, NULL, NULL),
+(14, 'https://www.youtube.com/watch?v=hFb0YL6pPhY', 14, NULL, '', 'normal', NULL, NULL, NULL),
+(15, 'https://www.youtube.com/watch?v=TnK4DsvAts4', 15, NULL, '', 'normal', NULL, NULL, NULL),
+(16, 'https://www.youtube.com/watch?v=4DapiJicioo', 16, NULL, '', 'normal', NULL, NULL, NULL),
+(17, 'https://www.youtube.com/watch?v=srgDQ6ie7qk', 17, NULL, '', 'normal', NULL, NULL, NULL),
+(18, 'https://www.youtube.com/watch?v=hZB7xezXbMM', 18, NULL, '', 'normal', NULL, NULL, NULL),
+(19, 'https://www.youtube.com/watch?v=CCLW6lekNTw', 19, NULL, '', 'normal', NULL, NULL, NULL),
+(20, 'https://www.youtube.com/watch?v=YgcwPqxibnE', 20, NULL, '', 'normal', NULL, NULL, NULL),
+(21, 'https://www.youtube.com/watch?v=DMPDjQdwhkA', 21, NULL, '', 'normal', NULL, NULL, NULL),
+(22, 'https://www.youtube.com/watch?v=BTEkru3wrfg', 22, NULL, '', 'normal', NULL, NULL, NULL),
+(23, 'https://www.youtube.com/watch?v=uFOs6zI883o', 23, NULL, '', 'normal', NULL, NULL, NULL),
+(24, 'https://www.youtube.com/watch?v=z3fMvMyql8A', 24, NULL, '', 'normal', NULL, NULL, NULL),
+(25, 'https://www.youtube.com/watch?v=mnOcntB2QE0', 25, NULL, '', 'normal', NULL, NULL, NULL),
+(26, 'https://www.youtube.com/watch?v=t3Uu11HfaNQ', 26, NULL, '', 'normal', NULL, NULL, NULL),
+(27, 'https://www.youtube.com/watch?v=Lsn4LVvtm44', 27, NULL, '', 'normal', NULL, NULL, NULL),
+(28, 'https://www.youtube.com/watch?v=9w4pFCQvKg4', 28, NULL, '', 'normal', NULL, NULL, NULL),
+(29, 'https://www.youtube.com/watch?v=m8J4xGmVXRA', 29, NULL, '', 'normal', NULL, NULL, NULL),
+(30, 'https://www.youtube.com/watch?v=637o04QCWs0', 30, NULL, '', 'normal', NULL, NULL, NULL),
+(31, 'https://www.youtube.com/watch?v=fNYeFdgR6Gs', 31, NULL, '', 'normal', NULL, NULL, NULL),
+(32, 'https://www.youtube.com/watch?v=5gmwbzepi7E', 32, NULL, '', 'normal', NULL, NULL, NULL),
+(33, 'https://www.youtube.com/watch?v=xkmxQaz6M3c', 33, NULL, '', 'normal', NULL, NULL, NULL),
+(34, 'https://www.youtube.com/watch?v=V4m_uE1M0TM', 34, NULL, '', 'normal', NULL, NULL, NULL),
+(35, 'https://www.youtube.com/watch?v=LHyYmMSTbj8', 35, NULL, '', 'normal', NULL, NULL, NULL),
+(36, 'https://www.youtube.com/watch?v=QL1uD2E_xpg', 36, NULL, '', 'normal', NULL, NULL, NULL),
+(37, 'https://www.youtube.com/watch?v=zpHgB1srbJA', 37, NULL, '', 'normal', NULL, NULL, NULL),
+(38, 'https://www.youtube.com/watch?v=2Sb2_atoD2c', 38, NULL, '', 'normal', NULL, NULL, NULL),
+(39, 'https://www.youtube.com/watch?v=rhlwE-J37x8', 39, NULL, '', 'normal', NULL, NULL, NULL),
+(40, 'https://www.youtube.com/watch?v=EjiH-RcOR2U', 40, NULL, '', 'normal', NULL, NULL, NULL),
+(41, 'https://www.youtube.com/watch?v=Q3motWl8P4w', 41, NULL, '', 'normal', NULL, NULL, NULL),
+(42, 'https://www.youtube.com/watch?v=LoWCU2Yb4AY', 42, NULL, '', 'normal', NULL, NULL, NULL),
+(43, 'https://www.youtube.com/watch?v=_3Mihov5a24', 43, NULL, '', 'normal', NULL, NULL, NULL),
+(44, 'https://www.youtube.com/watch?v=OuEJB34uSKI', 44, NULL, '', 'normal', NULL, NULL, NULL),
+(45, 'https://www.youtube.com/watch?v=jl2m6ch53NU', 45, NULL, '', 'normal', NULL, NULL, NULL),
+(46, 'https://www.youtube.com/watch?v=gVC2jMVZVfE', 46, NULL, '', 'normal', NULL, NULL, NULL),
+(47, 'https://www.youtube.com/watch?v=bCUMKcOefUU', 47, NULL, '', 'normal', NULL, NULL, NULL),
+(48, 'https://www.youtube.com/watch?v=bKPmruztS8g', 48, NULL, '', 'normal', NULL, NULL, NULL),
+(49, 'https://www.youtube.com/watch?v=1l7icabk0mo', 49, NULL, '', 'normal', NULL, NULL, NULL),
+(50, 'https://www.youtube.com/watch?v=j7a4_SjM8ZM', 50, NULL, '', 'normal', NULL, NULL, NULL),
+(51, 'https://www.youtube.com/watch?v=PXiJKmAyLR8', 51, NULL, '', 'normal', NULL, NULL, NULL),
+(52, 'https://www.youtube.com/watch?v=OXH8gKrYzig', 52, NULL, '', 'normal', NULL, NULL, NULL),
+(53, 'https://www.youtube.com/watch?v=toQuzSgZm8E', 53, NULL, '', 'normal', NULL, NULL, NULL),
+(54, 'https://www.youtube.com/watch?v=P2HPQuUHMsQ', 54, NULL, '', 'normal', NULL, NULL, NULL),
+(55, 'https://www.youtube.com/watch?v=-7OxAps9mvk', 55, NULL, '', 'normal', NULL, NULL, NULL),
+(56, 'https://www.youtube.com/watch?v=3H5Kw5-_Lw8', 56, NULL, '', 'normal', NULL, NULL, NULL),
+(57, 'https://www.youtube.com/watch?v=vMXNqjcc21c', 57, NULL, '', 'normal', NULL, NULL, NULL),
+(58, 'https://www.youtube.com/watch?v=4O_9NktinIw', 58, NULL, '', 'normal', NULL, NULL, NULL),
+(59, 'https://www.youtube.com/watch?v=wtcZa02D5-c', 59, NULL, '', 'normal', NULL, NULL, NULL),
+(60, 'https://www.youtube.com/watch?v=zqvKtQippnA', 60, NULL, '', 'normal', NULL, NULL, NULL),
+(61, 'https://www.youtube.com/watch?v=69JIUT2q6lU', 61, NULL, '', 'normal', NULL, NULL, NULL),
+(62, 'https://www.youtube.com/watch?v=mahiVOFUv14', 62, NULL, '', 'normal', NULL, NULL, NULL),
+(63, 'https://www.youtube.com/watch?v=gvbWkKYP0VY', 63, NULL, '', 'normal', NULL, NULL, NULL),
+(64, 'https://www.youtube.com/watch?v=1EQU0jBpcds', 64, NULL, '', 'normal', NULL, NULL, NULL),
+(65, 'https://www.youtube.com/watch?v=zEgL8MSaSs8', 65, NULL, '', 'normal', NULL, NULL, NULL),
+(66, 'https://www.youtube.com/watch?v=gh7fXWsPKaM', 66, NULL, '', 'normal', NULL, NULL, NULL),
+(67, 'https://www.youtube.com/watch?v=fCqyKmIVH00', 67, NULL, '', 'normal', NULL, NULL, NULL),
+(68, 'https://www.youtube.com/watch?v=QYF8YgU8few', 68, NULL, '', 'normal', NULL, NULL, NULL),
+(69, 'https://www.youtube.com/watch?v=PJMPwGvDxaQ', 69, NULL, '', 'normal', NULL, NULL, NULL),
+(70, 'https://www.youtube.com/watch?v=NjE50Vz5Lkc', 70, NULL, '', 'normal', NULL, NULL, NULL),
+(71, 'https://www.youtube.com/watch?v=I30xMS5gyPw', 71, NULL, '', 'normal', NULL, NULL, NULL),
+(72, 'https://www.youtube.com/watch?v=QmIpJ498RNA', 72, NULL, '', 'normal', NULL, NULL, NULL),
+(73, 'https://www.youtube.com/watch?v=u1DPdaxLMcw', 73, NULL, '', 'normal', NULL, NULL, NULL),
+(74, 'https://www.youtube.com/watch?v=kWGRm-IDMQ4', 74, NULL, '', 'normal', NULL, NULL, NULL),
+(75, 'https://www.youtube.com/watch?v=GKbh4fNX2gM', 75, NULL, '', 'normal', NULL, NULL, NULL),
+(76, 'https://www.youtube.com/watch?v=uCgSv-4-S0A', 76, NULL, '', 'normal', NULL, NULL, NULL),
+(77, 'https://www.youtube.com/watch?v=-OmMnWC4iT4', 77, NULL, '', 'normal', NULL, NULL, NULL),
+(78, 'https://www.youtube.com/watch?v=w5xVs3hCvfg', 78, NULL, '', 'normal', NULL, NULL, NULL),
+(79, 'https://www.youtube.com/watch?v=PxsKGxKsDL0', 79, NULL, '', 'normal', NULL, NULL, NULL),
+(80, 'https://www.youtube.com/watch?v=_UfEXzV5Yf4', 80, NULL, '', 'normal', NULL, NULL, NULL),
+(81, 'https://www.youtube.com/watch?v=u41-6ZMC528', 81, NULL, '', 'normal', NULL, NULL, NULL),
+(82, 'https://www.youtube.com/watch?v=HY8i_j-wvys', 82, NULL, '', 'normal', NULL, NULL, NULL),
+(83, 'https://www.youtube.com/watch?v=idOLAV3JGDc', 83, NULL, '', 'normal', NULL, NULL, NULL),
+(84, 'https://www.youtube.com/watch?v=YILZe3FfIw8', 84, NULL, '', 'normal', NULL, NULL, NULL),
+(85, 'https://www.youtube.com/watch?v=aKRVoiOQK3Y', 85, NULL, '', 'normal', NULL, NULL, NULL),
+(86, 'https://www.youtube.com/watch?v=0M0i4jD5CGw', 86, NULL, '', 'normal', NULL, NULL, NULL),
+(87, 'https://www.youtube.com/watch?v=FaGtwve4s-E', 87, NULL, '', 'normal', NULL, NULL, NULL),
+(88, 'https://www.youtube.com/watch?v=OpkKv88HzR8', 88, NULL, '', 'normal', NULL, NULL, NULL),
+(89, 'https://www.youtube.com/watch?v=HbLx5f5vnhY', 89, NULL, '', 'normal', NULL, NULL, NULL),
+(90, 'https://www.youtube.com/watch?v=jMnDwCn72ws', 90, NULL, '', 'normal', NULL, NULL, NULL),
+(91, 'https://www.youtube.com/watch?v=DKD0id35rgU', 91, NULL, '', 'normal', NULL, NULL, NULL),
+(92, 'https://www.youtube.com/watch?v=Tux6Q2AW0eA', 92, NULL, '', 'normal', NULL, NULL, NULL),
+(93, 'https://www.youtube.com/watch?v=ZEdksboBtg4', 93, NULL, '', 'normal', NULL, NULL, NULL),
+(94, 'https://www.youtube.com/watch?v=5MOa-_qdw9s', 94, NULL, '', 'normal', NULL, NULL, NULL),
+(95, 'https://www.youtube.com/watch?v=RqOJkeiET5Q', 95, NULL, '', 'normal', NULL, NULL, NULL),
+(96, 'https://www.youtube.com/watch?v=iAKisU13ypU', 96, NULL, '', 'normal', NULL, NULL, NULL),
+(97, 'https://www.youtube.com/watch?v=WFAvShrNgiw', 97, NULL, '', 'normal', NULL, NULL, NULL),
+(98, 'https://www.youtube.com/watch?v=6E5soH4kpL8', 98, NULL, '', 'normal', NULL, NULL, NULL),
+(99, 'https://www.youtube.com/watch?v=DmqaUQaskwo', 99, NULL, '', 'normal', NULL, NULL, NULL),
+(100, 'https://www.youtube.com/watch?v=0NES5nQ7tnw', 100, NULL, '', 'normal', NULL, NULL, NULL),
+(101, 'https://www.youtube.com/watch?v=bc6X06OWyPk', 101, NULL, '', 'normal', NULL, NULL, NULL),
+(102, 'https://www.youtube.com/watch?v=rreRO8-pPYg', 102, NULL, '', 'normal', NULL, NULL, NULL),
+(103, 'https://www.youtube.com/watch?v=cJ4J7XoPo6E', 103, NULL, '', 'normal', NULL, NULL, NULL),
+(104, 'https://www.youtube.com/watch?v=CC7fg3SEof8', 104, NULL, '', 'normal', NULL, NULL, NULL),
+(105, 'https://www.youtube.com/watch?v=7CaF6Rsw_SA', 105, NULL, '', 'normal', NULL, NULL, NULL),
+(106, 'https://www.youtube.com/watch?v=tATrzTP56_M', 106, NULL, '', 'normal', NULL, NULL, NULL),
+(107, 'https://www.youtube.com/watch?v=HqWvQkwr_Zk', 107, NULL, '', 'normal', NULL, NULL, NULL),
+(108, 'https://www.youtube.com/watch?v=lBRDG-psDdE', 108, NULL, '', 'normal', NULL, NULL, NULL),
+(109, 'https://www.youtube.com/watch?v=7hebjw6AGGM', 109, NULL, '', 'normal', NULL, NULL, NULL),
+(110, 'https://www.youtube.com/watch?v=cRWpZBMJZrw', 110, NULL, '', 'normal', NULL, NULL, NULL),
+(111, 'https://www.youtube.com/watch?v=EgbM4kXE-2s', 111, NULL, '', 'normal', NULL, NULL, NULL),
+(112, 'https://www.youtube.com/watch?v=A7BzMkvbGSY', 112, NULL, '', 'normal', NULL, NULL, NULL),
+(113, 'https://www.youtube.com/watch?v=KSjVpHvJhLo', 113, NULL, '', 'normal', NULL, NULL, NULL),
+(122, 'https://www.youtube.com/watch?v=oBXSvS2QKxU', 121, NULL, 'https://img.youtube.com/vi/oBXSvS2QKxU/hqdefault.jpg', 'normal', NULL, NULL, NULL),
+(123, 'https://www.youtube.com/watch?v=oBXSvS2QKxU', 122, NULL, 'https://img.youtube.com/vi/oBXSvS2QKxU/hqdefault.jpg', 'normal', NULL, NULL, NULL),
+(124, 'https://www.youtube.com/watch?v=URbJlVt5lgM', 123, NULL, 'https://img.youtube.com/vi/URbJlVt5lgM/hqdefault.jpg', 'normal', NULL, NULL, NULL),
+(125, 'https://www.youtube.com/watch?v=URbJlVt5lgM', 124, NULL, 'https://img.youtube.com/vi/URbJlVt5lgM/hqdefault.jpg', 'normal', NULL, NULL, NULL),
+(126, 'https://www.youtube.com/watch?v=URbJlVt5lgM', 125, NULL, 'https://img.youtube.com/vi/URbJlVt5lgM/hqdefault.jpg', 'normal', NULL, NULL, NULL),
+(127, 'https://www.youtube.com/watch?v=URbJlVt5lgM', 126, NULL, 'https://img.youtube.com/vi/URbJlVt5lgM/hqdefault.jpg', 'normal', NULL, NULL, NULL),
+(128, 'https://www.youtube.com/watch?v=URbJlVt5lgM', 127, NULL, 'https://img.youtube.com/vi/URbJlVt5lgM/hqdefault.jpg', 'normal', NULL, NULL, NULL);
+
+--
+-- Restrições para despejos de tabelas
+--
+
+--
+-- Limitadores para a tabela `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  ADD CONSTRAINT `FK_Agend_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_Agend_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `agua`
+--
+ALTER TABLE `agua`
+  ADD CONSTRAINT `FK_idAluno_Agua` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `alunos`
+--
+ALTER TABLE `alunos`
+  ADD CONSTRAINT `FK_Alunos_Academia` FOREIGN KEY (`idAcademia`) REFERENCES `academias` (`idAcademia`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_Alunos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_Alunos_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
+
+--
+-- Limitadores para a tabela `assinaturas`
+--
+ALTER TABLE `assinaturas`
+  ADD CONSTRAINT `FK_Assinatura_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
+
+--
+-- Limitadores para a tabela `convites`
+--
+ALTER TABLE `convites`
+  ADD CONSTRAINT `convites_ibfk_1` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE,
+  ADD CONSTRAINT `convites_ibfk_2` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `exercicios`
+--
+ALTER TABLE `exercicios`
+  ADD CONSTRAINT `exercicios_ibfk_1` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`);
+
+--
+-- Limitadores para a tabela `medidas`
+--
+ALTER TABLE `medidas`
+  ADD CONSTRAINT `FK_Medidas_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `modalidades_academia`
+--
+ALTER TABLE `modalidades_academia`
+  ADD CONSTRAINT `modalidades_academia_ibfk_1` FOREIGN KEY (`idAcademia`) REFERENCES `academias` (`idAcademia`) ON DELETE CASCADE,
+  ADD CONSTRAINT `modalidades_academia_ibfk_2` FOREIGN KEY (`idModalidade`) REFERENCES `modalidades` (`idModalidade`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `modalidades_aluno`
+--
+ALTER TABLE `modalidades_aluno`
+  ADD CONSTRAINT `modalidades_aluno_ibfk_1` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE,
+  ADD CONSTRAINT `modalidades_aluno_ibfk_2` FOREIGN KEY (`idModalidade`) REFERENCES `modalidades` (`idModalidade`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `modalidades_personal`
+--
+ALTER TABLE `modalidades_personal`
+  ADD CONSTRAINT `modalidades_personal_ibfk_1` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE,
+  ADD CONSTRAINT `modalidades_personal_ibfk_2` FOREIGN KEY (`idModalidade`) REFERENCES `modalidades` (`idModalidade`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `pagamentos`
+--
+ALTER TABLE `pagamentos`
+  ADD CONSTRAINT `FK_Pagamento_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
+
+--
+-- Limitadores para a tabela `personal`
+--
+ALTER TABLE `personal`
+  ADD CONSTRAINT `FK_Personal_Academia` FOREIGN KEY (`idAcademia`) REFERENCES `academias` (`idAcademia`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_Personal_Plano` FOREIGN KEY (`idPlano`) REFERENCES `planos` (`idPlano`);
+
+--
+-- Limitadores para a tabela `progresso`
+--
+ALTER TABLE `progresso`
+  ADD CONSTRAINT `FK_Progresso_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `refeicoes_tipos`
+--
+ALTER TABLE `refeicoes_tipos`
+  ADD CONSTRAINT `FK_Refeicoes_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `solicitacoes_academia`
+--
+ALTER TABLE `solicitacoes_academia`
+  ADD CONSTRAINT `fk_solicitacao_academia` FOREIGN KEY (`idAcademia`) REFERENCES `academias` (`idAcademia`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `treinos`
+--
+ALTER TABLE `treinos`
+  ADD CONSTRAINT `FK_Treino_UltimaSessao` FOREIGN KEY (`ultima_sessao_id`) REFERENCES `treino_sessao` (`idSessao`),
+  ADD CONSTRAINT `FK_Treinos_Aluno` FOREIGN KEY (`idAluno`) REFERENCES `alunos` (`idAluno`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_Treinos_Personal` FOREIGN KEY (`idPersonal`) REFERENCES `personal` (`idPersonal`) ON DELETE CASCADE,
+  ADD CONSTRAINT `treinos_ibfk_1` FOREIGN KEY (`ultima_sessao_id`) REFERENCES `treino_sessao` (`idSessao`);
+
+--
+-- Limitadores para a tabela `treino_exercicio`
+--
+ALTER TABLE `treino_exercicio`
+  ADD CONSTRAINT `FK_TreinoExercicio_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_TreinoExercicio_Exercicio` FOREIGN KEY (`idExercicio`) REFERENCES `exercicios` (`idExercicio`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_TreinoExercicio_Treino` FOREIGN KEY (`idTreino`) REFERENCES `treinos` (`idTreino`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `treino_sessao`
+--
+ALTER TABLE `treino_sessao`
+  ADD CONSTRAINT `treino_sessao_ibfk_1` FOREIGN KEY (`idTreino`) REFERENCES `treinos` (`idTreino`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `usuarios_academia`
+--
+ALTER TABLE `usuarios_academia`
+  ADD CONSTRAINT `fk_vinculo_academia` FOREIGN KEY (`idAcademia`) REFERENCES `academias` (`idAcademia`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `videos`
+--
+ALTER TABLE `videos`
+  ADD CONSTRAINT `FK_Videos_ExercAdaptado` FOREIGN KEY (`idExercAdaptado`) REFERENCES `exercadaptados` (`idExercAdaptado`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_Videos_Exercicio` FOREIGN KEY (`idExercicio`) REFERENCES `exercicios` (`idExercicio`) ON DELETE CASCADE;
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2025-10-28 14:05:33
