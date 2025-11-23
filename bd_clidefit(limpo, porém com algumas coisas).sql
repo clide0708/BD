@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 18-Nov-2025 às 07:52
+-- Tempo de geração: 23-Nov-2025 às 07:20
 -- Versão do servidor: 8.0.31
 -- versão do PHP: 8.0.26
 
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `academias` (
   UNIQUE KEY `cnpj` (`cnpj`),
   UNIQUE KEY `email` (`email`),
   KEY `idx_academia_foto_url` (`foto_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `academias`
@@ -89,7 +89,8 @@ TRUNCATE TABLE `academias`;
 --
 
 INSERT INTO `academias` (`idAcademia`, `nome`, `nome_fantasia`, `razao_social`, `cnpj`, `email`, `senha`, `telefone`, `endereco`, `data_cadastro`, `foto_url`, `sobre`, `tamanho_estrutura`, `capacidade_maxima`, `ano_fundacao`, `estacionamento`, `vestiario`, `ar_condicionado`, `wifi`, `totem_de_carregamento_usb`, `area_descanso`, `avaliacao_fisica`, `cadastro_completo`, `status_conta`, `idPlano`, `treinos_adaptados`) VALUES
-(1, 'Evoque Ribeirão Pires', 'Evoque Ribeirão Pires', 'Evoque Academia - Ribeirão Pires', '45345345345344', 'evoqueacademiarp@gmail.com', '$2y$10$EsJG9y2oR8DvJKjrB1EI2OdWEuqwqwJthM3/3GVDymzGk5RuSxhsK', '11940028922', NULL, '2025-11-18 03:28:08', '/assets/images/uploads/perfil_1763447155_691c11738fc7c.jpg', '', 'Grande', 150, 2019, 1, 1, 1, 1, 1, 1, 1, 1, 'Ativa', 5, 0);
+(1, 'Evoque Ribeirão Pires', 'Evoque Ribeirão Pires', 'Evoque Academia - Ribeirão Pires', '45345345345344', 'evoqueacademiarp@gmail.com', '$2y$10$EsJG9y2oR8DvJKjrB1EI2OdWEuqwqwJthM3/3GVDymzGk5RuSxhsK', '11940028922', NULL, '2025-11-18 03:28:08', '/assets/images/uploads/perfil_1763447155_691c11738fc7c.jpg', '', 'Grande', 150, 2019, 1, 1, 1, 1, 1, 1, 1, 1, 'Ativa', 5, 0),
+(2, 'Smart Fif Ribeirão Pires', 'Smart Fif Ribeirão Pires', 'Smart Fif Ribeirão Pires LTDA', '34534534534534', 'smartfitacademirarp@gmail.com', '$2y$10$yQIgBIajE01MBWj0sCY9Fe.xtlXy1gbNzEO0nsuB0LYIwKQW5tGlu', '34534534534', NULL, '2025-11-23 04:14:01', NULL, NULL, 'Grande', 200, 2024, 1, 1, 1, 0, 0, 0, 0, 0, 'Ativa', 5, 0);
 
 -- --------------------------------------------------------
 
@@ -108,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `academia_horarios` (
   `fechado` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`idHorario`),
   UNIQUE KEY `unique_academia_dia` (`idAcademia`,`dia_semana`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `academia_horarios`
@@ -126,7 +127,14 @@ INSERT INTO `academia_horarios` (`idHorario`, `idAcademia`, `dia_semana`, `abert
 (11, 1, 'Quinta-feira', 0, '08:00:00', '22:00:00', 0),
 (10, 1, 'Quarta-feira', 0, '08:00:00', '22:00:00', 0),
 (9, 1, 'Terça-feira', 0, '08:00:00', '22:00:00', 0),
-(8, 1, 'Segunda-feira', 0, '08:00:00', '22:00:00', 0);
+(8, 1, 'Segunda-feira', 0, '08:00:00', '22:00:00', 0),
+(15, 2, 'Segunda-feira', 0, '05:00:00', '23:59:00', 0),
+(16, 2, 'Terça-feira', 1, NULL, NULL, 0),
+(17, 2, 'Quarta-feira', 1, NULL, NULL, 0),
+(18, 2, 'Quinta-feira', 1, NULL, NULL, 0),
+(19, 2, 'Sexta-feira', 1, NULL, NULL, 0),
+(20, 2, 'Sábado', 1, NULL, NULL, 0),
+(21, 2, 'Domingo', 0, '00:00:00', '14:00:00', 0);
 
 -- --------------------------------------------------------
 
@@ -222,7 +230,7 @@ CREATE TABLE IF NOT EXISTS `alunos` (
   KEY `FK_Alunos_Academia` (`idAcademia`),
   KEY `idx_aluno_personal` (`idPersonal`),
   KEY `idx_aluno_idade` (`idade`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `alunos`
@@ -234,7 +242,9 @@ TRUNCATE TABLE `alunos`;
 --
 
 INSERT INTO `alunos` (`idAluno`, `nome`, `cpf`, `rg`, `email`, `senha`, `numTel`, `altura`, `meta`, `treinoTipo`, `foto_perfil`, `foto_url`, `data_cadastro`, `tipoPlano`, `idPersonal`, `idAcademia`, `status_vinculo`, `status_conta`, `idade`, `data_nascimento`, `genero`, `peso`, `idPlano`, `treinos_adaptados`, `cadastro_completo`) VALUES
-(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$ORiQ2/SdAGuLQTTHv/yFfeZ557FiHqQ2bRyIV4uRyJ/7gGFGQ3I1S', '11933572695', '177.00', 'Manter peso', NULL, NULL, '/assets/images/uploads/perfil_1763447028_691c10f417d1e.jpg', '2025-11-18 03:33:37', 'Básico(Gratuito)', NULL, NULL, 'Inativo', 'Ativa', NULL, '2001-11-24', 'Masculino', NULL, 1, 1, 1);
+(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$ORiQ2/SdAGuLQTTHv/yFfeZ557FiHqQ2bRyIV4uRyJ/7gGFGQ3I1S', '11933572695', '176.00', 'Manter peso', 'Moderado', NULL, '/assets/images/uploads/perfil_1763447028_691c10f417d1e.jpg', '2025-11-18 03:33:37', 'Básico(Gratuito)', 1, 1, 'Ativo', 'Ativa', NULL, '2001-11-24', 'Masculino', '71.00', 1, 1, 1),
+(2, 'Teste Aluno', '23452342342', '34.234.234-2', 'testealuno@gmail.com', '$2y$10$2d2radDFRVgt/l1xmq.bY.zH81ESvkZyG2JfWJ1cn1L3aqqz3JtC6', '23423423423', '177.00', 'Ganhar massa muscular', 'Moderado', NULL, '/assets/images/uploads/perfil_1763877957_6922a445a3925.jpg', '2025-11-23 03:08:22', 'Básico(Gratuito)', NULL, 1, 'Inativo', 'Ativa', NULL, '2006-11-24', 'Masculino', '71.00', 1, 1, 1),
+(3, 'Teste Aluno 2', '23423423456', '75.678.678-6', 'testealuno2@gmail.com', '$2y$10$ffxdrKEyFGqMF7/33eIviuL0QHsX7dFCt.XSJ96/H7Ub3uiKDIW2a', '12346489878', '189.00', 'Ganhar massa muscular', 'Intenso', NULL, '/assets/images/uploads/perfil_1763881131_6922b0abda655.jpg', '2025-11-23 03:59:57', 'Básico(Gratuito)', 1, NULL, 'Ativo', 'Ativa', NULL, '1996-08-07', 'Masculino', '92.00', 1, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -255,7 +265,7 @@ CREATE TABLE IF NOT EXISTS `assinaturas` (
   PRIMARY KEY (`idAssinatura`),
   KEY `idx_usuario` (`idUsuario`,`tipo_usuario`),
   KEY `FK_Assinatura_Plano` (`idPlano`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `assinaturas`
@@ -267,7 +277,11 @@ TRUNCATE TABLE `assinaturas`;
 --
 
 INSERT INTO `assinaturas` (`idAssinatura`, `idUsuario`, `tipo_usuario`, `idPlano`, `data_inicio`, `data_fim`, `status`, `id_gateway_assinatura`) VALUES
-(1, 1, 'academia', 5, '2025-11-18 03:28:08', NULL, 'ativa', NULL);
+(1, 1, 'academia', 5, '2025-11-18 03:28:08', NULL, 'ativa', NULL),
+(2, 1, 'personal', 3, '2025-11-18 05:11:24', NULL, 'ativa', NULL),
+(3, 2, 'personal', 3, '2025-11-22 18:42:39', NULL, 'ativa', NULL),
+(4, 3, 'personal', 3, '2025-11-23 04:09:19', NULL, 'ativa', NULL),
+(5, 2, 'academia', 5, '2025-11-23 04:14:01', NULL, 'ativa', NULL);
 
 -- --------------------------------------------------------
 
@@ -296,13 +310,21 @@ CREATE TABLE IF NOT EXISTS `convites` (
   KEY `idx_convites_tipos` (`tipo_remetente`,`tipo_destinatario`,`status`),
   KEY `idx_convites_status_tipos` (`status`,`tipo_remetente`,`tipo_destinatario`),
   KEY `idx_convites_usuarios_status` (`idPersonal`,`idAluno`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `convites`
 --
 
 TRUNCATE TABLE `convites`;
+--
+-- Extraindo dados da tabela `convites`
+--
+
+INSERT INTO `convites` (`idConvite`, `token`, `idPersonal`, `idAluno`, `email_aluno`, `status`, `data_criacao`, `data_resposta`, `visualizado`, `tipo_remetente`, `tipo_destinatario`, `mensagem`) VALUES
+(1, '4a632b35276d41b71713a49e3cb2c3791a87c20f11c9e10a251f714a48bf8cb8', 1, 1, NULL, 'aceito', '2025-11-18 05:11:51', NULL, 0, 'personal', 'aluno', 'Eae?'),
+(2, '2c74e5595173abd4c32927f4aed89db37f156b7a18d4c0c80a0722fb0d1c04f7', 1, 3, NULL, 'aceito', '2025-11-23 04:01:42', NULL, 0, 'aluno', 'personal', 'Olá!');
+
 -- --------------------------------------------------------
 
 --
@@ -356,7 +378,7 @@ CREATE TABLE IF NOT EXISTS `enderecos_usuarios` (
   KEY `idx_endereco_usuario` (`idUsuario`,`tipoUsuario`),
   KEY `idx_endereco_localizacao` (`cidade`,`estado`),
   KEY `idx_endereco_coordenadas` (`latitude`,`longitude`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `enderecos_usuarios`
@@ -369,7 +391,13 @@ TRUNCATE TABLE `enderecos_usuarios`;
 
 INSERT INTO `enderecos_usuarios` (`idEndereco`, `idUsuario`, `tipoUsuario`, `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `estado`, `pais`, `latitude`, `longitude`, `data_criacao`, `data_atualizacao`) VALUES
 (1, 1, '', '09400310', 'Avenida Francisco Monteiro', '171', '', 'Centro', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-18 03:28:08', NULL),
-(2, 1, 'aluno', '09400500', 'Rua Doutor Virgílio Gola', '171', '', 'Pastoril', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-18 03:33:37', NULL);
+(2, 1, 'aluno', '09400500', 'Rua Doutor Virgílio Gola', '171', '', 'Pastoril', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-18 03:33:37', '2025-11-23 03:52:25'),
+(3, 1, 'personal', '09430300', 'Rua Circular', '', '', 'Santa Luzia', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-18 05:11:24', NULL),
+(4, 2, 'personal', '09400500', 'Rua Doutor Virgílio Gola', '200', '', 'Pastoril', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-22 18:42:39', NULL),
+(5, 2, 'aluno', '09400500', 'Rua Doutor Virgílio Gola', '171', '', 'Pastoril', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-23 03:08:22', '2025-11-23 03:53:18'),
+(6, 3, 'aluno', '09430300', 'Rua Circular', '468', '', 'Santa Luzia', 'Ribeirão Pires', 'SP', 'Brasil', '-23.69625560', '-46.39288050', '2025-11-23 03:59:57', '2025-11-23 04:01:10'),
+(7, 3, 'personal', '09540000', 'Rua Engenheiro Rebouças', '250', '', 'Cerâmica', 'São Caetano do Sul', 'SP', 'Brasil', NULL, NULL, '2025-11-23 04:09:19', NULL),
+(8, 2, '', '09406000', 'Avenida Prefeito Valdírio Prisco', '1111', '', 'Pastoril', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-23 04:14:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -642,7 +670,7 @@ CREATE TABLE IF NOT EXISTS `modalidades_academia` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_academia_modalidade` (`idAcademia`,`idModalidade`),
   KEY `idModalidade` (`idModalidade`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Truncar tabela antes do insert `modalidades_academia`
@@ -662,7 +690,11 @@ INSERT INTO `modalidades_academia` (`id`, `idAcademia`, `idModalidade`, `data_as
 (15, 1, 15, '2025-11-18 03:32:53'),
 (16, 1, 16, '2025-11-18 03:32:53'),
 (17, 1, 12, '2025-11-18 03:32:53'),
-(18, 1, 14, '2025-11-18 03:32:53');
+(18, 1, 14, '2025-11-18 03:32:53'),
+(19, 2, 2, '2025-11-23 04:14:01'),
+(20, 2, 1, '2025-11-23 04:14:01'),
+(21, 2, 16, '2025-11-23 04:14:01'),
+(22, 2, 15, '2025-11-23 04:14:01');
 
 -- --------------------------------------------------------
 
@@ -680,7 +712,7 @@ CREATE TABLE IF NOT EXISTS `modalidades_aluno` (
   UNIQUE KEY `unique_aluno_modalidade` (`idAluno`,`idModalidade`),
   KEY `idModalidade` (`idModalidade`),
   KEY `idx_modalidades_aluno` (`idAluno`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Truncar tabela antes do insert `modalidades_aluno`
@@ -692,8 +724,16 @@ TRUNCATE TABLE `modalidades_aluno`;
 --
 
 INSERT INTO `modalidades_aluno` (`id`, `idAluno`, `idModalidade`, `data_associacao`) VALUES
-(1, 1, 5, '2025-11-18 03:33:38'),
-(2, 1, 1, '2025-11-18 03:33:38');
+(37, 1, 1, '2025-11-23 03:52:25'),
+(38, 1, 5, '2025-11-23 03:52:25'),
+(39, 1, 6, '2025-11-23 03:52:25'),
+(40, 2, 1, '2025-11-23 03:53:18'),
+(41, 2, 4, '2025-11-23 03:53:18'),
+(42, 2, 5, '2025-11-23 03:53:18'),
+(43, 2, 6, '2025-11-23 03:53:18'),
+(44, 3, 1, '2025-11-23 03:59:58'),
+(45, 3, 17, '2025-11-23 03:59:58'),
+(46, 3, 6, '2025-11-23 03:59:58');
 
 -- --------------------------------------------------------
 
@@ -711,13 +751,28 @@ CREATE TABLE IF NOT EXISTS `modalidades_personal` (
   UNIQUE KEY `unique_personal_modalidade` (`idPersonal`,`idModalidade`),
   KEY `idModalidade` (`idModalidade`),
   KEY `idx_modalidades_personal` (`idPersonal`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Truncar tabela antes do insert `modalidades_personal`
 --
 
 TRUNCATE TABLE `modalidades_personal`;
+--
+-- Extraindo dados da tabela `modalidades_personal`
+--
+
+INSERT INTO `modalidades_personal` (`id`, `idPersonal`, `idModalidade`, `data_associacao`) VALUES
+(1, 1, 2, '2025-11-18 05:11:25'),
+(2, 1, 5, '2025-11-18 05:11:25'),
+(3, 1, 1, '2025-11-18 05:11:25'),
+(4, 1, 9, '2025-11-18 05:11:25'),
+(5, 2, 2, '2025-11-22 18:42:41'),
+(6, 2, 5, '2025-11-22 18:42:41'),
+(7, 2, 4, '2025-11-22 18:42:41'),
+(8, 3, 2, '2025-11-23 04:09:20'),
+(9, 3, 1, '2025-11-23 04:09:20');
+
 -- --------------------------------------------------------
 
 --
@@ -815,13 +870,22 @@ CREATE TABLE IF NOT EXISTS `personal` (
   KEY `idx_personal_data_nascimento` (`data_nascimento`),
   KEY `idx_personal_genero` (`genero`),
   KEY `idx_personal_foto_url` (`foto_url`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `personal`
 --
 
 TRUNCATE TABLE `personal`;
+--
+-- Extraindo dados da tabela `personal`
+--
+
+INSERT INTO `personal` (`idPersonal`, `nome`, `cpf`, `rg`, `cref_numero`, `cref_categoria`, `cref_regional`, `email`, `senha`, `numTel`, `idade`, `data_nascimento`, `genero`, `foto_perfil`, `foto_url`, `data_cadastro`, `tipoPlano`, `status_conta`, `idPlano`, `idAcademia`, `treinos_adaptados`, `sobre`, `cadastro_completo`) VALUES
+(1, 'Enzo K', '46404867827', '592819955', '123456', 'A', 'SP', 'krebsenzo8@gmail.com', '$2y$10$jDZ5AZWGlggxxp18HYZzT.XImjk.YFQRY.x.NhTFHIDm.sIyqHf3e', '11933572696', NULL, '2001-11-24', 'Masculino', NULL, '/assets/images/uploads/perfil_1763453423_691c29ef004cb.jpg', '2025-11-18 05:11:24', 'Básico(Gratuito)', 'Ativa', 3, 1, 1, 'Teste', 1),
+(2, 'Teste Personal', '43564564564', '456456456456', '4563453', 'B', 'SP', 'testepersonal@gmail.com', '$2y$10$M2kAcRek/39HQAcUTK5BRe2.qvxiTohkcioxM8lTtHZXP0xRMMTL.', '45645645646', NULL, '2000-11-24', 'Masculino', NULL, '/assets/images/uploads/perfil_1763847696_69222e105281d.jpg', '2025-11-22 18:42:39', 'Básico(Gratuito)', 'Ativa', 3, 1, 1, 'fsdfsdfsdfsdfdfgdf', 1),
+(3, 'Teste personal 2', '34534534534', '34.534.534-5', '34534535', 'A', 'SP', 'testepersonal2@gmail.com', '$2y$10$jIQCAUMn6HOgRJbww3MK9uCxjTh0ejsiT9mUR1SKnJ0dtqceFZ03W', '53453453453', NULL, '1998-11-24', 'Masculino', NULL, '/assets/images/uploads/perfil_1763881653_6922b2b5c31fb.jpg', '2025-11-23 04:09:19', 'Básico(Gratuito)', 'Ativa', 3, 1, 1, 'Dgrgsdfgdfgdfg', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -951,13 +1015,28 @@ CREATE TABLE IF NOT EXISTS `solicitacoes_academia` (
   KEY `idAcademia` (`idAcademia`),
   KEY `idx_usuario_tipo` (`idUsuario`,`tipo_usuario`),
   KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Truncar tabela antes do insert `solicitacoes_academia`
 --
 
 TRUNCATE TABLE `solicitacoes_academia`;
+--
+-- Extraindo dados da tabela `solicitacoes_academia`
+--
+
+INSERT INTO `solicitacoes_academia` (`idSolicitacao`, `token`, `idAcademia`, `idUsuario`, `tipo_usuario`, `status`, `mensagem_solicitante`, `mensagem_resposta`, `data_criacao`, `data_resposta`, `visualizado`) VALUES
+(1, 'c0cd4187fc2a37249eab4b80b90d746f36d7fd981cfa58259292231f21d59c11', 1, 1, 'aluno', 'recusada', NULL, '', '2025-11-22 21:48:25', '2025-11-23 03:51:21', 0),
+(2, '8e2dcd62ffe2747eb5815fa48f76661f708b470d53d3b6ceebdfa517e9e50fb0', 1, 1, 'aluno', 'recusada', NULL, '', '2025-11-22 21:48:38', '2025-11-23 03:51:17', 0),
+(3, '28ccc98742b2aa488684f2f6ac3dfa9674d6e6d51a78861bd5fc17ddc81f9449', 1, 1, 'aluno', 'recusada', NULL, '', '2025-11-22 23:17:27', '2025-11-23 03:51:07', 0),
+(4, '461f7d06e68bef5600f7a34bc451605f3a52fff02617175d5fbd7d4768e2fcf0', 1, 1, 'aluno', 'recusada', NULL, '', '2025-11-23 00:51:18', '2025-11-23 03:51:02', 0),
+(5, '1e2b29c26e864aceb2355a4c494db441b3f2a81e2c7689fc49c92c47b44b2019', 1, 1, 'aluno', 'recusada', NULL, '', '2025-11-23 00:51:35', '2025-11-23 03:51:00', 0),
+(6, '3a6c64dd6ca3bb796a2601c5fdd8da3d23ac7e83e105e9f15abd0ff28357873f', 1, 2, 'aluno', 'recusada', NULL, '', '2025-11-23 03:14:45', '2025-11-23 03:50:56', 0),
+(7, '021b5d5612ed81a976b52f6a6b0682a4b060d8caf06035f2704610492297d719', 1, 1, 'aluno', 'aceita', NULL, NULL, '2025-11-23 03:52:25', '2025-11-23 03:52:38', 0),
+(8, '3a39c51d130402a08d7959622541356460887da74369b4609b77f4fcdd873c8b', 1, 3, 'aluno', 'recusada', 'Solicitação enviada durante o cadastro', '', '2025-11-23 03:59:57', '2025-11-23 04:00:34', 0),
+(9, 'be55b77072bd80bcc2befcea0dc67a28c724cc4c4b210c39bdaa9797f972e267', 1, 3, 'personal', 'aceita', NULL, NULL, '2025-11-23 04:09:19', '2025-11-23 04:10:18', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -1224,13 +1303,21 @@ CREATE TABLE IF NOT EXISTS `usuarios_academia` (
   UNIQUE KEY `unique_usuario_academia` (`idAcademia`,`idUsuario`,`tipo_usuario`),
   KEY `idx_academia` (`idAcademia`),
   KEY `idx_usuario` (`idUsuario`,`tipo_usuario`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Truncar tabela antes do insert `usuarios_academia`
 --
 
 TRUNCATE TABLE `usuarios_academia`;
+--
+-- Extraindo dados da tabela `usuarios_academia`
+--
+
+INSERT INTO `usuarios_academia` (`idVinculo`, `idAcademia`, `idUsuario`, `tipo_usuario`, `data_vinculo`, `status`, `data_desvinculo`, `motivo_desvinculo`) VALUES
+(1, 1, 1, 'aluno', '2025-11-23 03:52:38', 'ativo', NULL, NULL),
+(2, 1, 3, 'personal', '2025-11-23 04:10:18', 'ativo', NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
