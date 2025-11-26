@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 18-Nov-2025 às 07:52
+-- Tempo de geração: 26-Nov-2025 às 05:39
 -- Versão do servidor: 8.0.31
 -- versão do PHP: 8.0.26
 
@@ -77,20 +77,13 @@ CREATE TABLE IF NOT EXISTS `academias` (
   UNIQUE KEY `cnpj` (`cnpj`),
   UNIQUE KEY `email` (`email`),
   KEY `idx_academia_foto_url` (`foto_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `academias`
 --
 
 TRUNCATE TABLE `academias`;
---
--- Extraindo dados da tabela `academias`
---
-
-INSERT INTO `academias` (`idAcademia`, `nome`, `nome_fantasia`, `razao_social`, `cnpj`, `email`, `senha`, `telefone`, `endereco`, `data_cadastro`, `foto_url`, `sobre`, `tamanho_estrutura`, `capacidade_maxima`, `ano_fundacao`, `estacionamento`, `vestiario`, `ar_condicionado`, `wifi`, `totem_de_carregamento_usb`, `area_descanso`, `avaliacao_fisica`, `cadastro_completo`, `status_conta`, `idPlano`, `treinos_adaptados`) VALUES
-(1, 'Evoque Ribeirão Pires', 'Evoque Ribeirão Pires', 'Evoque Academia - Ribeirão Pires', '45345345345344', 'evoqueacademiarp@gmail.com', '$2y$10$EsJG9y2oR8DvJKjrB1EI2OdWEuqwqwJthM3/3GVDymzGk5RuSxhsK', '11940028922', NULL, '2025-11-18 03:28:08', '/assets/images/uploads/perfil_1763447155_691c11738fc7c.jpg', '', 'Grande', 150, 2019, 1, 1, 1, 1, 1, 1, 1, 1, 'Ativa', 5, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -108,26 +101,13 @@ CREATE TABLE IF NOT EXISTS `academia_horarios` (
   `fechado` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`idHorario`),
   UNIQUE KEY `unique_academia_dia` (`idAcademia`,`dia_semana`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `academia_horarios`
 --
 
 TRUNCATE TABLE `academia_horarios`;
---
--- Extraindo dados da tabela `academia_horarios`
---
-
-INSERT INTO `academia_horarios` (`idHorario`, `idAcademia`, `dia_semana`, `aberto_24h`, `horario_abertura`, `horario_fechamento`, `fechado`) VALUES
-(14, 1, 'Domingo', 0, '08:00:00', '22:00:00', 0),
-(13, 1, 'Sábado', 0, '08:00:00', '22:00:00', 0),
-(12, 1, 'Sexta-feira', 0, '08:00:00', '22:00:00', 0),
-(11, 1, 'Quinta-feira', 0, '08:00:00', '22:00:00', 0),
-(10, 1, 'Quarta-feira', 0, '08:00:00', '22:00:00', 0),
-(9, 1, 'Terça-feira', 0, '08:00:00', '22:00:00', 0),
-(8, 1, 'Segunda-feira', 0, '08:00:00', '22:00:00', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -222,20 +202,13 @@ CREATE TABLE IF NOT EXISTS `alunos` (
   KEY `FK_Alunos_Academia` (`idAcademia`),
   KEY `idx_aluno_personal` (`idPersonal`),
   KEY `idx_aluno_idade` (`idade`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `alunos`
 --
 
 TRUNCATE TABLE `alunos`;
---
--- Extraindo dados da tabela `alunos`
---
-
-INSERT INTO `alunos` (`idAluno`, `nome`, `cpf`, `rg`, `email`, `senha`, `numTel`, `altura`, `meta`, `treinoTipo`, `foto_perfil`, `foto_url`, `data_cadastro`, `tipoPlano`, `idPersonal`, `idAcademia`, `status_vinculo`, `status_conta`, `idade`, `data_nascimento`, `genero`, `peso`, `idPlano`, `treinos_adaptados`, `cadastro_completo`) VALUES
-(1, 'Enzo Krebs Silva', '46404867826', '592819954', 'enzokrebs8@gmail.com', '$2y$10$ORiQ2/SdAGuLQTTHv/yFfeZ557FiHqQ2bRyIV4uRyJ/7gGFGQ3I1S', '11933572695', '177.00', 'Manter peso', NULL, NULL, '/assets/images/uploads/perfil_1763447028_691c10f417d1e.jpg', '2025-11-18 03:33:37', 'Básico(Gratuito)', NULL, NULL, 'Inativo', 'Ativa', NULL, '2001-11-24', 'Masculino', NULL, 1, 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -255,20 +228,13 @@ CREATE TABLE IF NOT EXISTS `assinaturas` (
   PRIMARY KEY (`idAssinatura`),
   KEY `idx_usuario` (`idUsuario`,`tipo_usuario`),
   KEY `FK_Assinatura_Plano` (`idPlano`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `assinaturas`
 --
 
 TRUNCATE TABLE `assinaturas`;
---
--- Extraindo dados da tabela `assinaturas`
---
-
-INSERT INTO `assinaturas` (`idAssinatura`, `idUsuario`, `tipo_usuario`, `idPlano`, `data_inicio`, `data_fim`, `status`, `id_gateway_assinatura`) VALUES
-(1, 1, 'academia', 5, '2025-11-18 03:28:08', NULL, 'ativa', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -356,21 +322,13 @@ CREATE TABLE IF NOT EXISTS `enderecos_usuarios` (
   KEY `idx_endereco_usuario` (`idUsuario`,`tipoUsuario`),
   KEY `idx_endereco_localizacao` (`cidade`,`estado`),
   KEY `idx_endereco_coordenadas` (`latitude`,`longitude`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `enderecos_usuarios`
 --
 
 TRUNCATE TABLE `enderecos_usuarios`;
---
--- Extraindo dados da tabela `enderecos_usuarios`
---
-
-INSERT INTO `enderecos_usuarios` (`idEndereco`, `idUsuario`, `tipoUsuario`, `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `estado`, `pais`, `latitude`, `longitude`, `data_criacao`, `data_atualizacao`) VALUES
-(1, 1, '', '09400310', 'Avenida Francisco Monteiro', '171', '', 'Centro', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-18 03:28:08', NULL),
-(2, 1, 'aluno', '09400500', 'Rua Doutor Virgílio Gola', '171', '', 'Pastoril', 'Ribeirão Pires', 'SP', 'Brasil', NULL, NULL, '2025-11-18 03:33:37', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -642,28 +600,13 @@ CREATE TABLE IF NOT EXISTS `modalidades_academia` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_academia_modalidade` (`idAcademia`,`idModalidade`),
   KEY `idModalidade` (`idModalidade`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `modalidades_academia`
 --
 
 TRUNCATE TABLE `modalidades_academia`;
---
--- Extraindo dados da tabela `modalidades_academia`
---
-
-INSERT INTO `modalidades_academia` (`id`, `idAcademia`, `idModalidade`, `data_associacao`) VALUES
-(10, 1, 13, '2025-11-18 03:32:53'),
-(11, 1, 2, '2025-11-18 03:32:53'),
-(12, 1, 5, '2025-11-18 03:32:53'),
-(13, 1, 11, '2025-11-18 03:32:53'),
-(14, 1, 1, '2025-11-18 03:32:53'),
-(15, 1, 15, '2025-11-18 03:32:53'),
-(16, 1, 16, '2025-11-18 03:32:53'),
-(17, 1, 12, '2025-11-18 03:32:53'),
-(18, 1, 14, '2025-11-18 03:32:53');
-
 -- --------------------------------------------------------
 
 --
@@ -680,21 +623,13 @@ CREATE TABLE IF NOT EXISTS `modalidades_aluno` (
   UNIQUE KEY `unique_aluno_modalidade` (`idAluno`,`idModalidade`),
   KEY `idModalidade` (`idModalidade`),
   KEY `idx_modalidades_aluno` (`idAluno`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `modalidades_aluno`
 --
 
 TRUNCATE TABLE `modalidades_aluno`;
---
--- Extraindo dados da tabela `modalidades_aluno`
---
-
-INSERT INTO `modalidades_aluno` (`id`, `idAluno`, `idModalidade`, `data_associacao`) VALUES
-(1, 1, 5, '2025-11-18 03:33:38'),
-(2, 1, 1, '2025-11-18 03:33:38');
-
 -- --------------------------------------------------------
 
 --
@@ -711,13 +646,40 @@ CREATE TABLE IF NOT EXISTS `modalidades_personal` (
   UNIQUE KEY `unique_personal_modalidade` (`idPersonal`,`idModalidade`),
   KEY `idModalidade` (`idModalidade`),
   KEY `idx_modalidades_personal` (`idPersonal`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `modalidades_personal`
 --
 
 TRUNCATE TABLE `modalidades_personal`;
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `notificacoes`
+--
+
+DROP TABLE IF EXISTS `notificacoes`;
+CREATE TABLE IF NOT EXISTS `notificacoes` (
+  `idNotificacao` int NOT NULL AUTO_INCREMENT,
+  `idUsuario` int NOT NULL,
+  `tipoUsuario` enum('aluno','personal','academia') COLLATE utf8mb4_general_ci NOT NULL,
+  `titulo` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `mensagem` text COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `lida` tinyint(1) DEFAULT '0',
+  `data_criacao` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idNotificacao`),
+  KEY `idx_usuario` (`idUsuario`,`tipoUsuario`),
+  KEY `idx_lida` (`lida`),
+  KEY `idx_data` (`data_criacao`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Truncar tabela antes do insert `notificacoes`
+--
+
+TRUNCATE TABLE `notificacoes`;
 -- --------------------------------------------------------
 
 --
@@ -785,7 +747,10 @@ CREATE TABLE IF NOT EXISTS `personal` (
   `rg` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cref_numero` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `cref_categoria` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `cref_regional` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cref_regional` enum('AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO','Outro') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `cref_verificado` tinyint(1) NOT NULL DEFAULT '0',
+  `cref_data_verificacao` datetime DEFAULT NULL,
+  `cref_observacao` text COLLATE utf8mb4_general_ci,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `numTel` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -794,6 +759,7 @@ CREATE TABLE IF NOT EXISTS `personal` (
   `genero` enum('Masculino','Feminino','Outro') COLLATE utf8mb4_general_ci DEFAULT NULL,
   `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `foto_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cref_foto_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `data_cadastro` datetime NOT NULL,
   `tipoPlano` enum('Básico(Gratuito)','Plus') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Básico(Gratuito)',
   `status_conta` enum('Ativa','Pendente','Excluida') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Ativa',
@@ -936,13 +902,13 @@ TRUNCATE TABLE `refeicoes_tipos`;
 DROP TABLE IF EXISTS `solicitacoes_academia`;
 CREATE TABLE IF NOT EXISTS `solicitacoes_academia` (
   `idSolicitacao` int NOT NULL AUTO_INCREMENT,
-  `token` varchar(64) NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_general_ci NOT NULL,
   `idAcademia` int NOT NULL,
   `idUsuario` int NOT NULL,
-  `tipo_usuario` enum('aluno','personal') NOT NULL,
-  `status` enum('pendente','aceita','recusada') NOT NULL DEFAULT 'pendente',
-  `mensagem_solicitante` text,
-  `mensagem_resposta` text,
+  `tipo_usuario` enum('aluno','personal') COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('pendente','aceita','recusada') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `mensagem_solicitante` text COLLATE utf8mb4_general_ci,
+  `mensagem_resposta` text COLLATE utf8mb4_general_ci,
   `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_resposta` datetime DEFAULT NULL,
   `visualizado` tinyint(1) NOT NULL DEFAULT '0',
@@ -951,7 +917,7 @@ CREATE TABLE IF NOT EXISTS `solicitacoes_academia` (
   KEY `idAcademia` (`idAcademia`),
   KEY `idx_usuario_tipo` (`idUsuario`,`tipo_usuario`),
   KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `solicitacoes_academia`
@@ -1215,16 +1181,16 @@ CREATE TABLE IF NOT EXISTS `usuarios_academia` (
   `idVinculo` int NOT NULL AUTO_INCREMENT,
   `idAcademia` int NOT NULL,
   `idUsuario` int NOT NULL,
-  `tipo_usuario` enum('aluno','personal') NOT NULL,
+  `tipo_usuario` enum('aluno','personal') COLLATE utf8mb4_general_ci NOT NULL,
   `data_vinculo` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` enum('ativo','inativo') NOT NULL DEFAULT 'ativo',
+  `status` enum('ativo','inativo') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'ativo',
   `data_desvinculo` datetime DEFAULT NULL,
-  `motivo_desvinculo` text,
+  `motivo_desvinculo` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`idVinculo`),
   UNIQUE KEY `unique_usuario_academia` (`idAcademia`,`idUsuario`,`tipo_usuario`),
   KEY `idx_academia` (`idAcademia`),
   KEY `idx_usuario` (`idUsuario`,`tipo_usuario`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Truncar tabela antes do insert `usuarios_academia`
